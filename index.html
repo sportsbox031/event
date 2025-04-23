@@ -460,18 +460,6 @@
                 successModal.classList.add('hidden');
             });
             
-            // Helper functions
-            function validateInput(input) {
-                if (input.value.trim() === '') {
-                    const fieldName = input.previousElementSibling.textContent.replace('*', '').trim();
-                    showError(input, `${fieldName}을(를) 입력해주세요`);
-                    return false;
-                } else {
-                    hideError(input);
-                    return true;
-                }
-            }
-            
             function showError(input, message) {
     // 부모의 형제 요소들 중에서 error-message 클래스를 가진 요소를 찾기
     const parentDiv = input.closest('div');
@@ -484,6 +472,28 @@
     input.classList.add('border-red-500');
 }
             
+function hideError(input) {
+        const parentDiv = input.closest('div');
+        const errorElement = parentDiv.querySelector('.error-message');
+        
+        if (errorElement) {
+            errorElement.classList.add('hidden');
+        }
+        input.classList.remove('border-red-500');
+    }
+
+            // Helper functions
+            function validateInput(input) {
+                if (input.value.trim() === '') {
+                    const fieldName = input.previousElementSibling.textContent.replace('*', '').trim();
+                    showError(input, `${fieldName}을(를) 입력해주세요`);
+                    return false;
+                } else {
+                    hideError(input);
+                    return true;
+                }
+            }
+
             function validateForm() {
                 let isValid = true;
                 
