@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>스포츠박스 하계 이벤트 신청</title>
+    <script src="https://cdn.tailwindcss.com/3.4.16"></script>
+    <script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#f59e0b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/remixicon@4.5.0/fonts/remixicon.css" rel="stylesheet">
+    <style>
+        :where([class^="ri-"])::before { content: "\f3c2"; }
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f9fafb;
+        }
+        .calendar-day {
+            transition: all 0.3s ease;
+        }
+        .calendar-day.highlight {
+            background-color: rgba(59, 130, 246, 0.1);
+            border-color: #3b82f6;
+        }
+        .calendar-day.selected {
+            background-color: #3b82f6;
+            color: white;
+            border-color: #3b82f6;
+        }
+        input:focus {
+            outline: none;
+            border-color: #3b82f6;
+        }
+        input[type="number"]::-webkit-inner-spin-button,
+        input[type="number"]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="min-h-screen flex flex-col">
+        <!-- Hero Section -->
+        <div class="w-full bg-gradient-to-r from-blue-50 to-blue-100 py-16">
+            <div class="container mx-auto px-4 md:px-8 max-w-6xl">
+                <div class="flex flex-col md:flex-row items-center justify-between">
+                    <div class="md:w-1/2 mb-8 md:mb-0">
+                        <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">스포츠박스 하계 이벤트</h1>
+                        <p class="text-xl text-gray-700 mb-6">2025년 6월 23일 - 6월 25일</p>
+                        <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-2">
+                                <div class="w-8 h-8 flex items-center justify-center bg-primary rounded-full text-white mr-3">
+                                    <i class="ri-user-line"></i>
+                                </div>
+                                <p class="text-gray-700">각 차수별 최대 인원: <span class="font-semibold">50명</span></p>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 flex items-center justify-center bg-primary rounded-full text-white mr-3">
+                                    <i class="ri-calendar-line"></i>
+                                </div>
+                                <p class="text-gray-700">1차(6/23), 2차(6/24), 3차(6/25)</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="md:w-5/12">
+                        <img src="https://readdy.ai/api/search-image?query=Sports%20event%20with%20people%20participating%20in%20summer%20activities%2C%20vibrant%20atmosphere%2C%20sports%20equipment%2C%20blue%20sky%2C%20sunny%20day%2C%20energetic%20scene%2C%20professional%20photography&width=600&height=400&seq=1&orientation=landscape" alt="하계 이벤트 이미지" class="rounded-lg shadow-lg w-full h-auto object-cover object-top">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl py-12">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">이벤트 신청하기</h2>
+                
+                <!-- Calendar Section -->
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-4">참가 날짜 선택</h3>
+                    <div class="bg-gray-50 rounded-lg p-4 md:p-6">
+                        <div class="flex justify-between items-center mb-4">
+                            <h4 class="text-lg font-medium text-gray-800">2025년 6월</h4>
+                        </div>
+                        
+                        <!-- Calendar Header -->
+                        <div class="grid grid-cols-7 gap-1 mb-2">
+                            <div class="text-center text-sm font-medium text-gray-500">일</div>
+                            <div class="text-center text-sm font-medium text-gray-500">월</div>
+                            <div class="text-center text-sm font-medium text-gray-500">화</div>
+                            <div class="text-center text-sm font-medium text-gray-500">수</div>
+                            <div class="text-center text-sm font-medium text-gray-500">목</div>
+                            <div class="text-center text-sm font-medium text-gray-500">금</div>
+                            <div class="text-center text-sm font-medium text-gray-500">토</div>
+                        </div>
+                        
+                        <!-- Calendar Days -->
+                        <div class="grid grid-cols-7 gap-1">
+                            <!-- Week 1 -->
+                            <div class="h-12 flex items-center justify-center text-gray-400">26</div>
+                            <div class="h-12 flex items-center justify-center text-gray-400">27</div>
+                            <div class="h-12 flex items-center justify-center text-gray-400">28</div>
+                            <div class="h-12 flex items-center justify-center text-gray-400">29</div>
+                            <div class="h-12 flex items-center justify-center text-gray-400">30</div>
+                            <div class="h-12 flex items-center justify-center text-gray-400">31</div>
+                            <div class="h-12 flex items-center justify-center">1</div>
+                            
+                            <!-- Week 2 -->
+                            <div class="h-12 flex items-center justify-center">2</div>
+                            <div class="h-12 flex items-center justify-center">3</div>
+                            <div class="h-12 flex items-center justify-center">4</div>
+                            <div class="h-12 flex items-center justify-center">5</div>
+                            <div class="h-12 flex items-center justify-center">6</div>
+                            <div class="h-12 flex items-center justify-center">7</div>
+                            <div class="h-12 flex items-center justify-center">8</div>
+                            
+                            <!-- Week 3 -->
+                            <div class="h-12 flex items-center justify-center">9</div>
+                            <div class="h-12 flex items-center justify-center">10</div>
+                            <div class="h-12 flex items-center justify-center">11</div>
+                            <div class="h-12 flex items-center justify-center">12</div>
+                            <div class="h-12 flex items-center justify-center">13</div>
+                            <div class="h-12 flex items-center justify-center">14</div>
+                            <div class="h-12 flex items-center justify-center">15</div>
+                            
+                            <!-- Week 4 -->
+                            <div class="h-12 flex items-center justify-center">16</div>
+                            <div class="h-12 flex items-center justify-center">17</div>
+                            <div class="h-12 flex items-center justify-center">18</div>
+                            <div class="h-12 flex items-center justify-center">19</div>
+                            <div class="h-12 flex items-center justify-center">20</div>
+                            <div class="h-12 flex items-center justify-center">21</div>
+                            <div class="h-12 flex items-center justify-center">22</div>
+                            
+                            <!-- Week 5 (Event Days) -->
+                            <div class="calendar-day h-12 flex items-center justify-center rounded-full border-2 border-transparent cursor-pointer highlight" data-date="2025-06-23">23</div>
+                            <div class="calendar-day h-12 flex items-center justify-center rounded-full border-2 border-transparent cursor-pointer highlight" data-date="2025-06-24">24</div>
+                            <div class="calendar-day h-12 flex items-center justify-center rounded-full border-2 border-transparent cursor-pointer highlight" data-date="2025-06-25">25</div>
+                            <div class="h-12 flex items-center justify-center">26</div>
+                            <div class="h-12 flex items-center justify-center">27</div>
+                            <div class="h-12 flex items-center justify-center">28</div>
+                            <div class="h-12 flex items-center justify-center">29</div>
+                            
+                            <!-- Week 6 -->
+                            <div class="h-12 flex items-center justify-center">30</div>
+                            <div class="h-12 flex items-center justify-center text-gray-400">1</div>
+                            <div class="h-12 flex items-center justify-center text-gray-400">2</div>
+                            <div class="h-12 flex items-center justify-center text-gray-400">3</div>
+                            <div class="h-12 flex items-center justify-center text-gray-400">4</div>
+                            <div class="h-12 flex items-center justify-center text-gray-400">5</div>
+                            <div class="h-12 flex items-center justify-center text-gray-400">6</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Registration Form -->
+                <form id="registrationForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <!-- Group Name -->
+                        <div>
+                            <label for="groupName" class="block text-sm font-medium text-gray-700 mb-1">단체명 <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="ri-team-line text-gray-400"></i>
+                                </div>
+                                <input type="text" id="groupName" name="groupName" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:ring-opacity-20" placeholder="단체명을 입력해주세요" required>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">예: 체육회초등학교</p>
+                            <p class="error-message text-sm text-red-500 mt-1 hidden">단체명을 입력해주세요</p>
+                        </div>
+                        
+                        <!-- Manager Name -->
+                        <div>
+                            <label for="managerName" class="block text-sm font-medium text-gray-700 mb-1">담당자 성함 <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="ri-user-line text-gray-400"></i>
+                                </div>
+                                <input type="text" id="managerName" name="managerName" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:ring-opacity-20" placeholder="담당자 성함을 입력해주세요" required>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">예: 김민준</p>
+                            <p class="error-message text-sm text-red-500 mt-1 hidden">담당자 성함을 입력해주세요</p>
+                        </div>
+                        
+                        <!-- Contact Number -->
+                        <div>
+                            <label for="contactNumber" class="block text-sm font-medium text-gray-700 mb-1">담당자 연락처 <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="ri-phone-line text-gray-400"></i>
+                                </div>
+                                <input type="tel" id="contactNumber" name="contactNumber" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:ring-opacity-20" placeholder="연락처를 입력해주세요" required>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">예: 010-1234-5678</p>
+                            <p class="error-message text-sm text-red-500 mt-1 hidden">유효한 연락처를 입력해주세요</p>
+                        </div>
+                        
+                        <!-- Participant Count -->
+                        <div>
+                            <label for="participantCount" class="block text-sm font-medium text-gray-700 mb-1">참가 인원 <span class="text-red-500">*</span></label>
+                            <div class="relative">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="ri-group-line text-gray-400"></i>
+                                </div>
+                                <input type="number" id="participantCount" name="participantCount" min="1" max="50" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:ring-opacity-20" placeholder="참가 인원을 입력해주세요" required>
+                            </div>
+                            <p class="text-sm text-gray-500 mt-1">최소 15명, 최대 50명까지 가능합니다</p>
+                            <p class="error-message text-sm text-red-500 mt-1 hidden">유효한 참가 인원을 입력해주세요 (15-50명)</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Selected Date -->
+                    <div>
+                        <label for="selectedDate" class="block text-sm font-medium text-gray-700 mb-1">선택한 날짜 <span class="text-red-500">*</span></label>
+                        <div class="relative">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <i class="ri-calendar-check-line text-gray-400"></i>
+                            </div>
+                            <input type="text" id="selectedDate" name="selectedDate" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded text-gray-900 placeholder-gray-400 bg-gray-50 focus:ring-2 focus:ring-primary focus:ring-opacity-20" placeholder="날짜를 선택해주세요" readonly required>
+                        </div>
+                        <p class="error-message text-sm text-red-500 mt-1 hidden">날짜를 선택해주세요</p>
+                    </div>
+                    
+                    <!-- Submit Button -->
+                    <div class="pt-4">
+                        <button type="submit" id="submitButton" class="w-full md:w-auto px-6 py-3 bg-primary text-white font-medium rounded-button shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap" disabled>
+                            신청하기
+                        </button>
+                    </div>
+                </form>
+            </div>
+            
+            <!-- Additional Information -->
+            <div class="mt-12 bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">이벤트 안내사항</h2>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h3 class="text-lg font-semibold text-gray-700 mb-4 flex items-center">
+                            <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-primary rounded-full mr-2">
+                                <i class="ri-information-line"></i>
+                            </div>
+                            주의사항
+                        </h3>
+                        <ul class="space-y-3 text-gray-600">
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0 w-5 h-5 flex items-center justify-center text-primary mt-0.5">
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <span class="ml-2">신청 후 참가가 확정되면 별도의 안내 메시지가 발송됩니다.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0 w-5 h-5 flex items-center justify-center text-primary mt-0.5">
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <span class="ml-2">신청 후 참가가 확정되면 별도의 안내 메시지가 발송됩니다.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0 w-5 h-5 flex items-center justify-center text-primary mt-0.5">
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <span class="ml-2">주차 공간이 제한되어 있으니 가급적 대중교통을 이용해 주세요.</span>
+                            </li>
+                            <li class="flex items-start">
+                                <div class="flex-shrink-0 w-5 h-5 flex items-center justify-center text-primary mt-0.5">
+                                    <i class="ri-checkbox-circle-line"></i>
+                                </div>
+                                <span class="ml-2">우천 시 행사가 취소 또는 연기될 수 있으며, 이 경우 별도 공지됩니다.</span>
+                            </li>
+                        </ul>
+                    </div>
+                
+                <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                    <h3 class="text-lg font-semibold text-gray-700 mb-2 flex items-center">
+                        <div class="w-6 h-6 flex items-center justify-center text-primary mr-2">
+                            <i class="ri-customer-service-2-line"></i>
+                        </div>
+                        문의 연락처
+                    </h3>
+                    <p class="text-gray-600">궁금한 사항은 아래 연락처로 문의해 주세요:</p>
+                    <div class="mt-2 flex flex-col sm:flex-row sm:space-x-6">
+                        <div class="flex items-center mt-2">
+                            <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-primary rounded-full mr-2">
+                                <i class="ri-phone-line"></i>
+                            </div>
+                            <span class="text-gray-700">031-250-0474~7</span>
+                        </div>
+                        <div class="flex items-center mt-2">
+                            <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-primary rounded-full mr-2">
+                                <i class="ri-mail-line"></i>
+                            </div>
+                            <span class="text-gray-700">p705321@ggsc.or.kr</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Footer -->
+        <footer class="bg-gray-800 text-white mt-auto">
+            <div class="container mx-auto px-4 md:px-8 py-8">
+                <div class="flex flex-col md:flex-row justify-between items-center">
+                    <div class="mb-4 md:mb-0">
+                        <h3 class="text-2xl font-['Pacifico'] text-white mb-2">logo</h3>
+                        <p class="text-gray-400">경기도체육회 스포츠박스 2025</p>
+                    </div>
+                    <div class="flex space-x-4">
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600">
+                                <i class="ri-instagram-line"></i>
+                            </div>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600">
+                                <i class="ri-facebook-fill"></i>
+                            </div>
+                        </a>
+                        <a href="#" class="text-gray-400 hover:text-white transition-colors">
+                            <div class="w-10 h-10 flex items-center justify-center rounded-full bg-gray-700 hover:bg-gray-600">
+                                <i class="ri-kakao-talk-fill"></i>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400 text-sm">
+                    © 2025 스포츠박스. All rights reserved.
+                </div>
+            </div>
+        </footer>
+    </div>
+    <!-- Success Modal -->
+    <div id="successModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="bg-white rounded-lg p-8 max-w-md w-full relative z-10">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="ri-check-line text-green-500 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">신청이 완료되었습니다!</h3>
+                <p class="text-gray-600 mb-6">신청 내용을 확인한 후 담당자가 연락드릴 예정입니다.</p>
+                <button id="closeSuccessModal" class="px-6 py-2 bg-primary text-white font-medium rounded-button shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors whitespace-nowrap">
+                    확인
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const calendarDays = document.querySelectorAll('.calendar-day');
+            const selectedDateInput = document.getElementById('selectedDate');
+            const registrationForm = document.getElementById('registrationForm');
+            const submitButton = document.getElementById('submitButton');
+            const successModal = document.getElementById('successModal');
+            const closeSuccessModal = document.getElementById('closeSuccessModal');
+            
+            // Calendar date selection
+            calendarDays.forEach(day => {
+                day.addEventListener('click', function() {
+                    // Remove selected class from all days
+                    calendarDays.forEach(d => d.classList.remove('selected'));
+                    
+                    // Add selected class to clicked day
+                    this.classList.add('selected');
+                    
+                    // Update selected date input
+                    const date = this.dataset.date;
+                    const dateObj = new Date(date);
+                    const formattedDate = `${dateObj.getFullYear()}년 ${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
+                    selectedDateInput.value = formattedDate;
+                    
+                    // Validate form
+                    validateForm();
+                });
+            });
+            
+            // Form validation
+            const inputs = registrationForm.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                input.addEventListener('input', validateForm);
+                input.addEventListener('blur', function() {
+                    validateInput(this);
+                });
+            });
+            
+            // Specific validation for participant count
+            const participantCountInput = document.getElementById('participantCount');
+            participantCountInput.addEventListener('input', function() {
+                const value = parseInt(this.value);
+                if (isNaN(value) || value < 1 || value > 50) {
+                    showError(this, '유효한 참가 인원을 입력해주세요 (1-50명)');
+                } else {
+                    hideError(this);
+                }
+                validateForm();
+            });
+            
+            // Specific validation for contact number
+            const contactNumberInput = document.getElementById('contactNumber');
+            contactNumberInput.addEventListener('input', function() {
+                // Allow digits and hyphens
+                this.value = this.value.replace(/[^\d-]/g, '');
+                
+                // Basic phone number validation
+                const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
+                if (!phoneRegex.test(this.value.replace(/-/g, ''))) {
+                    showError(this, '유효한 연락처를 입력해주세요');
+                } else {
+                    hideError(this);
+                }
+                validateForm();
+            });
+            
+            // Form submission
+            registrationForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    if (validateForm()) {
+        // 폼 데이터 수집
+        const formData = {
+            '단체명': document.getElementById('groupName').value,
+            '담당자 성함': document.getElementById('managerName').value,
+            '담당자 연락처': document.getElementById('contactNumber').value,
+            '참가 인원': document.getElementById('participantCount').value,
+            '선택한 날짜': document.getElementById('selectedDate').value
+        };
+        
+        // Google Apps Script 웹앱 URL (배포 후 받은 URL로 변경해야 함)
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyyi8BvoDi0MynaM_GTH-RAIYY30nQijVJT9IzwFuUXWYEaNjdZN4kFgmKqlcgB4ekQ/exec';
+        
+        // 데이터 전송
+        fetch(scriptURL, {
+            method: 'POST',
+            mode: 'no-cors',
+            cache: 'no-cache',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: new URLSearchParams(formData)
+        })
+        .then(response => {
+            // 성공 모달 표시
+            successModal.classList.remove('hidden');
+            
+            // 폼 초기화
+            registrationForm.reset();
+            calendarDays.forEach(day => day.classList.remove('selected'));
+            submitButton.disabled = true;
+        })
+        .catch(error => {
+            console.error('Error!', error.message);
+            alert('제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+        });
+    }
+});
+            
+            // Close success modal
+            closeSuccessModal.addEventListener('click', function() {
+                successModal.classList.add('hidden');
+            });
+            
+            // Helper functions
+            function validateInput(input) {
+                if (input.value.trim() === '') {
+                    const fieldName = input.previousElementSibling.textContent.replace('*', '').trim();
+                    showError(input, `${fieldName}을(를) 입력해주세요`);
+                    return false;
+                } else {
+                    hideError(input);
+                    return true;
+                }
+            }
+            
+            function showError(input, message) {
+                const errorElement = input.parentElement.nextElementSibling.nextElementSibling;
+                errorElement.textContent = message;
+                errorElement.classList.remove('hidden');
+                input.classList.add('border-red-500');
+            }
+            
+            function hideError(input) {
+                const errorElement = input.parentElement.nextElementSibling.nextElementSibling;
+                errorElement.classList.add('hidden');
+                input.classList.remove('border-red-500');
+            }
+            
+            function validateForm() {
+                let isValid = true;
+                
+                inputs.forEach(input => {
+                    if (!validateInput(input)) {
+                        isValid = false;
+                    }
+                });
+                
+                // Additional validation for participant count
+                const participantCount = parseInt(participantCountInput.value);
+                if (isNaN(participantCount) || participantCount < 1 || participantCount > 50) {
+                    isValid = false;
+                }
+                
+                // Additional validation for contact number
+                const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
+                if (!phoneRegex.test(contactNumberInput.value.replace(/-/g, ''))) {
+                    isValid = false;
+                }
+                
+                submitButton.disabled = !isValid;
+                return isValid;
+            }
+        });
+    </script>
+</body>
+</html>
