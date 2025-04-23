@@ -473,17 +473,16 @@
             }
             
             function showError(input, message) {
-                const errorElement = input.parentElement.nextElementSibling.nextElementSibling;
-                errorElement.textContent = message;
-                errorElement.classList.remove('hidden');
-                input.classList.add('border-red-500');
-            }
-            
-            function hideError(input) {
-                const errorElement = input.parentElement.nextElementSibling.nextElementSibling;
-                errorElement.classList.add('hidden');
-                input.classList.remove('border-red-500');
-            }
+    // 부모의 형제 요소들 중에서 error-message 클래스를 가진 요소를 찾기
+    const parentDiv = input.closest('div');
+    const errorElement = parentDiv.querySelector('.error-message');
+    
+    if (errorElement) {
+        errorElement.textContent = message;
+        errorElement.classList.remove('hidden');
+    }
+    input.classList.add('border-red-500');
+}
             
             function validateForm() {
                 let isValid = true;
