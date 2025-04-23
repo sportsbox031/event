@@ -206,9 +206,9 @@
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="ri-group-line text-gray-400"></i>
                                 </div>
-                                <input type="number" id="participantCount" name="participantCount" min="1" max="50" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:ring-opacity-20" placeholder="참가 인원을 입력해주세요" required>
+                                <input type="number" id="participantCount" name="participantCount" min="10" max="44" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:ring-opacity-20" placeholder="참가 인원을 입력해주세요 (최소 10명)" required>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1">인솔자 포함 최소 10명, 최대 44명까지 가능합니다</p>
+                            <p class="text-sm text-gray-500 mt-1"><strong class="text-primary">최소 10명</strong>, 최대 44명까지 가능합니다</p>
                             <p class="error-message text-sm text-red-500 mt-1 hidden">유효한 참가 인원을 입력해주세요 (10-44명)</p>
                         </div>
                     </div>
@@ -366,6 +366,23 @@
         </div>
     </div>
 
+    <!-- Low Participant Count Modal -->
+<div id="lowParticipantModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+    <div class="bg-white rounded-lg p-8 max-w-md w-full relative z-10">
+        <div class="text-center">
+            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <i class="ri-error-warning-line text-yellow-500 text-3xl"></i>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">참가 인원 부족</h3>
+            <p class="text-gray-600 mb-6">참가 인원은 최소 10명 이상이어야 합니다.</p>
+            <button id="closeLowParticipantModal" class="px-6 py-2 bg-primary text-white font-medium rounded-button shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors whitespace-nowrap">
+                확인
+            </button>
+        </div>
+    </div>
+</div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
     const calendarDays = document.querySelectorAll('.calendar-day');
@@ -444,9 +461,12 @@
         
         // Additional validation for participant count
         const participantCount = parseInt(participantCountInput.value);
-        if (isNaN(participantCount) || participantCount < 10 || participantCount > 44) {
-            isValid = false;
-        }
+if (isNaN(participantCount) || participantCount < 10 || participantCount > 44) {
+    showError(participantCountInput, '유효한 참가 인원을 입력해주세요 (10-44명)');
+    isValid = false;
+} else {
+    hideError(participantCountInput);
+}
         
         // Additional validation for contact number
         const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
@@ -495,10 +515,26 @@
         validateForm();
     });
     
+    // 인원 수 미달 모달 닫기 버튼 이벤트
+const closeLowParticipantModal = document.getElementById('closeLowParticipantModal');
+if (closeLowParticipantModal) {
+    closeLowParticipantModal.addEventListener('click', function() {
+        document.getElementById('lowParticipantModal').classList.add('hidden');
+    });
+}
+
     // Form submission
     registrationForm.addEventListener('submit', function(e) {
     e.preventDefault();
     
+    // 참가 인원에 대한 명시적 검증
+    const participantCount = parseInt(document.getElementById('participantCount').value);
+    if (isNaN(participantCount) || participantCount < 10) {
+        // 인원 수 미달 모달 표시
+        document.getElementById('lowParticipantModal').classList.remove('hidden');
+        return; // 제출 중단
+    }
+
     if (validateForm()) {
         // 로딩 인디케이터 표시 (로딩 인디케이터 요소가 있다면)
         const loadingIndicator = document.getElementById('loadingIndicator');
@@ -608,7 +644,7 @@ function hideError(input) {
                 
                 // Additional validation for participant count
                 const participantCount = parseInt(participantCountInput.value);
-                if (isNaN(participantCount) || participantCount < 1 || participantCount > 50) {
+                if (isNaN(participantCount) || participantCount < 10 || participantCount > 44) {
                     isValid = false;
                 }
                 
