@@ -329,6 +329,19 @@
             </div>
         </footer>
     </div>
+
+    <!-- Loading Indicator -->
+    <div id="loadingIndicator" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="bg-white rounded-lg p-8 max-w-md w-full relative z-10">
+            <div class="text-center">
+                <div class="w-12 h-12 border-4 border-primary border-t-transparent rounded-full mx-auto mb-4 animate-spin"></div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">처리 중...</h3>
+                <p class="text-gray-600">잠시만 기다려주세요.</p>
+            </div>
+        </div>
+    </div>
+
     <!-- Success Modal -->
     <div id="successModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
         <div class="absolute inset-0 bg-black bg-opacity-50"></div>
@@ -346,119 +359,224 @@
         </div>
     </div>
 
+    <!-- Duplicate Submission Modal -->
+    <div id="duplicateModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="bg-white rounded-lg p-8 max-w-md w-full relative z-10">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="ri-error-warning-line text-red-500 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">중복 신청</h3>
+                <p class="text-gray-600 mb-6">같은 단체명으로 해당 날짜에 이미 신청 내역이 있습니다.</p>
+                <button id="closeDuplicateModal" class="px-6 py-2 bg-primary text-white font-medium rounded-button shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors whitespace-nowrap">
+                    확인
+                </button>
+            </div>
+        </div>
+    </div>
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            const calendarDays = document.querySelectorAll('.calendar-day');
-            const selectedDateInput = document.getElementById('selectedDate');
-            const registrationForm = document.getElementById('registrationForm');
-            const submitButton = document.getElementById('submitButton');
-            const successModal = document.getElementById('successModal');
-            const closeSuccessModal = document.getElementById('closeSuccessModal');
-            
-            // Calendar date selection
-            calendarDays.forEach(day => {
-                day.addEventListener('click', function() {
-                    // Remove selected class from all days
-                    calendarDays.forEach(d => d.classList.remove('selected'));
-                    
-                    // Add selected class to clicked day
-                    this.classList.add('selected');
-                    
-                    // Update selected date input
-                    const date = this.dataset.date;
-                    const dateObj = new Date(date);
-                    const formattedDate = `${dateObj.getFullYear()}년 ${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
-                    selectedDateInput.value = formattedDate;
-                    
-                    // Validate form
-                    validateForm();
-                });
-            });
-            
-            // Form validation
-            const inputs = registrationForm.querySelectorAll('input[required]');
-            inputs.forEach(input => {
-                input.addEventListener('input', validateForm);
-                input.addEventListener('blur', function() {
-                    validateInput(this);
-                });
-            });
-            
-            // Specific validation for participant count
-            const participantCountInput = document.getElementById('participantCount');
-            participantCountInput.addEventListener('input', function() {
-                const value = parseInt(this.value);
-                if (isNaN(value) || value < 1 || value > 50) {
-                    showError(this, '유효한 참가 인원을 입력해주세요 (1-50명)');
-                } else {
-                    hideError(this);
-                }
-                validateForm();
-            });
-            
-            // Specific validation for contact number
-            const contactNumberInput = document.getElementById('contactNumber');
-            contactNumberInput.addEventListener('input', function() {
-                // Allow digits and hyphens
-                this.value = this.value.replace(/[^\d-]/g, '');
-                
-                // Basic phone number validation
-                const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
-                if (!phoneRegex.test(this.value.replace(/-/g, ''))) {
-                    showError(this, '유효한 연락처를 입력해주세요');
-                } else {
-                    hideError(this);
-                }
-                validateForm();
-            });
-            
-            // Form submission
-            registrationForm.addEventListener('submit', function(e) {
-    e.preventDefault();
+    const calendarDays = document.querySelectorAll('.calendar-day');
+    const selectedDateInput = document.getElementById('selectedDate');
+    const registrationForm = document.getElementById('registrationForm');
+    const submitButton = document.getElementById('submitButton');
+    const successModal = document.getElementById('successModal');
+    const closeSuccessModal = document.getElementById('closeSuccessModal');
+    const loadingIndicator = document.getElementById('loadingIndicator');
+    const duplicateModal = document.getElementById('duplicateModal');
+    const closeDuplicateModal = document.getElementById('closeDuplicateModal');
     
-    if (validateForm()) {
-        // 폼 데이터 수집
-        const formData = {
-            '단체명': document.getElementById('groupName').value,
-            '담당자 성함': document.getElementById('managerName').value,
-            '담당자 연락처': document.getElementById('contactNumber').value,
-            '참가 인원': document.getElementById('participantCount').value,
-            '선택한 날짜': document.getElementById('selectedDate').value
-        };
-        
-        // Google Apps Script 웹앱 URL (배포 후 받은 URL로 변경해야 함)
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyyi8BvoDi0MynaM_GTH-RAIYY30nQijVJT9IzwFuUXWYEaNjdZN4kFgmKqlcgB4ekQ/exec';
-        
-        // 데이터 전송
-        fetch(scriptURL, {
-            method: 'POST',
-            mode: 'no-cors',
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams(formData)
-        })
-        .then(response => {
-            // 성공 모달 표시
-            successModal.classList.remove('hidden');
+    // Calendar date selection
+    calendarDays.forEach(day => {
+        day.addEventListener('click', function() {
+            // Remove selected class from all days
+            calendarDays.forEach(d => d.classList.remove('selected'));
             
-            // 폼 초기화
-            registrationForm.reset();
-            calendarDays.forEach(day => day.classList.remove('selected'));
-            submitButton.disabled = true;
-        })
-        .catch(error => {
-            console.error('Error!', error.message);
-            alert('제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+            // Add selected class to clicked day
+            this.classList.add('selected');
+            
+            // Update selected date input
+            const date = this.dataset.date;
+            const dateObj = new Date(date);
+            const formattedDate = `${dateObj.getFullYear()}년 ${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
+            selectedDateInput.value = formattedDate;
+            // 원본 날짜 값을 데이터 속성으로 저장
+            selectedDateInput.dataset.originalDate = date;
+            
+            // Validate form
+            validateForm();
         });
+    });
+    
+    // Helper functions - 함수 정의 순서를 변경했습니다
+    function showError(input, message) {
+        const parentDiv = input.closest('div');
+        const errorElement = parentDiv.querySelector('.error-message');
+        
+        if (errorElement) {
+            errorElement.textContent = message;
+            errorElement.classList.remove('hidden');
+        }
+        input.classList.add('border-red-500');
     }
-});
+    
+    function hideError(input) {
+        const parentDiv = input.closest('div');
+        const errorElement = parentDiv.querySelector('.error-message');
+        
+        if (errorElement) {
+            errorElement.classList.add('hidden');
+        }
+        input.classList.remove('border-red-500');
+    }
+    
+    function validateInput(input) {
+        if (input.value.trim() === '') {
+            const fieldName = input.previousElementSibling.textContent.replace('*', '').trim();
+            showError(input, `${fieldName}을(를) 입력해주세요`);
+            return false;
+        } else {
+            hideError(input);
+            return true;
+        }
+    }
+    
+    function validateForm() {
+        let isValid = true;
+        
+        inputs.forEach(input => {
+            if (!validateInput(input)) {
+                isValid = false;
+            }
+        });
+        
+        // Additional validation for participant count
+        const participantCount = parseInt(participantCountInput.value);
+        if (isNaN(participantCount) || participantCount < 15 || participantCount > 50) {
+            isValid = false;
+        }
+        
+        // Additional validation for contact number
+        const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
+        if (!phoneRegex.test(contactNumberInput.value.replace(/-/g, ''))) {
+            isValid = false;
+        }
+        
+        submitButton.disabled = !isValid;
+        return isValid;
+    }
+    
+    // Form validation
+    const inputs = registrationForm.querySelectorAll('input[required]');
+    inputs.forEach(input => {
+        input.addEventListener('input', validateForm);
+        input.addEventListener('blur', function() {
+            validateInput(this);
+        });
+    });
+    
+    // Specific validation for participant count
+    const participantCountInput = document.getElementById('participantCount');
+    participantCountInput.addEventListener('input', function() {
+        const value = parseInt(this.value);
+        if (isNaN(value) || value < 15 || value > 50) {
+            showError(this, '유효한 참가 인원을 입력해주세요 (15-50명)');
+        } else {
+            hideError(this);
+        }
+        validateForm();
+    });
+    
+    // Specific validation for contact number
+    const contactNumberInput = document.getElementById('contactNumber');
+    contactNumberInput.addEventListener('input', function() {
+        // Allow digits and hyphens
+        this.value = this.value.replace(/[^\d-]/g, '');
+        
+        // Basic phone number validation
+        const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
+        if (!phoneRegex.test(this.value.replace(/-/g, ''))) {
+            showError(this, '유효한 연락처를 입력해주세요');
+        } else {
+            hideError(this);
+        }
+        validateForm();
+    });
+    
+    // Form submission
+    registrationForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        if (validateForm()) {
+            // 로딩 인디케이터 표시
+            loadingIndicator.classList.remove('hidden');
+            submitButton.disabled = true;
             
-            // Close success modal
-            closeSuccessModal.addEventListener('click', function() {
-                successModal.classList.add('hidden');
+            // 현재 시간을 ISO 포맷으로 저장 (초 단위까지)
+            const submissionTime = new Date().toISOString();
+            
+            // 폼 데이터 수집
+            const formData = {
+                '단체명': document.getElementById('groupName').value,
+                '담당자 성함': document.getElementById('managerName').value,
+                '담당자 연락처': document.getElementById('contactNumber').value,
+                '참가 인원': document.getElementById('participantCount').value,
+                '선택한 날짜': document.getElementById('selectedDate').value,
+                '원본 날짜': selectedDateInput.dataset.originalDate || document.getElementById('selectedDate').value,
+                '제출 시간': submissionTime
+            };
+            
+            // Google Apps Script 웹앱 URL (배포 후 받은 URL로 변경해야 함)
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbyyi8BvoDi0MynaM_GTH-RAIYY30nQijVJT9IzwFuUXWYEaNjdZN4kFgmKqlcgB4ekQ/exec';
+            
+            // 데이터 전송
+            fetch(scriptURL, {
+                method: 'POST',
+                mode: 'no-cors',
+                cache: 'no-cache',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    action: 'checkAndSubmit',
+                    data: formData
+                })
+            })
+            .then(response => {
+                // 일단 응답이 왔으므로 로딩 인디케이터 숨김
+                loadingIndicator.classList.add('hidden');
+                
+                // Google Apps Script의 mode: 'no-cors'로 인해 실제 응답 내용을 확인할 수 없음
+                // 따라서 응답을 처리하는 로직은 서버 측에서 처리하고 결과를 리디렉션이나 다른 방법으로 확인해야 함
+                
+                // 여기서는 일단 성공으로 처리하고, 서버 측에서 중복 검사 로직을 처리하도록 함
+                successModal.classList.remove('hidden');
+                
+                // 폼 초기화
+                registrationForm.reset();
+                calendarDays.forEach(day => day.classList.remove('selected'));
+                submitButton.disabled = true;
+            })
+            .catch(error => {
+                console.error('Error!', error.message);
+                loadingIndicator.classList.add('hidden');
+                alert('제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                submitButton.disabled = false;
             });
+        }
+    });
+    
+    // Close success modal
+    closeSuccessModal.addEventListener('click', function() {
+        successModal.classList.add('hidden');
+    });
+    
+    // Close duplicate modal
+    closeDuplicateModal.addEventListener('click', function() {
+        duplicateModal.classList.add('hidden');
+    });
             
             function showError(input, message) {
     // 부모의 형제 요소들 중에서 error-message 클래스를 가진 요소를 찾기
