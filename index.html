@@ -676,7 +676,10 @@ function hideError(input) {
     document.getElementById('adminLoginBtn').addEventListener('click', function() {
         const email = prompt('관리자 이메일을 입력해주세요:');
         if (email) {
-            window.location.href = `https://script.google.com/macros/s/AKfycbxj7954hoQCMam2qccN51quoaB2-iwv27QZMwu-kRxvIhaPEIbKBORxirGpttWLZZNP/exec?page=admin&email=${encodeURIComponent(email)}`;
+            const password = prompt('비밀번호를 입력해주세요:');
+            if (password) {
+                window.location.href = `https://script.google.com/macros/s/AKfycbxj7954hoQCMam2qccN51quoaB2-iwv27QZMwu-kRxvIhaPEIbKBORxirGpttWLZZNP/exec?page=admin&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+            }
         }
     });
     </script>
