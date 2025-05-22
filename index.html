@@ -39,6 +39,18 @@
             -webkit-appearance: none;
             margin: 0;
         }
+        .admin-login-btn {
+            background: none;
+            border: none;
+            color: #666;
+            cursor: pointer;
+            font-size: 0.8em;
+            margin-top: 10px;
+            text-decoration: underline;
+        }
+        .admin-login-btn:hover {
+            color: #333;
+        }
     </style>
 </head>
 <body>
@@ -316,6 +328,7 @@
                 <div class="border-t border-gray-700 mt-6 pt-6 text-center text-gray-400 text-sm">
                     © 2025 스포츠박스. All rights reserved.
                 </div>
+                <button id="adminLoginBtn" class="admin-login-btn">관리자 로그인</button>
             </div>
         </footer>
     </div>
@@ -658,6 +671,15 @@ function hideError(input) {
                 return isValid;
             }
         });
+
+    // 관리자 로그인 처리
+    document.getElementById('adminLoginBtn').addEventListener('click', function() {
+        const email = prompt('관리자 이메일을 입력해주세요:');
+        if (email) {
+            // 앱스크립트 URL로 리다이렉트 (실제 URL로 변경 필요)
+            window.location.href = `[앱스크립트 URL]?page=admin&email=${encodeURIComponent(email)}`;
+        }
+    });
     </script>
 </body>
 </html>
