@@ -651,8 +651,8 @@ if (closeLowParticipantModal) {
         
         console.log('폼 데이터:', formData); // 디버깅용 로그
             
-            // Google Apps Script 웹앱 URL (배포 후 받은 URL로 변경해야 함)
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbzkmC6PpA4lkyj9cglN_WqmMy-N28akOzAJJYZkQqeO57w_DnLkfg8BMiEAvIDS2L_a/exec';
+            // Google Apps Script 웹앱 URL
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxKWmFPxEOSrXlCBX8J1VZnbWwVfviv0sm881-hDfM3J3FVgk19gAm1vL1-45UnCKf-/exec';
             
             // 데이터 전송 - form-urlencoded 형식 사용
         fetch(scriptURL, {
@@ -882,7 +882,7 @@ function hideError(input) {
         if (email) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbwIRnmGKvqVkhmF_8xWR2tm5G6IPX00G-t5X7V2N2SbEaKeVc2IHhOt3RlrW4AE9pLb/exec';
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbxKWmFPxEOSrXlCBX8J1VZnbWwVfviv0sm881-hDfM3J3FVgk19gAm1vL1-45UnCKf-/exec';
                 
                 // JSONP 방식으로 요청
                 const script = document.createElement('script');
