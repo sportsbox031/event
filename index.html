@@ -6,7 +6,7 @@
     <title>스포츠박스 하계 이벤트 신청</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://script.google.com/macros/s/AKfycbwmynCnHnVEB4d3kSZpQeVEbuOWJZFD10QtiLlrLSHEDkm0OVOywq1GRbfbpo5TDLoe/exec"></script>
+    <script src="https://script.google.com/macros/s/AKfycbzEvcmsQkQEvI6JC_QXS2_R3est92UBI8ovGccTExPmsIgPNekSoa43geg1M6wXT46b/exec"></script>
     <script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#f59e0b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -620,7 +620,7 @@ if (closeLowParticipantModal) {
         console.log('폼 데이터:', formData); // 디버깅용 로그
             
             // Google Apps Script 웹앱 URL
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbwmynCnHnVEB4d3kSZpQeVEbuOWJZFD10QtiLlrLSHEDkm0OVOywq1GRbfbpo5TDLoe/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzEvcmsQkQEvI6JC_QXS2_R3est92UBI8ovGccTExPmsIgPNekSoa43geg1M6wXT46b/exec';
             
             // 데이터 전송 - form-urlencoded 형식 사용
         fetch(scriptURL, {
@@ -736,7 +736,7 @@ function hideError(input) {
     }
 
     function loadAdminData() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwmynCnHnVEB4d3kSZpQeVEbuOWJZFD10QtiLlrLSHEDkm0OVOywq1GRbfbpo5TDLoe/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzEvcmsQkQEvI6JC_QXS2_R3est92UBI8ovGccTExPmsIgPNekSoa43geg1M6wXT46b/exec';
         
         // 로딩 상태 표시
         const statusDiv = document.getElementById('reservationStatus');
@@ -773,7 +773,7 @@ function hideError(input) {
     }
 
     function toggleReservation() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwmynCnHnVEB4d3kSZpQeVEbuOWJZFD10QtiLlrLSHEDkm0OVOywq1GRbfbpo5TDLoe/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzEvcmsQkQEvI6JC_QXS2_R3est92UBI8ovGccTExPmsIgPNekSoa43geg1M6wXT46b/exec';
         
         // 로딩 상태 표시
         const statusDiv = document.getElementById('reservationStatus');
@@ -842,7 +842,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwmynCnHnVEB4d3kSZpQeVEbuOWJZFD10QtiLlrLSHEDkm0OVOywq1GRbfbpo5TDLoe/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzEvcmsQkQEvI6JC_QXS2_R3est92UBI8ovGccTExPmsIgPNekSoa43geg1M6wXT46b/exec';
         
         // 로딩 상태 표시
         const button = document.querySelector('button[onclick="changePassword()"]');
@@ -882,7 +882,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwmynCnHnVEB4d3kSZpQeVEbuOWJZFD10QtiLlrLSHEDkm0OVOywq1GRbfbpo5TDLoe/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbzEvcmsQkQEvI6JC_QXS2_R3est92UBI8ovGccTExPmsIgPNekSoa43geg1M6wXT46b/exec';
         
         fetch(`${scriptURL}?action=addAdmin&email=${encodeURIComponent(email)}`)
             .then(response => response.json())
@@ -894,7 +894,7 @@ function hideError(input) {
 
     function removeAdmin(email) {
         if (confirm('정말로 이 관리자를 삭제하시겠습니까?')) {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbwmynCnHnVEB4d3kSZpQeVEbuOWJZFD10QtiLlrLSHEDkm0OVOywq1GRbfbpo5TDLoe/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzEvcmsQkQEvI6JC_QXS2_R3est92UBI8ovGccTExPmsIgPNekSoa43geg1M6wXT46b/exec';
             
             fetch(`${scriptURL}?action=removeAdmin&email=${encodeURIComponent(email)}`)
                 .then(response => response.json())
@@ -910,7 +910,7 @@ function hideError(input) {
         if (email) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbwmynCnHnVEB4d3kSZpQeVEbuOWJZFD10QtiLlrLSHEDkm0OVOywq1GRbfbpo5TDLoe/exec';
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbzEvcmsQkQEvI6JC_QXS2_R3est92UBI8ovGccTExPmsIgPNekSoa43geg1M6wXT46b/exec';
                 
                 // 로딩 상태 표시
                 const loadingIndicator = document.getElementById('loadingIndicator');
