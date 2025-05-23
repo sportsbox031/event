@@ -401,80 +401,48 @@
     <!-- Admin Panel Modal -->
     <div id="adminPanel" class="fixed inset-0 flex items-center justify-center z-50 hidden">
         <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-        <div class="bg-white rounded-lg p-8 max-w-2xl w-full relative z-10">
-            <div class="text-center mb-6">
-                <h2 class="text-2xl font-bold text-gray-900">관리자 설정</h2>
+        <div class="bg-white rounded-lg p-6 max-w-md w-full relative z-10">
+            <div class="text-center mb-4">
+                <h2 class="text-xl font-bold text-gray-900">관리자 설정</h2>
             </div>
             
-            <div class="space-y-6">
+            <div class="space-y-4">
                 <!-- 예약 상태 -->
                 <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">예약 상태</h3>
-                    <div id="reservationStatus" class="text-center p-2 rounded mb-4">
+                    <h3 class="text-base font-semibold text-gray-700 mb-2">예약 상태</h3>
+                    <div id="reservationStatus" class="text-center p-2 rounded mb-3">
                         확인 중...
                     </div>
-                    <button onclick="toggleReservation()" class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-blue-600">
+                    <button onclick="toggleReservation()" class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition-colors">
                         예약 시작/중지
-                    </button>
-                </div>
-
-                <!-- 예약 시간 설정 -->
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">예약 시간 설정</h3>
-                    <div class="grid grid-cols-2 gap-4 mb-4">
-                        <div>
-                            <label class="block text-sm text-gray-600 mb-1">시작 시간</label>
-                            <input type="datetime-local" id="startTime" class="w-full p-2 border rounded">
-                        </div>
-                        <div>
-                            <label class="block text-sm text-gray-600 mb-1">종료 시간</label>
-                            <input type="datetime-local" id="endTime" class="w-full p-2 border rounded">
-                        </div>
-                    </div>
-                    <button onclick="setReservationTime()" class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-blue-600">
-                        시간 설정
                     </button>
                 </div>
 
                 <!-- 비밀번호 변경 -->
                 <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">비밀번호 변경</h3>
-                    <div class="space-y-4">
+                    <h3 class="text-base font-semibold text-gray-700 mb-2">비밀번호 변경</h3>
+                    <div class="space-y-3">
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">현재 비밀번호</label>
-                            <input type="password" id="currentPassword" class="w-full p-2 border rounded">
+                            <input type="password" id="currentPassword" class="w-full p-2 border rounded focus:ring-2 focus:ring-primary focus:ring-opacity-20">
                         </div>
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">새 비밀번호</label>
-                            <input type="password" id="newPassword" class="w-full p-2 border rounded">
+                            <input type="password" id="newPassword" class="w-full p-2 border rounded focus:ring-2 focus:ring-primary focus:ring-opacity-20">
                         </div>
                         <div>
                             <label class="block text-sm text-gray-600 mb-1">새 비밀번호 확인</label>
-                            <input type="password" id="confirmPassword" class="w-full p-2 border rounded">
+                            <input type="password" id="confirmPassword" class="w-full p-2 border rounded focus:ring-2 focus:ring-primary focus:ring-opacity-20">
                         </div>
-                        <button onclick="changePassword()" class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-blue-600">
+                        <button onclick="changePassword()" class="w-full px-4 py-2 bg-primary text-white rounded hover:bg-blue-600 transition-colors">
                             비밀번호 변경
-                        </button>
-                    </div>
-                </div>
-
-                <!-- 관리자 목록 -->
-                <div class="bg-gray-50 p-4 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2">관리자 목록</h3>
-                    <div id="adminList" class="mb-4">
-                        로딩 중...
-                    </div>
-                    <div class="flex gap-2">
-                        <input type="email" id="newAdminEmail" placeholder="새 관리자 이메일" class="flex-1 p-2 border rounded">
-                        <button onclick="addAdmin()" class="px-4 py-2 bg-primary text-white rounded hover:bg-blue-600">
-                            추가
                         </button>
                     </div>
                 </div>
             </div>
 
-            <div class="mt-6 text-center">
-                <button onclick="closeAdminPanel()" class="px-6 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300">
+            <div class="mt-4 text-center">
+                <button onclick="closeAdminPanel()" class="px-4 py-2 bg-gray-200 text-gray-700 rounded hover:bg-gray-300 transition-colors">
                     닫기
                 </button>
             </div>
@@ -652,7 +620,7 @@ if (closeLowParticipantModal) {
         console.log('폼 데이터:', formData); // 디버깅용 로그
             
             // Google Apps Script 웹앱 URL
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
             
             // 데이터 전송 - form-urlencoded 형식 사용
         fetch(scriptURL, {
@@ -768,7 +736,7 @@ function hideError(input) {
     }
 
     function loadAdminData() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
         
         // 예약 상태 로드
         fetch(`${scriptURL}?action=getStatus`)
@@ -813,30 +781,26 @@ function hideError(input) {
     }
 
     function toggleReservation() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
+        
+        // 로딩 상태 표시
+        const statusDiv = document.getElementById('reservationStatus');
+        statusDiv.textContent = '처리 중...';
+        statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
         
         fetch(`${scriptURL}?action=toggleStatus`)
             .then(response => response.json())
-            .then(() => {
+            .then(data => {
+                if (data.result === 'success') {
+                    loadAdminData();
+                } else {
+                    alert(data.message || '상태 변경 중 오류가 발생했습니다.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('상태 변경 중 오류가 발생했습니다.');
                 loadAdminData();
-            });
-    }
-
-    function setReservationTime() {
-        const startTime = document.getElementById('startTime').value;
-        const endTime = document.getElementById('endTime').value;
-        
-        if (!startTime || !endTime) {
-            alert('시작 시간과 종료 시간을 모두 입력해주세요.');
-            return;
-        }
-
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
-        
-        fetch(`${scriptURL}?action=setTime&start=${encodeURIComponent(startTime)}&end=${encodeURIComponent(endTime)}`)
-            .then(response => response.json())
-            .then(() => {
-                alert('예약 시간이 설정되었습니다.');
             });
     }
 
@@ -855,7 +819,13 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
+        
+        // 로딩 상태 표시
+        const button = document.querySelector('button[onclick="changePassword()"]');
+        const originalText = button.textContent;
+        button.textContent = '처리 중...';
+        button.disabled = true;
         
         fetch(`${scriptURL}?action=changePassword&current=${encodeURIComponent(currentPassword)}&new=${encodeURIComponent(newPassword)}`)
             .then(response => response.json())
@@ -868,6 +838,14 @@ function hideError(input) {
                 } else {
                     alert(data.message || '비밀번호 변경 중 오류가 발생했습니다.');
                 }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('비밀번호 변경 중 오류가 발생했습니다.');
+            })
+            .finally(() => {
+                button.textContent = originalText;
+                button.disabled = false;
             });
     }
 
@@ -878,7 +856,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
         
         fetch(`${scriptURL}?action=addAdmin&email=${encodeURIComponent(email)}`)
             .then(response => response.json())
@@ -890,7 +868,7 @@ function hideError(input) {
 
     function removeAdmin(email) {
         if (confirm('정말로 이 관리자를 삭제하시겠습니까?')) {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
             
             fetch(`${scriptURL}?action=removeAdmin&email=${encodeURIComponent(email)}`)
                 .then(response => response.json())
@@ -906,7 +884,7 @@ function hideError(input) {
         if (email) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
                 
                 // JSONP 방식으로 요청
                 const script = document.createElement('script');
