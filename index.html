@@ -883,13 +883,26 @@ function hideError(input) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
                 const scriptURL = 'https://script.google.com/macros/s/AKfycbzkmC6PpA4lkyj9cglN_WqmMy-N28akOzAJJYZkQqeO57w_DnLkfg8BMiEAvIDS2L_a/exec';
-                fetch(`${scriptURL}?page=admin&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
-                    method: 'GET',
+                
+                // 먼저 OPTIONS 요청 보내기
+                fetch(`${scriptURL}?method=OPTIONS`, {
+                    method: 'OPTIONS',
                     mode: 'cors',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Accept': 'application/json'
+                        'Access-Control-Request-Method': 'GET',
+                        'Access-Control-Request-Headers': 'Content-Type, Accept'
                     }
+                })
+                .then(() => {
+                    // OPTIONS 요청 성공 후 실제 요청 보내기
+                    return fetch(`${scriptURL}?page=admin&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
+                        method: 'GET',
+                        mode: 'cors',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        }
+                    });
                 })
                 .then(response => response.json())
                 .then(data => {
