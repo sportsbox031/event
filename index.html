@@ -520,9 +520,12 @@
                 .then(response => response.json())
                 .then(data => {
                     if (data.result === 'success') {
-                        loadAdminData();
-                        // 메인 페이지의 예약 상태도 즉시 업데이트
+                        // 메인 페이지의 예약 상태 먼저 업데이트
                         checkReservationStatus();
+                        // 그 다음 관리자 패널 상태 업데이트
+                        setTimeout(() => {
+                            loadAdminData();
+                        }, 500);
                     } else {
                         alert(data.message || '상태 변경 중 오류가 발생했습니다.');
                         if (data.message && data.message.includes('세션이 만료')) {
@@ -534,6 +537,43 @@
                     console.error('Error:', error);
                     alert('상태 변경 중 오류가 발생했습니다.');
                     loadAdminData();
+                });
+        }
+
+        function loadAdminData() {
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
+            
+            // 로딩 상태 표시
+            const statusDiv = document.getElementById('reservationStatus');
+            if (statusDiv) {
+                statusDiv.textContent = '로딩 중...';
+                statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
+            }
+            
+            fetch(`${scriptURL}?action=getStatus`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        if (statusDiv) {
+                            statusDiv.textContent = `현재 상태: ${data.status === 'open' ? '예약 진행 중' : '예약 중지'}`;
+                            statusDiv.className = `text-center p-2 rounded mb-3 ${data.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+                        }
+                    } else {
+                        if (statusDiv) {
+                            statusDiv.textContent = data.message || '상태를 불러오는 중 오류가 발생했습니다.';
+                            statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
+                        }
+                        if (data.message && data.message.includes('세션이 만료')) {
+                            closeAdminPanel();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading status:', error);
+                    if (statusDiv) {
+                        statusDiv.textContent = '상태를 불러오는 중 오류가 발생했습니다.';
+                        statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
+                    }
                 });
         }
 
@@ -764,43 +804,6 @@
 
         function closeAdminPanel() {
             document.getElementById('adminPanel').classList.add('hidden');
-        }
-
-        function loadAdminData() {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
-            
-            // 로딩 상태 표시
-            const statusDiv = document.getElementById('reservationStatus');
-            if (statusDiv) {
-                statusDiv.textContent = '로딩 중...';
-                statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
-            }
-            
-            fetch(`${scriptURL}?action=getStatus`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.result === 'success') {
-                        if (statusDiv) {
-                            statusDiv.textContent = `현재 상태: ${data.status === 'open' ? '예약 진행 중' : '예약 중지'}`;
-                            statusDiv.className = `text-center p-2 rounded mb-3 ${data.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
-                        }
-                    } else {
-                        if (statusDiv) {
-                            statusDiv.textContent = data.message || '상태를 불러오는 중 오류가 발생했습니다.';
-                            statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
-                        }
-                        if (data.message && data.message.includes('세션이 만료')) {
-                            closeAdminPanel();
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error loading status:', error);
-                    if (statusDiv) {
-                        statusDiv.textContent = '상태를 불러오는 중 오류가 발생했습니다.';
-                        statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
-                    }
-                });
         }
 
         function changePassword() {
