@@ -6,7 +6,7 @@
     <title>스포츠박스 하계 이벤트 신청</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec"></script>
+    <script src="https://script.google.com/macros/s/AKfycby1KYsoDJuIeTRLbtvwkFz3lLNvzJYIATKapBcn1174MzXcG7Yr1nCn4ofJQtI1NsT4/exec"></script>
     <script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#f59e0b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -620,7 +620,7 @@ if (closeLowParticipantModal) {
         console.log('폼 데이터:', formData); // 디버깅용 로그
             
             // Google Apps Script 웹앱 URL
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycby1KYsoDJuIeTRLbtvwkFz3lLNvzJYIATKapBcn1174MzXcG7Yr1nCn4ofJQtI1NsT4/exec';
             
             // 데이터 전송 - form-urlencoded 형식 사용
         fetch(scriptURL, {
@@ -736,7 +736,7 @@ function hideError(input) {
     }
 
     function loadAdminData() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycby1KYsoDJuIeTRLbtvwkFz3lLNvzJYIATKapBcn1174MzXcG7Yr1nCn4ofJQtI1NsT4/exec';
         
         // 예약 상태 로드
         fetch(`${scriptURL}?action=getStatus`)
@@ -759,7 +759,7 @@ function hideError(input) {
     }
 
     function toggleReservation() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycby1KYsoDJuIeTRLbtvwkFz3lLNvzJYIATKapBcn1174MzXcG7Yr1nCn4ofJQtI1NsT4/exec';
         
         // 로딩 상태 표시
         const statusDiv = document.getElementById('reservationStatus');
@@ -775,6 +775,9 @@ function hideError(input) {
                     loadAdminData();
                 } else {
                     alert(data.message || '상태 변경 중 오류가 발생했습니다.');
+                    if (data.message.includes('세션이 만료')) {
+                        closeAdminPanel();
+                    }
                 }
             })
             .catch(error => {
@@ -799,7 +802,33 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
+        // 비밀번호 유효성 검사
+        if (newPassword.length < 8) {
+            alert('비밀번호는 8자 이상이어야 합니다.');
+            return;
+        }
+        
+        if (!/[A-Z]/.test(newPassword)) {
+            alert('비밀번호는 대문자를 포함해야 합니다.');
+            return;
+        }
+        
+        if (!/[a-z]/.test(newPassword)) {
+            alert('비밀번호는 소문자를 포함해야 합니다.');
+            return;
+        }
+        
+        if (!/[0-9]/.test(newPassword)) {
+            alert('비밀번호는 숫자를 포함해야 합니다.');
+            return;
+        }
+        
+        if (!/[!@#$%^&*]/.test(newPassword)) {
+            alert('비밀번호는 특수문자(!@#$%^&*)를 포함해야 합니다.');
+            return;
+        }
+
+        const scriptURL = 'https://script.google.com/macros/s/AKfycby1KYsoDJuIeTRLbtvwkFz3lLNvzJYIATKapBcn1174MzXcG7Yr1nCn4ofJQtI1NsT4/exec';
         
         // 로딩 상태 표시
         const button = document.querySelector('button[onclick="changePassword()"]');
@@ -817,6 +846,9 @@ function hideError(input) {
                     document.getElementById('confirmPassword').value = '';
                 } else {
                     alert(data.message || '비밀번호 변경 중 오류가 발생했습니다.');
+                    if (data.message.includes('세션이 만료')) {
+                        closeAdminPanel();
+                    }
                 }
             })
             .catch(error => {
@@ -836,7 +868,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycby1KYsoDJuIeTRLbtvwkFz3lLNvzJYIATKapBcn1174MzXcG7Yr1nCn4ofJQtI1NsT4/exec';
         
         fetch(`${scriptURL}?action=addAdmin&email=${encodeURIComponent(email)}`)
             .then(response => response.json())
@@ -848,7 +880,7 @@ function hideError(input) {
 
     function removeAdmin(email) {
         if (confirm('정말로 이 관리자를 삭제하시겠습니까?')) {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycby1KYsoDJuIeTRLbtvwkFz3lLNvzJYIATKapBcn1174MzXcG7Yr1nCn4ofJQtI1NsT4/exec';
             
             fetch(`${scriptURL}?action=removeAdmin&email=${encodeURIComponent(email)}`)
                 .then(response => response.json())
@@ -864,7 +896,7 @@ function hideError(input) {
         if (email) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
+                const scriptURL = 'https://script.google.com/macros/s/AKfycby1KYsoDJuIeTRLbtvwkFz3lLNvzJYIATKapBcn1174MzXcG7Yr1nCn4ofJQtI1NsT4/exec';
                 
                 // JSONP 방식으로 요청
                 const script = document.createElement('script');
