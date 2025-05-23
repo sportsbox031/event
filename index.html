@@ -883,19 +883,26 @@ function hideError(input) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
                 const scriptURL = 'https://script.google.com/macros/s/AKfycbzkmC6PpA4lkyj9cglN_WqmMy-N28akOzAJJYZkQqeO57w_DnLkfg8BMiEAvIDS2L_a/exec';
-                fetch(`${scriptURL}?page=admin&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.result === 'success') {
-                            showAdminPanel();
-                        } else {
-                            alert(data.message || '로그인에 실패했습니다.');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('Error:', error);
-                        alert('로그인 처리 중 오류가 발생했습니다.');
-                    });
+                fetch(`${scriptURL}?page=admin&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
+                    method: 'GET',
+                    mode: 'cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        showAdminPanel();
+                    } else {
+                        alert(data.message || '로그인에 실패했습니다.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('로그인 처리 중 오류가 발생했습니다.');
+                });
             }
         }
     });
