@@ -652,7 +652,7 @@ if (closeLowParticipantModal) {
         console.log('폼 데이터:', formData); // 디버깅용 로그
             
             // Google Apps Script 웹앱 URL
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
             
             // 데이터 전송 - form-urlencoded 형식 사용
         fetch(scriptURL, {
@@ -768,7 +768,7 @@ function hideError(input) {
     }
 
     function loadAdminData() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
         
         // 예약 상태 로드
         fetch(`${scriptURL}?action=getStatus`)
@@ -813,7 +813,7 @@ function hideError(input) {
     }
 
     function toggleReservation() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
         
         fetch(`${scriptURL}?action=toggleStatus`)
             .then(response => response.json())
@@ -831,7 +831,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
         
         fetch(`${scriptURL}?action=setTime&start=${encodeURIComponent(startTime)}&end=${encodeURIComponent(endTime)}`)
             .then(response => response.json())
@@ -855,7 +855,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
         
         fetch(`${scriptURL}?action=changePassword&current=${encodeURIComponent(currentPassword)}&new=${encodeURIComponent(newPassword)}`)
             .then(response => response.json())
@@ -878,7 +878,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
         
         fetch(`${scriptURL}?action=addAdmin&email=${encodeURIComponent(email)}`)
             .then(response => response.json())
@@ -890,7 +890,7 @@ function hideError(input) {
 
     function removeAdmin(email) {
         if (confirm('정말로 이 관리자를 삭제하시겠습니까?')) {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
             
             fetch(`${scriptURL}?action=removeAdmin&email=${encodeURIComponent(email)}`)
                 .then(response => response.json())
@@ -906,7 +906,7 @@ function hideError(input) {
         if (email) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbxfzu7PZ41wq4kRE1ajUb2df5iuvdfn_oAcISc7k6sWsQ9wv8dzzty0fCKwl2t9vsU6/exec';
                 
                 // JSONP 방식으로 요청
                 const script = document.createElement('script');
