@@ -6,7 +6,7 @@
     <title>스포츠박스 하계 이벤트 신청</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://script.google.com/macros/s/AKfycbzvv2s5khQbbzM2TE2DSTe57q4AZsDJm9d1nFP-KOeNuI5NR8VZlxc8i1MIS1sBOBhA/exec"></script>
+    <script src="https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec"></script>
     <script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#f59e0b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -74,21 +74,28 @@
                 <div class="flex flex-col md:flex-row items-center justify-between">
                     <div class="md:w-1/2 mb-8 md:mb-0">
                         <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">스포츠박스 하계 이벤트</h1>
-<p class="text-xl text-gray-700 mb-6">2025년 7월 7일 - 7월 9일</p>
-<div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
-    <div class="flex items-center mb-2">
-        <div class="w-8 h-8 flex items-center justify-center bg-primary rounded-full text-white mr-3">
-            <i class="ri-user-line"></i>
-        </div>
-        <p class="text-gray-700">각 차수별 최대 인원: <span class="font-semibold">50명</span></p>
-    </div>
-    <div class="flex items-center">
-        <div class="w-8 h-8 flex items-center justify-center bg-primary rounded-full text-white mr-3">
-            <i class="ri-calendar-line"></i>
-        </div>
-        <p class="text-gray-700">1차(7/7), 2차(7/8), 3차(7/9)</p>
-    </div>
-</div>
+                        <p class="text-xl text-gray-700 mb-6">2025년 7월 7일 - 7월 9일</p>
+                        <!-- 예약 상태 표시 추가 -->
+                        <div id="reservationStatusDisplay" class="mb-4 p-3 rounded-lg text-center">
+                            <div class="inline-flex items-center px-4 py-2 rounded-full">
+                                <span class="mr-2">예약 상태:</span>
+                                <span id="statusText" class="font-semibold">확인 중...</span>
+                            </div>
+                        </div>
+                        <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                            <div class="flex items-center mb-2">
+                                <div class="w-8 h-8 flex items-center justify-center bg-primary rounded-full text-white mr-3">
+                                    <i class="ri-user-line"></i>
+                                </div>
+                                <p class="text-gray-700">각 차수별 최대 인원: <span class="font-semibold">50명</span></p>
+                            </div>
+                            <div class="flex items-center">
+                                <div class="w-8 h-8 flex items-center justify-center bg-primary rounded-full text-white mr-3">
+                                    <i class="ri-calendar-line"></i>
+                                </div>
+                                <p class="text-gray-700">1차(7/7), 2차(7/8), 3차(7/9)</p>
+                            </div>
+                        </div>
                     </div>
                     <div class="md:w-5/12">
                         <img src="https://raw.githubusercontent.com/sportsbox031/event/main/IMG_1463.JPG" alt="하계 이벤트 이미지" class="rounded-lg shadow-lg w-full h-auto object-cover object-center">
@@ -451,247 +458,102 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-    const calendarDays = document.querySelectorAll('.calendar-day');
-    const selectedDateInput = document.getElementById('selectedDate');
-    const registrationForm = document.getElementById('registrationForm');
-    const submitButton = document.getElementById('submitButton');
-    const successModal = document.getElementById('successModal');
-    const closeSuccessModal = document.getElementById('closeSuccessModal');
-    const loadingIndicator = document.getElementById('loadingIndicator');
-    const duplicateModal = document.getElementById('duplicateModal');
-    const closeDuplicateModal = document.getElementById('closeDuplicateModal');
-    
-    // Calendar date selection
-    calendarDays.forEach(day => {
-        day.addEventListener('click', function() {
-            // Remove selected class from all days
-            calendarDays.forEach(d => d.classList.remove('selected'));
-            
-            // Add selected class to clicked day
-            this.classList.add('selected');
-            
-            // Update selected date input
-            const date = this.dataset.date;
-            const dateObj = new Date(date);
-            const formattedDate = `${dateObj.getFullYear()}년 ${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
-            selectedDateInput.value = formattedDate;
-            // 원본 날짜 값을 데이터 속성으로 저장
-            selectedDateInput.dataset.originalDate = date;
-            
-            // Validate form
-            validateForm();
-        });
-    });
-    
-    // Helper functions - 함수 정의 순서를 변경했습니다
-    function showError(input, message) {
-        const parentDiv = input.closest('div');
-        const errorElement = parentDiv.querySelector('.error-message');
-        
-        if (errorElement) {
-            errorElement.textContent = message;
-            errorElement.classList.remove('hidden');
-        }
-        input.classList.add('border-red-500');
-    }
-    
-    function hideError(input) {
-        const parentDiv = input.closest('div');
-        const errorElement = parentDiv.querySelector('.error-message');
-        
-        if (errorElement) {
-            errorElement.classList.add('hidden');
-        }
-        input.classList.remove('border-red-500');
-    }
-    
-    function validateInput(input) {
-        if (input.value.trim() === '') {
-            const fieldName = input.previousElementSibling.textContent.replace('*', '').trim();
-            showError(input, `${fieldName}을(를) 입력해주세요`);
-            return false;
-        } else {
-            hideError(input);
-            return true;
-        }
-    }
-    
-    function validateForm() {
-        let isValid = true;
-        
-        inputs.forEach(input => {
-            if (!validateInput(input)) {
-                isValid = false;
-            }
-        });
-        
-        // Additional validation for participant count
-        const participantCount = parseInt(participantCountInput.value);
-if (isNaN(participantCount) || participantCount < 10 || participantCount > 44) {
-    showError(participantCountInput, '유효한 참가 인원을 입력해주세요 (10-44명)');
-    isValid = false;
-} else {
-    hideError(participantCountInput);
-}
-        
-        // Additional validation for contact number
-        const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
-        if (!phoneRegex.test(contactNumberInput.value.replace(/-/g, ''))) {
-            isValid = false;
-        }
-        
-        submitButton.disabled = !isValid;
-        return isValid;
-    }
-    
-    // Form validation
-    const inputs = registrationForm.querySelectorAll('input[required]');
-    inputs.forEach(input => {
-        input.addEventListener('input', validateForm);
-        input.addEventListener('blur', function() {
-            validateInput(this);
-        });
-    });
-    
-    // Specific validation for participant count
-    const participantCountInput = document.getElementById('participantCount');
-    participantCountInput.addEventListener('input', function() {
-        const value = parseInt(this.value);
-        if (isNaN(value) || value < 10 || value > 44) {
-            showError(this, '유효한 참가 인원을 입력해주세요 (10-44명)');
-        } else {
-            hideError(this);
-        }
-        validateForm();
-    });
-    
-    // Specific validation for contact number
-    const contactNumberInput = document.getElementById('contactNumber');
-    contactNumberInput.addEventListener('input', function() {
-        // Allow digits and hyphens
-        this.value = this.value.replace(/[^\d-]/g, '');
-        
-        // Basic phone number validation
-        const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
-        if (!phoneRegex.test(this.value.replace(/-/g, ''))) {
-            showError(this, '유효한 연락처를 입력해주세요');
-        } else {
-            hideError(this);
-        }
-        validateForm();
-    });
-    
-    // 인원 수 미달 모달 닫기 버튼 이벤트
-const closeLowParticipantModal = document.getElementById('closeLowParticipantModal');
-if (closeLowParticipantModal) {
-    closeLowParticipantModal.addEventListener('click', function() {
-        document.getElementById('lowParticipantModal').classList.add('hidden');
-    });
-}
-
-    // Form submission
-    registrationForm.addEventListener('submit', function(e) {
-    e.preventDefault();
-    
-    // 참가 인원에 대한 명시적 검증
-    const participantCount = parseInt(document.getElementById('participantCount').value);
-    if (isNaN(participantCount) || participantCount < 10) {
-        // 인원 수 미달 모달 표시
-        document.getElementById('lowParticipantModal').classList.remove('hidden');
-        return; // 제출 중단
-    }
-
-    if (validateForm()) {
-        // 로딩 인디케이터 표시
-        const loadingIndicator = document.getElementById('loadingIndicator');
-        if (loadingIndicator) loadingIndicator.classList.remove('hidden');
-        
-        submitButton.disabled = true;
-        
-        // 폼 데이터 수집
-        const formData = {
-            '단체명': document.getElementById('groupName').value,
-            '담당자 성함': document.getElementById('managerName').value,
-            '담당자 연락처': document.getElementById('contactNumber').value,
-            '참가 인원': document.getElementById('participantCount').value,
-            '선택한 날짜': document.getElementById('selectedDate').value
-        };
-        
-        console.log('폼 데이터:', formData); // 디버깅용 로그
-            
-            // Google Apps Script 웹앱 URL
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbzvv2s5khQbbzM2TE2DSTe57q4AZsDJm9d1nFP-KOeNuI5NR8VZlxc8i1MIS1sBOBhA/exec';
-            
-            // 데이터 전송 - form-urlencoded 형식 사용
-        fetch(scriptURL, {
-            method: 'POST',
-            mode: 'no-cors',
-            cache: 'no-cache',
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            body: new URLSearchParams(formData).toString()
-        })
-        .then(response => {
-            // 로딩 인디케이터 숨기기
-            if (loadingIndicator) loadingIndicator.classList.add('hidden');
-            
-            // 응답 처리
-            if (response.ok) {
-                const successModal = document.getElementById('successModal');
-                if (successModal) successModal.classList.remove('hidden');
+            // 예약 상태 확인 함수
+            function checkReservationStatus() {
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
                 
-                // 폼 초기화
-                registrationForm.reset();
-                const calendarDays = document.querySelectorAll('.calendar-day');
-                calendarDays.forEach(day => day.classList.remove('selected'));
-                submitButton.disabled = true;
-            } else {
-                throw new Error('예약이 중지되었습니다.');
+                fetch(`${scriptURL}?action=getStatus`)
+                    .then(response => response.json())
+                    .then(data => {
+                        const statusText = document.getElementById('statusText');
+                        const statusDisplay = document.getElementById('reservationStatusDisplay');
+                        const calendarDays = document.querySelectorAll('.calendar-day');
+                        const submitButton = document.getElementById('submitButton');
+                        
+                        if (data.result === 'success') {
+                            const isOpen = data.status === 'open';
+                            
+                            // 상태 텍스트 업데이트
+                            statusText.textContent = isOpen ? '예약 진행 중' : '예약 중지';
+                            statusDisplay.className = `mb-4 p-3 rounded-lg text-center ${isOpen ? 'bg-green-100' : 'bg-red-100'}`;
+                            
+                            // 캘린더와 제출 버튼 상태 업데이트
+                            calendarDays.forEach(day => {
+                                day.style.pointerEvents = isOpen ? 'auto' : 'none';
+                                day.style.opacity = isOpen ? '1' : '0.5';
+                            });
+                            
+                            submitButton.disabled = !isOpen;
+                            if (!isOpen) {
+                                submitButton.title = '현재 예약이 중지되었습니다.';
+                            }
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error checking status:', error);
+                    });
             }
-        })
-        .catch(error => {
-            console.error('Error!', error.message);
-            if (loadingIndicator) loadingIndicator.classList.add('hidden');
-            alert(error.message || '제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
-            submitButton.disabled = false;
-        });
-    }
-});
-    
-    // Close success modal
-    closeSuccessModal.addEventListener('click', function() {
-        successModal.classList.add('hidden');
-    });
-    
-    // Close duplicate modal
-    closeDuplicateModal.addEventListener('click', function() {
-        duplicateModal.classList.add('hidden');
-    });
-            
-            function showError(input, message) {
-    // 부모의 형제 요소들 중에서 error-message 클래스를 가진 요소를 찾기
-    const parentDiv = input.closest('div');
-    const errorElement = parentDiv.querySelector('.error-message');
-    
-    if (errorElement) {
-        errorElement.textContent = message;
-        errorElement.classList.remove('hidden');
-    }
-    input.classList.add('border-red-500');
-}
-            
-function hideError(input) {
-        const parentDiv = input.closest('div');
-        const errorElement = parentDiv.querySelector('.error-message');
-        
-        if (errorElement) {
-            errorElement.classList.add('hidden');
-        }
-        input.classList.remove('border-red-500');
-    }
 
-            // Helper functions
+            // 페이지 로드 시 예약 상태 확인
+            checkReservationStatus();
+            
+            // 1분마다 예약 상태 확인
+            setInterval(checkReservationStatus, 60000);
+
+            const calendarDays = document.querySelectorAll('.calendar-day');
+            const selectedDateInput = document.getElementById('selectedDate');
+            const registrationForm = document.getElementById('registrationForm');
+            const submitButton = document.getElementById('submitButton');
+            const successModal = document.getElementById('successModal');
+            const closeSuccessModal = document.getElementById('closeSuccessModal');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const duplicateModal = document.getElementById('duplicateModal');
+            const closeDuplicateModal = document.getElementById('closeDuplicateModal');
+            
+            // Calendar date selection
+            calendarDays.forEach(day => {
+                day.addEventListener('click', function() {
+                    // Remove selected class from all days
+                    calendarDays.forEach(d => d.classList.remove('selected'));
+                    
+                    // Add selected class to clicked day
+                    this.classList.add('selected');
+                    
+                    // Update selected date input
+                    const date = this.dataset.date;
+                    const dateObj = new Date(date);
+                    const formattedDate = `${dateObj.getFullYear()}년 ${dateObj.getMonth() + 1}월 ${dateObj.getDate()}일`;
+                    selectedDateInput.value = formattedDate;
+                    // 원본 날짜 값을 데이터 속성으로 저장
+                    selectedDateInput.dataset.originalDate = date;
+                    
+                    // Validate form
+                    validateForm();
+                });
+            });
+            
+            // Helper functions - 함수 정의 순서를 변경했습니다
+            function showError(input, message) {
+                const parentDiv = input.closest('div');
+                const errorElement = parentDiv.querySelector('.error-message');
+                
+                if (errorElement) {
+                    errorElement.textContent = message;
+                    errorElement.classList.remove('hidden');
+                }
+                input.classList.add('border-red-500');
+            }
+            
+            function hideError(input) {
+                const parentDiv = input.closest('div');
+                const errorElement = parentDiv.querySelector('.error-message');
+                
+                if (errorElement) {
+                    errorElement.classList.add('hidden');
+                }
+                input.classList.remove('border-red-500');
+            }
+            
             function validateInput(input) {
                 if (input.value.trim() === '') {
                     const fieldName = input.previousElementSibling.textContent.replace('*', '').trim();
@@ -702,7 +564,7 @@ function hideError(input) {
                     return true;
                 }
             }
-
+            
             function validateForm() {
                 let isValid = true;
                 
@@ -727,225 +589,346 @@ function hideError(input) {
                 submitButton.disabled = !isValid;
                 return isValid;
             }
-        });
-
-    // 관리자 패널 관련 함수들
-    function showAdminPanel() {
-        document.getElementById('adminPanel').classList.remove('hidden');
-        loadAdminData();
-    }
-
-    function closeAdminPanel() {
-        document.getElementById('adminPanel').classList.add('hidden');
-    }
-
-    function loadAdminData() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzvv2s5khQbbzM2TE2DSTe57q4AZsDJm9d1nFP-KOeNuI5NR8VZlxc8i1MIS1sBOBhA/exec';
-        
-        // 로딩 상태 표시
-        const statusDiv = document.getElementById('reservationStatus');
-        if (statusDiv) {
-            statusDiv.textContent = '로딩 중...';
-            statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
-        }
-        
-        fetch(`${scriptURL}?action=getStatus`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.result === 'success') {
-                    if (statusDiv) {
-                        statusDiv.textContent = `현재 상태: ${data.status === 'open' ? '예약 진행 중' : '예약 중지'}`;
-                        statusDiv.className = `text-center p-2 rounded mb-3 ${data.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
-                    }
-                } else {
-                    if (statusDiv) {
-                        statusDiv.textContent = data.message || '상태를 불러오는 중 오류가 발생했습니다.';
-                        statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
-                    }
-                    if (data.message && data.message.includes('세션이 만료')) {
-                        closeAdminPanel();
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error loading status:', error);
-                if (statusDiv) {
-                    statusDiv.textContent = '상태를 불러오는 중 오류가 발생했습니다.';
-                    statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
-                }
-            });
-    }
-
-    function toggleReservation() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzvv2s5khQbbzM2TE2DSTe57q4AZsDJm9d1nFP-KOeNuI5NR8VZlxc8i1MIS1sBOBhA/exec';
-        
-        // 로딩 상태 표시
-        const statusDiv = document.getElementById('reservationStatus');
-        if (statusDiv) {
-            statusDiv.textContent = '처리 중...';
-            statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
-        }
-        
-        fetch(`${scriptURL}?action=toggleStatus`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.result === 'success') {
-                    loadAdminData();
-                } else {
-                    alert(data.message || '상태 변경 중 오류가 발생했습니다.');
-                    if (data.message && data.message.includes('세션이 만료')) {
-                        closeAdminPanel();
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('상태 변경 중 오류가 발생했습니다.');
-                loadAdminData();
-            });
-    }
-
-    function changePassword() {
-        const currentPassword = document.getElementById('currentPassword').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        
-        if (!currentPassword || !newPassword || !confirmPassword) {
-            alert('모든 필드를 입력해주세요.');
-            return;
-        }
-        
-        if (newPassword !== confirmPassword) {
-            alert('새 비밀번호가 일치하지 않습니다.');
-            return;
-        }
-
-        // 비밀번호 유효성 검사
-        if (newPassword.length < 8) {
-            alert('비밀번호는 8자 이상이어야 합니다.');
-            return;
-        }
-        
-        if (!/[A-Z]/.test(newPassword)) {
-            alert('비밀번호는 대문자를 포함해야 합니다.');
-            return;
-        }
-        
-        if (!/[a-z]/.test(newPassword)) {
-            alert('비밀번호는 소문자를 포함해야 합니다.');
-            return;
-        }
-        
-        if (!/[0-9]/.test(newPassword)) {
-            alert('비밀번호는 숫자를 포함해야 합니다.');
-            return;
-        }
-        
-        if (!/[!@#$%^&*]/.test(newPassword)) {
-            alert('비밀번호는 특수문자(!@#$%^&*)를 포함해야 합니다.');
-            return;
-        }
-
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzvv2s5khQbbzM2TE2DSTe57q4AZsDJm9d1nFP-KOeNuI5NR8VZlxc8i1MIS1sBOBhA/exec';
-        
-        // 로딩 상태 표시
-        const button = document.querySelector('button[onclick="changePassword()"]');
-        const originalText = button.textContent;
-        button.textContent = '처리 중...';
-        button.disabled = true;
-        
-        fetch(`${scriptURL}?action=changePassword&current=${encodeURIComponent(currentPassword)}&new=${encodeURIComponent(newPassword)}`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.result === 'success') {
-                    alert('비밀번호가 변경되었습니다.');
-                    document.getElementById('currentPassword').value = '';
-                    document.getElementById('newPassword').value = '';
-                    document.getElementById('confirmPassword').value = '';
-                } else {
-                    alert(data.message || '비밀번호 변경 중 오류가 발생했습니다.');
-                    if (data.message && data.message.includes('세션이 만료')) {
-                        closeAdminPanel();
-                    }
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('비밀번호 변경 중 오류가 발생했습니다.');
-            })
-            .finally(() => {
-                button.textContent = originalText;
-                button.disabled = false;
-            });
-    }
-
-    function addAdmin() {
-        const email = document.getElementById('newAdminEmail').value;
-        if (!email) {
-            alert('이메일 주소를 입력해주세요.');
-            return;
-        }
-
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbzvv2s5khQbbzM2TE2DSTe57q4AZsDJm9d1nFP-KOeNuI5NR8VZlxc8i1MIS1sBOBhA/exec';
-        
-        fetch(`${scriptURL}?action=addAdmin&email=${encodeURIComponent(email)}`)
-            .then(response => response.json())
-            .then(() => {
-                document.getElementById('newAdminEmail').value = '';
-                loadAdminData();
-            });
-    }
-
-    function removeAdmin(email) {
-        if (confirm('정말로 이 관리자를 삭제하시겠습니까?')) {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbzvv2s5khQbbzM2TE2DSTe57q4AZsDJm9d1nFP-KOeNuI5NR8VZlxc8i1MIS1sBOBhA/exec';
             
-            fetch(`${scriptURL}?action=removeAdmin&email=${encodeURIComponent(email)}`)
-                .then(response => response.json())
-                .then(() => {
-                    loadAdminData();
+            // Form validation
+            const inputs = registrationForm.querySelectorAll('input[required]');
+            inputs.forEach(input => {
+                input.addEventListener('input', validateForm);
+                input.addEventListener('blur', function() {
+                    validateInput(this);
                 });
-        }
-    }
+            });
+            
+            // Specific validation for participant count
+            const participantCountInput = document.getElementById('participantCount');
+            participantCountInput.addEventListener('input', function() {
+                const value = parseInt(this.value);
+                if (isNaN(value) || value < 10 || value > 44) {
+                    showError(this, '유효한 참가 인원을 입력해주세요 (10-44명)');
+                } else {
+                    hideError(this);
+                }
+                validateForm();
+            });
+            
+            // Specific validation for contact number
+            const contactNumberInput = document.getElementById('contactNumber');
+            contactNumberInput.addEventListener('input', function() {
+                // Allow digits and hyphens
+                this.value = this.value.replace(/[^\d-]/g, '');
+                
+                // Basic phone number validation
+                const phoneRegex = /^01[0-9]-?[0-9]{3,4}-?[0-9]{4}$/;
+                if (!phoneRegex.test(this.value.replace(/-/g, ''))) {
+                    showError(this, '유효한 연락처를 입력해주세요');
+                } else {
+                    hideError(this);
+                }
+                validateForm();
+            });
+            
+            // 인원 수 미달 모달 닫기 버튼 이벤트
+            const closeLowParticipantModal = document.getElementById('closeLowParticipantModal');
+            if (closeLowParticipantModal) {
+                closeLowParticipantModal.addEventListener('click', function() {
+                    document.getElementById('lowParticipantModal').classList.add('hidden');
+                });
+            }
 
-    // 관리자 로그인 처리 수정
-    document.getElementById('adminLoginBtn').addEventListener('click', function() {
-        const email = prompt('관리자 이메일을 입력해주세요:');
-        if (email) {
-            const password = prompt('비밀번호를 입력해주세요:');
-            if (password) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbzvv2s5khQbbzM2TE2DSTe57q4AZsDJm9d1nFP-KOeNuI5NR8VZlxc8i1MIS1sBOBhA/exec';
+            // Form submission
+            registrationForm.addEventListener('submit', function(e) {
+                e.preventDefault();
                 
-                // 로딩 상태 표시
-                const loadingIndicator = document.getElementById('loadingIndicator');
-                if (loadingIndicator) loadingIndicator.classList.remove('hidden');
-                
-                // URL 파라미터 인코딩
-                const params = new URLSearchParams({
-                    page: 'admin',
-                    email: email,
-                    password: password
-                });
-                
-                fetch(`${scriptURL}?${params.toString()}`)
-                    .then(response => response.json())
-                    .then(data => {
-                        if (data.result === 'success') {
-                            showAdminPanel();
-                        } else {
-                            alert(data.message || '로그인에 실패했습니다.');
-                        }
+                // 참가 인원에 대한 명시적 검증
+                const participantCount = parseInt(document.getElementById('participantCount').value);
+                if (isNaN(participantCount) || participantCount < 10) {
+                    // 인원 수 미달 모달 표시
+                    document.getElementById('lowParticipantModal').classList.remove('hidden');
+                    return; // 제출 중단
+                }
+
+                if (validateForm()) {
+                    // 로딩 인디케이터 표시
+                    const loadingIndicator = document.getElementById('loadingIndicator');
+                    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+                    
+                    submitButton.disabled = true;
+                    
+                    // 폼 데이터 수집
+                    const formData = {
+                        '단체명': document.getElementById('groupName').value,
+                        '담당자 성함': document.getElementById('managerName').value,
+                        '담당자 연락처': document.getElementById('contactNumber').value,
+                        '참가 인원': document.getElementById('participantCount').value,
+                        '선택한 날짜': document.getElementById('selectedDate').value
+                    };
+                    
+                    console.log('폼 데이터:', formData); // 디버깅용 로그
+                        
+                    // Google Apps Script 웹앱 URL
+                    const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+                    
+                    // 데이터 전송 - form-urlencoded 형식 사용
+                    fetch(scriptURL, {
+                        method: 'POST',
+                        mode: 'no-cors',
+                        cache: 'no-cache',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                        },
+                        body: new URLSearchParams(formData).toString()
+                    })
+                    .then(response => {
+                        // 로딩 인디케이터 숨기기
+                        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+                        
+                        // 응답 처리
+                        const successModal = document.getElementById('successModal');
+                        if (successModal) successModal.classList.remove('hidden');
+                        
+                        // 폼 초기화
+                        registrationForm.reset();
+                        const calendarDays = document.querySelectorAll('.calendar-day');
+                        calendarDays.forEach(day => day.classList.remove('selected'));
+                        submitButton.disabled = true;
                     })
                     .catch(error => {
-                        console.error('Error:', error);
-                        alert('로그인 중 오류가 발생했습니다.');
-                    })
-                    .finally(() => {
+                        console.error('Error!', error.message);
                         if (loadingIndicator) loadingIndicator.classList.add('hidden');
+                        alert('제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
+                        submitButton.disabled = false;
+                    });
+                }
+            });
+            
+            // Close success modal
+            closeSuccessModal.addEventListener('click', function() {
+                successModal.classList.add('hidden');
+            });
+            
+            // Close duplicate modal
+            closeDuplicateModal.addEventListener('click', function() {
+                duplicateModal.classList.add('hidden');
+            });
+        });
+
+        // 관리자 패널 관련 함수들
+        function showAdminPanel() {
+            document.getElementById('adminPanel').classList.remove('hidden');
+            loadAdminData();
+        }
+
+        function closeAdminPanel() {
+            document.getElementById('adminPanel').classList.add('hidden');
+        }
+
+        function loadAdminData() {
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+            
+            // 로딩 상태 표시
+            const statusDiv = document.getElementById('reservationStatus');
+            if (statusDiv) {
+                statusDiv.textContent = '로딩 중...';
+                statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
+            }
+            
+            fetch(`${scriptURL}?action=getStatus`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        if (statusDiv) {
+                            statusDiv.textContent = `현재 상태: ${data.status === 'open' ? '예약 진행 중' : '예약 중지'}`;
+                            statusDiv.className = `text-center p-2 rounded mb-3 ${data.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+                        }
+                    } else {
+                        if (statusDiv) {
+                            statusDiv.textContent = data.message || '상태를 불러오는 중 오류가 발생했습니다.';
+                            statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
+                        }
+                        if (data.message && data.message.includes('세션이 만료')) {
+                            closeAdminPanel();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error loading status:', error);
+                    if (statusDiv) {
+                        statusDiv.textContent = '상태를 불러오는 중 오류가 발생했습니다.';
+                        statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
+                    }
+                });
+        }
+
+        function toggleReservation() {
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+            
+            // 로딩 상태 표시
+            const statusDiv = document.getElementById('reservationStatus');
+            if (statusDiv) {
+                statusDiv.textContent = '처리 중...';
+                statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
+            }
+            
+            fetch(`${scriptURL}?action=toggleStatus`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        loadAdminData();
+                    } else {
+                        alert(data.message || '상태 변경 중 오류가 발생했습니다.');
+                        if (data.message && data.message.includes('세션이 만료')) {
+                            closeAdminPanel();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('상태 변경 중 오류가 발생했습니다.');
+                    loadAdminData();
+                });
+        }
+
+        function changePassword() {
+            const currentPassword = document.getElementById('currentPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (!currentPassword || !newPassword || !confirmPassword) {
+                alert('모든 필드를 입력해주세요.');
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                alert('새 비밀번호가 일치하지 않습니다.');
+                return;
+            }
+
+            // 비밀번호 유효성 검사
+            if (newPassword.length < 8) {
+                alert('비밀번호는 8자 이상이어야 합니다.');
+                return;
+            }
+            
+            if (!/[A-Z]/.test(newPassword)) {
+                alert('비밀번호는 대문자를 포함해야 합니다.');
+                return;
+            }
+            
+            if (!/[a-z]/.test(newPassword)) {
+                alert('비밀번호는 소문자를 포함해야 합니다.');
+                return;
+            }
+            
+            if (!/[0-9]/.test(newPassword)) {
+                alert('비밀번호는 숫자를 포함해야 합니다.');
+                return;
+            }
+            
+            if (!/[!@#$%^&*]/.test(newPassword)) {
+                alert('비밀번호는 특수문자(!@#$%^&*)를 포함해야 합니다.');
+                return;
+            }
+
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+            
+            // 로딩 상태 표시
+            const button = document.querySelector('button[onclick="changePassword()"]');
+            const originalText = button.textContent;
+            button.textContent = '처리 중...';
+            button.disabled = true;
+            
+            fetch(`${scriptURL}?action=changePassword&current=${encodeURIComponent(currentPassword)}&new=${encodeURIComponent(newPassword)}`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        alert('비밀번호가 변경되었습니다.');
+                        document.getElementById('currentPassword').value = '';
+                        document.getElementById('newPassword').value = '';
+                        document.getElementById('confirmPassword').value = '';
+                    } else {
+                        alert(data.message || '비밀번호 변경 중 오류가 발생했습니다.');
+                        if (data.message && data.message.includes('세션이 만료')) {
+                            closeAdminPanel();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('비밀번호 변경 중 오류가 발생했습니다.');
+                })
+                .finally(() => {
+                    button.textContent = originalText;
+                    button.disabled = false;
+                });
+        }
+
+        function addAdmin() {
+            const email = document.getElementById('newAdminEmail').value;
+            if (!email) {
+                alert('이메일 주소를 입력해주세요.');
+                return;
+            }
+
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+            
+            fetch(`${scriptURL}?action=addAdmin&email=${encodeURIComponent(email)}`)
+                .then(response => response.json())
+                .then(() => {
+                    document.getElementById('newAdminEmail').value = '';
+                    loadAdminData();
+                });
+        }
+
+        function removeAdmin(email) {
+            if (confirm('정말로 이 관리자를 삭제하시겠습니까?')) {
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+                
+                fetch(`${scriptURL}?action=removeAdmin&email=${encodeURIComponent(email)}`)
+                    .then(response => response.json())
+                    .then(() => {
+                        loadAdminData();
                     });
             }
         }
-    });
+
+        // 관리자 로그인 처리 수정
+        document.getElementById('adminLoginBtn').addEventListener('click', function() {
+            const email = prompt('관리자 이메일을 입력해주세요:');
+            if (email) {
+                const password = prompt('비밀번호를 입력해주세요:');
+                if (password) {
+                    const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+                    
+                    // 로딩 상태 표시
+                    const loadingIndicator = document.getElementById('loadingIndicator');
+                    if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+                    
+                    // URL 파라미터 인코딩
+                    const params = new URLSearchParams({
+                        page: 'admin',
+                        email: email,
+                        password: password
+                    });
+                    
+                    fetch(`${scriptURL}?${params.toString()}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.result === 'success') {
+                                showAdminPanel();
+                            } else {
+                                alert(data.message || '로그인에 실패했습니다.');
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('로그인 중 오류가 발생했습니다.');
+                        })
+                        .finally(() => {
+                            if (loadingIndicator) loadingIndicator.classList.add('hidden');
+                        });
+                }
+            }
+        });
     </script>
 </body>
 </html>
