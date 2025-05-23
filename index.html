@@ -6,7 +6,7 @@
     <title>스포츠박스 하계 이벤트 신청</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://script.google.com/macros/s/AKfycbyuKxsSJ7uoXC5PI8p9aRSwHurtNRtuy8GLn7VnLAr9G7S6zq_-XifFXK-viiGSObAy/exec"></script>
+    <script src="https://script.google.com/macros/s/AKfycbzdPCtf5Ng-uewOwYIj8ad97qrLRK8-zwWmcf3zuzAsPCQX3kOUKAVe1gCKBAd3mdY0/exec"></script>
     <script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#f59e0b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -652,7 +652,7 @@ if (closeLowParticipantModal) {
         console.log('폼 데이터:', formData); // 디버깅용 로그
             
             // Google Apps Script 웹앱 URL (배포 후 받은 URL로 변경해야 함)
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbyuKxsSJ7uoXC5PI8p9aRSwHurtNRtuy8GLn7VnLAr9G7S6zq_-XifFXK-viiGSObAy/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzdPCtf5Ng-uewOwYIj8ad97qrLRK8-zwWmcf3zuzAsPCQX3kOUKAVe1gCKBAd3mdY0/exec';
             
             // 데이터 전송 - form-urlencoded 형식 사용
         fetch(scriptURL, {
@@ -882,7 +882,7 @@ function hideError(input) {
         if (email) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
-                window.location.href = `https://script.google.com/macros/s/AKfycbyuKxsSJ7uoXC5PI8p9aRSwHurtNRtuy8GLn7VnLAr9G7S6zq_-XifFXK-viiGSObAy/exec?page=admin&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
+                window.location.href = `https://script.google.com/macros/s/AKfycbzdPCtf5Ng-uewOwYIj8ad97qrLRK8-zwWmcf3zuzAsPCQX3kOUKAVe1gCKBAd3mdY0/exec?page=admin&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`;
             }
         }
     });
