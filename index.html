@@ -652,7 +652,7 @@ if (closeLowParticipantModal) {
         console.log('폼 데이터:', formData); // 디버깅용 로그
             
             // Google Apps Script 웹앱 URL
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
             
             // 데이터 전송 - form-urlencoded 형식 사용
         fetch(scriptURL, {
@@ -768,7 +768,7 @@ function hideError(input) {
     }
 
     function loadAdminData() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
         
         // 예약 상태 로드
         fetch(`${scriptURL}?action=getStatus`)
@@ -792,19 +792,28 @@ function hideError(input) {
             .then(response => response.json())
             .then(data => {
                 const adminList = document.getElementById('adminList');
-                adminList.innerHTML = data.admins.map(admin => `
-                    <div class="flex justify-between items-center p-2 bg-white rounded mb-2">
-                        <span>${admin}</span>
-                        <button onclick="removeAdmin('${admin}')" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-                            삭제
-                        </button>
-                    </div>
-                `).join('');
+                if (data && Array.isArray(data.admins)) {
+                    adminList.innerHTML = data.admins.map(admin => `
+                        <div class="flex justify-between items-center p-2 bg-white rounded mb-2">
+                            <span>${admin}</span>
+                            <button onclick="removeAdmin('${admin}')" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
+                                삭제
+                            </button>
+                        </div>
+                    `).join('');
+                } else {
+                    adminList.innerHTML = '<p class="text-gray-500">관리자 목록을 불러올 수 없습니다.</p>';
+                }
+            })
+            .catch(error => {
+                const adminList = document.getElementById('adminList');
+                adminList.innerHTML = '<p class="text-red-500">관리자 목록을 불러오는 중 오류가 발생했습니다.</p>';
+                console.error('Error loading admin list:', error);
             });
     }
 
     function toggleReservation() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
         
         fetch(`${scriptURL}?action=toggleStatus`)
             .then(response => response.json())
@@ -822,7 +831,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
         
         fetch(`${scriptURL}?action=setTime&start=${encodeURIComponent(startTime)}&end=${encodeURIComponent(endTime)}`)
             .then(response => response.json())
@@ -846,7 +855,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
         
         fetch(`${scriptURL}?action=changePassword&current=${encodeURIComponent(currentPassword)}&new=${encodeURIComponent(newPassword)}`)
             .then(response => response.json())
@@ -869,7 +878,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
         
         fetch(`${scriptURL}?action=addAdmin&email=${encodeURIComponent(email)}`)
             .then(response => response.json())
@@ -881,7 +890,7 @@ function hideError(input) {
 
     function removeAdmin(email) {
         if (confirm('정말로 이 관리자를 삭제하시겠습니까?')) {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
             
             fetch(`${scriptURL}?action=removeAdmin&email=${encodeURIComponent(email)}`)
                 .then(response => response.json())
@@ -897,7 +906,7 @@ function hideError(input) {
         if (email) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbxYYqE-RTgSdcVAQoCvODzZ89PSYYpnpCp3iR0PG9V84-wBjmKTmGFArA46zpr2UaQ/exec';
                 
                 // JSONP 방식으로 요청
                 const script = document.createElement('script');
