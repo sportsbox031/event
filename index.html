@@ -6,7 +6,7 @@
     <title>스포츠박스 하계 이벤트 신청</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://script.google.com/macros/s/AKfycbzkmC6PpA4lkyj9cglN_WqmMy-N28akOzAJJYZkQqeO57w_DnLkfg8BMiEAvIDS2L_a/exec"></script>
+    <script src="https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec"></script>
     <script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#f59e0b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -620,7 +620,7 @@ if (closeLowParticipantModal) {
         console.log('폼 데이터:', formData); // 디버깅용 로그
             
             // Google Apps Script 웹앱 URL
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
             
             // 데이터 전송 - form-urlencoded 형식 사용
         fetch(scriptURL, {
@@ -736,57 +736,37 @@ function hideError(input) {
     }
 
     function loadAdminData() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
         
         // 예약 상태 로드
         fetch(`${scriptURL}?action=getStatus`)
             .then(response => response.json())
             .then(data => {
                 const statusDiv = document.getElementById('reservationStatus');
-                statusDiv.textContent = `현재 상태: ${data.status === 'open' ? '예약 진행 중' : '예약 중지'}`;
-                statusDiv.className = `text-center p-2 rounded mb-4 ${data.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
-            });
-
-        // 예약 시간 로드
-        fetch(`${scriptURL}?action=getTime`)
-            .then(response => response.json())
-            .then(data => {
-                document.getElementById('startTime').value = data.start;
-                document.getElementById('endTime').value = data.end;
-            });
-
-        // 관리자 목록 로드
-        fetch(`${scriptURL}?action=getAdmins`)
-            .then(response => response.json())
-            .then(data => {
-                const adminList = document.getElementById('adminList');
-                if (data && Array.isArray(data.admins)) {
-                    adminList.innerHTML = data.admins.map(admin => `
-                        <div class="flex justify-between items-center p-2 bg-white rounded mb-2">
-                            <span>${admin}</span>
-                            <button onclick="removeAdmin('${admin}')" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
-                                삭제
-                            </button>
-                        </div>
-                    `).join('');
-                } else {
-                    adminList.innerHTML = '<p class="text-gray-500">관리자 목록을 불러올 수 없습니다.</p>';
+                if (statusDiv) {
+                    statusDiv.textContent = `현재 상태: ${data.status === 'open' ? '예약 진행 중' : '예약 중지'}`;
+                    statusDiv.className = `text-center p-2 rounded mb-3 ${data.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
                 }
             })
             .catch(error => {
-                const adminList = document.getElementById('adminList');
-                adminList.innerHTML = '<p class="text-red-500">관리자 목록을 불러오는 중 오류가 발생했습니다.</p>';
-                console.error('Error loading admin list:', error);
+                console.error('Error loading status:', error);
+                const statusDiv = document.getElementById('reservationStatus');
+                if (statusDiv) {
+                    statusDiv.textContent = '상태를 불러오는 중 오류가 발생했습니다.';
+                    statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
+                }
             });
     }
 
     function toggleReservation() {
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
         
         // 로딩 상태 표시
         const statusDiv = document.getElementById('reservationStatus');
-        statusDiv.textContent = '처리 중...';
-        statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
+        if (statusDiv) {
+            statusDiv.textContent = '처리 중...';
+            statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
+        }
         
         fetch(`${scriptURL}?action=toggleStatus`)
             .then(response => response.json())
@@ -819,7 +799,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
         
         // 로딩 상태 표시
         const button = document.querySelector('button[onclick="changePassword()"]');
@@ -856,7 +836,7 @@ function hideError(input) {
             return;
         }
 
-        const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
         
         fetch(`${scriptURL}?action=addAdmin&email=${encodeURIComponent(email)}`)
             .then(response => response.json())
@@ -868,7 +848,7 @@ function hideError(input) {
 
     function removeAdmin(email) {
         if (confirm('정말로 이 관리자를 삭제하시겠습니까?')) {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
             
             fetch(`${scriptURL}?action=removeAdmin&email=${encodeURIComponent(email)}`)
                 .then(response => response.json())
@@ -884,7 +864,7 @@ function hideError(input) {
         if (email) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbwr59MfAqPCRRkRpWXDA6bQXiFNiEq4CQGPgSxwZX0lwtn65umRCMK2yUztKQvByYVg/exec';
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbyHVdK9xOVJ8ybFIOkD2qJwrD5e-lOeAwXBdKmSjf3SLkPhII1qL-DW7IGbEoV-kCWV/exec';
                 
                 // JSONP 방식으로 요청
                 const script = document.createElement('script');
