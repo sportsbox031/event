@@ -457,55 +457,87 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // 예약 상태 확인 함수
-            function checkReservationStatus() {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
-                
-                fetch(`${scriptURL}?action=getStatus`)
-                    .then(response => response.json())
-                    .then(data => {
-                        const statusText = document.getElementById('statusText');
-                        const statusDisplay = document.getElementById('reservationStatusDisplay');
-                        const calendarDays = document.querySelectorAll('.calendar-day');
-                        const submitButton = document.getElementById('submitButton');
+        // 예약 상태 확인 함수를 먼저 정의
+        function checkReservationStatus() {
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
+            
+            fetch(`${scriptURL}?action=getStatus`)
+                .then(response => response.json())
+                .then(data => {
+                    const statusText = document.getElementById('statusText');
+                    const statusDisplay = document.getElementById('reservationStatusDisplay');
+                    const calendarDays = document.querySelectorAll('.calendar-day');
+                    const submitButton = document.getElementById('submitButton');
+                    
+                    if (data.result === 'success') {
+                        const isOpen = data.status === 'open';
                         
-                        if (data.result === 'success') {
-                            const isOpen = data.status === 'open';
-                            
-                            // 상태 텍스트 업데이트
-                            statusText.textContent = isOpen ? '예약 진행 중' : '예약 중지';
-                            statusDisplay.className = `mb-4 p-3 rounded-lg text-center ${isOpen ? 'bg-green-100' : 'bg-red-100'}`;
-                            
-                            // 캘린더와 제출 버튼 상태 업데이트
-                            calendarDays.forEach(day => {
-                                day.style.pointerEvents = isOpen ? 'auto' : 'none';
-                                day.style.opacity = isOpen ? '1' : '0.5';
-                                if (!isOpen) {
-                                    day.title = '현재 예약이 중지되었습니다.';
-                                } else {
-                                    day.title = '';
-                                }
-                            });
-                            
-                            submitButton.disabled = !isOpen;
+                        // 상태 텍스트 업데이트
+                        statusText.textContent = isOpen ? '예약 진행 중' : '예약 중지';
+                        statusDisplay.className = `mb-4 p-3 rounded-lg text-center ${isOpen ? 'bg-green-100' : 'bg-red-100'}`;
+                        
+                        // 캘린더와 제출 버튼 상태 업데이트
+                        calendarDays.forEach(day => {
+                            day.style.pointerEvents = isOpen ? 'auto' : 'none';
+                            day.style.opacity = isOpen ? '1' : '0.5';
                             if (!isOpen) {
-                                submitButton.title = '현재 예약이 중지되었습니다.';
+                                day.title = '현재 예약이 중지되었습니다.';
                             } else {
-                                submitButton.title = '';
+                                day.title = '';
                             }
+                        });
+                        
+                        submitButton.disabled = !isOpen;
+                        if (!isOpen) {
+                            submitButton.title = '현재 예약이 중지되었습니다.';
+                        } else {
+                            submitButton.title = '';
                         }
-                    })
-                    .catch(error => {
-                        console.error('Error checking status:', error);
-                        // 오류 발생 시 상태 표시 업데이트
-                        const statusText = document.getElementById('statusText');
-                        const statusDisplay = document.getElementById('reservationStatusDisplay');
-                        statusText.textContent = '상태 확인 중 오류 발생';
-                        statusDisplay.className = 'mb-4 p-3 rounded-lg text-center bg-yellow-100';
-                    });
-            }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error checking status:', error);
+                    // 오류 발생 시 상태 표시 업데이트
+                    const statusText = document.getElementById('statusText');
+                    const statusDisplay = document.getElementById('reservationStatusDisplay');
+                    statusText.textContent = '상태 확인 중 오류 발생';
+                    statusDisplay.className = 'mb-4 p-3 rounded-lg text-center bg-yellow-100';
+                });
+        }
 
+        // 관리자 패널에서 상태 변경 시 메인 페이지 상태도 업데이트
+        function toggleReservation() {
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
+            
+            // 로딩 상태 표시
+            const statusDiv = document.getElementById('reservationStatus');
+            if (statusDiv) {
+                statusDiv.textContent = '처리 중...';
+                statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
+            }
+            
+            fetch(`${scriptURL}?action=toggleStatus`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data.result === 'success') {
+                        loadAdminData();
+                        // 메인 페이지의 예약 상태도 즉시 업데이트
+                        checkReservationStatus();
+                    } else {
+                        alert(data.message || '상태 변경 중 오류가 발생했습니다.');
+                        if (data.message && data.message.includes('세션이 만료')) {
+                            closeAdminPanel();
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('상태 변경 중 오류가 발생했습니다.');
+                    loadAdminData();
+                });
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
             // 페이지 로드 시 예약 상태 확인
             checkReservationStatus();
             
@@ -768,37 +800,6 @@
                         statusDiv.textContent = '상태를 불러오는 중 오류가 발생했습니다.';
                         statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
                     }
-                });
-        }
-
-        function toggleReservation() {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
-            
-            // 로딩 상태 표시
-            const statusDiv = document.getElementById('reservationStatus');
-            if (statusDiv) {
-                statusDiv.textContent = '처리 중...';
-                statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
-            }
-            
-            fetch(`${scriptURL}?action=toggleStatus`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.result === 'success') {
-                        loadAdminData();
-                        // 메인 페이지의 예약 상태도 즉시 업데이트
-                        checkReservationStatus();
-                    } else {
-                        alert(data.message || '상태 변경 중 오류가 발생했습니다.');
-                        if (data.message && data.message.includes('세션이 만료')) {
-                            closeAdminPanel();
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('상태 변경 중 오류가 발생했습니다.');
-                    loadAdminData();
                 });
         }
 
