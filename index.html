@@ -882,24 +882,24 @@ function hideError(input) {
         if (email) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbzkmC6PpA4lkyj9cglN_WqmMy-N28akOzAJJYZkQqeO57w_DnLkfg8BMiEAvIDS2L_a/exec';
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbwIRnmGKvqVkhmF_8xWR2tm5G6IPX00G-t5X7V2N2SbEaKeVc2IHhOt3RlrW4AE9pLb/exec';
                 
-                fetch(`${scriptURL}?page=admin&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}`, {
-                    method: 'GET',
-                    mode: 'cors'
-                })
-                .then(response => response.json())
-                .then(data => {
+                // JSONP 방식으로 요청
+                const script = document.createElement('script');
+                const callbackName = 'jsonpCallback_' + Date.now();
+                
+                window[callbackName] = function(data) {
                     if (data.result === 'success') {
                         showAdminPanel();
                     } else {
                         alert(data.message || '로그인에 실패했습니다.');
                     }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('로그인 처리 중 오류가 발생했습니다.');
-                });
+                    delete window[callbackName];
+                    document.body.removeChild(script);
+                };
+                
+                script.src = `${scriptURL}?page=admin&email=${encodeURIComponent(email)}&password=${encodeURIComponent(password)}&callback=${callbackName}`;
+                document.body.appendChild(script);
             }
         }
     });
