@@ -652,7 +652,7 @@ if (closeLowParticipantModal) {
         console.log('폼 데이터:', formData); // 디버깅용 로그
             
             // Google Apps Script 웹앱 URL
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbxKWmFPxEOSrXlCBX8J1VZnbWwVfviv0sm881-hDfM3J3FVgk19gAm1vL1-45UnCKf-/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
             
             // 데이터 전송 - form-urlencoded 형식 사용
         fetch(scriptURL, {
@@ -768,28 +768,31 @@ function hideError(input) {
     }
 
     function loadAdminData() {
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+        
         // 예약 상태 로드
-        google.script.run
-            .withSuccessHandler(function(status) {
+        fetch(`${scriptURL}?action=getStatus`)
+            .then(response => response.json())
+            .then(data => {
                 const statusDiv = document.getElementById('reservationStatus');
-                statusDiv.textContent = `현재 상태: ${status === 'open' ? '예약 진행 중' : '예약 중지'}`;
-                statusDiv.className = `text-center p-2 rounded mb-4 ${status === 'open' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
-            })
-            .getReservationStatus();
+                statusDiv.textContent = `현재 상태: ${data.status === 'open' ? '예약 진행 중' : '예약 중지'}`;
+                statusDiv.className = `text-center p-2 rounded mb-4 ${data.status === 'open' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`;
+            });
 
         // 예약 시간 로드
-        google.script.run
-            .withSuccessHandler(function(times) {
-                document.getElementById('startTime').value = times.start;
-                document.getElementById('endTime').value = times.end;
-            })
-            .getReservationTime();
+        fetch(`${scriptURL}?action=getTime`)
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('startTime').value = data.start;
+                document.getElementById('endTime').value = data.end;
+            });
 
         // 관리자 목록 로드
-        google.script.run
-            .withSuccessHandler(function(admins) {
+        fetch(`${scriptURL}?action=getAdmins`)
+            .then(response => response.json())
+            .then(data => {
                 const adminList = document.getElementById('adminList');
-                adminList.innerHTML = admins.map(admin => `
+                adminList.innerHTML = data.admins.map(admin => `
                     <div class="flex justify-between items-center p-2 bg-white rounded mb-2">
                         <span>${admin}</span>
                         <button onclick="removeAdmin('${admin}')" class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600">
@@ -797,16 +800,17 @@ function hideError(input) {
                         </button>
                     </div>
                 `).join('');
-            })
-            .getAdminList();
+            });
     }
 
     function toggleReservation() {
-        google.script.run
-            .withSuccessHandler(function() {
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+        
+        fetch(`${scriptURL}?action=toggleStatus`)
+            .then(response => response.json())
+            .then(() => {
                 loadAdminData();
-            })
-            .toggleReservationStatus();
+            });
     }
 
     function setReservationTime() {
@@ -818,11 +822,13 @@ function hideError(input) {
             return;
         }
 
-        google.script.run
-            .withSuccessHandler(function() {
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+        
+        fetch(`${scriptURL}?action=setTime&start=${encodeURIComponent(startTime)}&end=${encodeURIComponent(endTime)}`)
+            .then(response => response.json())
+            .then(() => {
                 alert('예약 시간이 설정되었습니다.');
-            })
-            .setReservationTime(startTime, endTime);
+            });
     }
 
     function changePassword() {
@@ -839,18 +845,21 @@ function hideError(input) {
             alert('새 비밀번호가 일치하지 않습니다.');
             return;
         }
+
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
         
-        google.script.run
-            .withSuccessHandler(function() {
-                alert('비밀번호가 변경되었습니다.');
-                document.getElementById('currentPassword').value = '';
-                document.getElementById('newPassword').value = '';
-                document.getElementById('confirmPassword').value = '';
-            })
-            .withFailureHandler(function(error) {
-                alert(error.message || '비밀번호 변경 중 오류가 발생했습니다.');
-            })
-            .changeAdminPassword(currentPassword, newPassword);
+        fetch(`${scriptURL}?action=changePassword&current=${encodeURIComponent(currentPassword)}&new=${encodeURIComponent(newPassword)}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.result === 'success') {
+                    alert('비밀번호가 변경되었습니다.');
+                    document.getElementById('currentPassword').value = '';
+                    document.getElementById('newPassword').value = '';
+                    document.getElementById('confirmPassword').value = '';
+                } else {
+                    alert(data.message || '비밀번호 변경 중 오류가 발생했습니다.');
+                }
+            });
     }
 
     function addAdmin() {
@@ -859,20 +868,26 @@ function hideError(input) {
             alert('이메일 주소를 입력해주세요.');
             return;
         }
+
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
         
-        google.script.run
-            .withSuccessHandler(function() {
+        fetch(`${scriptURL}?action=addAdmin&email=${encodeURIComponent(email)}`)
+            .then(response => response.json())
+            .then(() => {
                 document.getElementById('newAdminEmail').value = '';
                 loadAdminData();
-            })
-            .addAdmin(email);
+            });
     }
 
     function removeAdmin(email) {
         if (confirm('정말로 이 관리자를 삭제하시겠습니까?')) {
-            google.script.run
-                .withSuccessHandler(loadAdminData)
-                .removeAdmin(email);
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
+            
+            fetch(`${scriptURL}?action=removeAdmin&email=${encodeURIComponent(email)}`)
+                .then(response => response.json())
+                .then(() => {
+                    loadAdminData();
+                });
         }
     }
 
@@ -882,7 +897,7 @@ function hideError(input) {
         if (email) {
             const password = prompt('비밀번호를 입력해주세요:');
             if (password) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbxKWmFPxEOSrXlCBX8J1VZnbWwVfviv0sm881-hDfM3J3FVgk19gAm1vL1-45UnCKf-/exec';
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbw-mJqjDoyyvfj6Jb2H3Kz9iRXCAWZ5WtKN6Xvzywjd-DkqmLeosZ9x-s6e2S5gW9tS/exec';
                 
                 // JSONP 방식으로 요청
                 const script = document.createElement('script');
