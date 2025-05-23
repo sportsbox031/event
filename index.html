@@ -6,7 +6,7 @@
     <title>스포츠박스 하계 이벤트 신청</title>
     <script src="https://cdn.tailwindcss.com/3.4.16"></script>
     <script src="https://apis.google.com/js/api.js"></script>
-    <script src="https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec"></script>
+    <script src="https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec"></script>
     <script>tailwind.config={theme:{extend:{colors:{primary:'#3b82f6',secondary:'#f59e0b'},borderRadius:{'none':'0px','sm':'4px',DEFAULT:'8px','md':'12px','lg':'16px','xl':'20px','2xl':'24px','3xl':'32px','full':'9999px','button':'8px'}}}}</script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -460,7 +460,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             // 예약 상태 확인 함수
             function checkReservationStatus() {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
                 
                 fetch(`${scriptURL}?action=getStatus`)
                     .then(response => response.json())
@@ -481,16 +481,28 @@
                             calendarDays.forEach(day => {
                                 day.style.pointerEvents = isOpen ? 'auto' : 'none';
                                 day.style.opacity = isOpen ? '1' : '0.5';
+                                if (!isOpen) {
+                                    day.title = '현재 예약이 중지되었습니다.';
+                                } else {
+                                    day.title = '';
+                                }
                             });
                             
                             submitButton.disabled = !isOpen;
                             if (!isOpen) {
                                 submitButton.title = '현재 예약이 중지되었습니다.';
+                            } else {
+                                submitButton.title = '';
                             }
                         }
                     })
                     .catch(error => {
                         console.error('Error checking status:', error);
+                        // 오류 발생 시 상태 표시 업데이트
+                        const statusText = document.getElementById('statusText');
+                        const statusDisplay = document.getElementById('reservationStatusDisplay');
+                        statusText.textContent = '상태 확인 중 오류 발생';
+                        statusDisplay.className = 'mb-4 p-3 rounded-lg text-center bg-yellow-100';
                     });
             }
 
@@ -666,7 +678,7 @@
                     console.log('폼 데이터:', formData); // 디버깅용 로그
                         
                     // Google Apps Script 웹앱 URL
-                    const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+                    const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
                     
                     // 데이터 전송 - form-urlencoded 형식 사용
                     fetch(scriptURL, {
@@ -723,7 +735,7 @@
         }
 
         function loadAdminData() {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
             
             // 로딩 상태 표시
             const statusDiv = document.getElementById('reservationStatus');
@@ -760,7 +772,7 @@
         }
 
         function toggleReservation() {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
             
             // 로딩 상태 표시
             const statusDiv = document.getElementById('reservationStatus');
@@ -774,6 +786,8 @@
                 .then(data => {
                     if (data.result === 'success') {
                         loadAdminData();
+                        // 메인 페이지의 예약 상태도 즉시 업데이트
+                        checkReservationStatus();
                     } else {
                         alert(data.message || '상태 변경 중 오류가 발생했습니다.');
                         if (data.message && data.message.includes('세션이 만료')) {
@@ -829,7 +843,7 @@
                 return;
             }
 
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
             
             // 로딩 상태 표시
             const button = document.querySelector('button[onclick="changePassword()"]');
@@ -869,7 +883,7 @@
                 return;
             }
 
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
             
             fetch(`${scriptURL}?action=addAdmin&email=${encodeURIComponent(email)}`)
                 .then(response => response.json())
@@ -881,7 +895,7 @@
 
         function removeAdmin(email) {
             if (confirm('정말로 이 관리자를 삭제하시겠습니까?')) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+                const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
                 
                 fetch(`${scriptURL}?action=removeAdmin&email=${encodeURIComponent(email)}`)
                     .then(response => response.json())
@@ -897,7 +911,7 @@
             if (email) {
                 const password = prompt('비밀번호를 입력해주세요:');
                 if (password) {
-                    const scriptURL = 'https://script.google.com/macros/s/AKfycbx1c4gWk8aY8uW_Q5BEjcq_zlos-lf_AqrlXKtvR0rJC0S_Y3CmuPEjmi_1F9yiYCHn/exec';
+                    const scriptURL = 'https://script.google.com/macros/s/AKfycbz605Ty74W6zjEyYYAcEJEWzHsejWFj__3T1WBvr9RJjAPzEKmM9-cQKAZExIdalb3K/exec';
                     
                     // 로딩 상태 표시
                     const loadingIndicator = document.getElementById('loadingIndicator');
