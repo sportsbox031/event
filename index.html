@@ -756,17 +756,26 @@
                 if (file) {
                   const form = new FormData();
                   form.append('file', file);
+                  form.append('fileName', file.name);
+                  form.append('fileType', file.type);
+                  
                   // 파일명 표시
                   document.getElementById('selectedDocumentName').textContent = `선택된 파일: ${file.name}`;
+                  
                   // 로딩 인디케이터 표시
                   const loadingIndicator = document.getElementById('loadingIndicator');
                   if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+                  
+                  // 디버깅을 위한 로그
+                  console.log('파일 업로드 시작:', file.name, file.type);
+                  
                   fetch('https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec', {
                     method: 'POST',
                     body: form
                   })
                   .then(res => res.json())
                   .then(result => {
+                    console.log('서버 응답:', result);
                     if (result.result === 'success') {
                       alert('파일이 성공적으로 업로드되었습니다.');
                       documentUpload.value = '';
@@ -775,7 +784,10 @@
                       alert(result.message || '업로드 실패');
                     }
                   })
-                  .catch(err => alert('업로드 중 오류: ' + err.message))
+                  .catch(err => {
+                    console.error('업로드 오류:', err);
+                    alert('업로드 중 오류: ' + err.message);
+                  })
                   .finally(() => {
                     if (loadingIndicator) loadingIndicator.classList.add('hidden');
                   });
