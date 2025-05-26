@@ -111,7 +111,7 @@
             </div>
         </div>
 
-        <!-- 서류 제출 섹션 (완전히 분리) -->
+        <!-- 서류 제출 섹션 (완전히 분리된 독립 섹션) -->
         <div class="container mx-auto px-4 md:px-8 max-w-6xl py-8">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">서류 제출</h2>
@@ -119,15 +119,15 @@
                     <div class="text-center">
                         <i class="ri-upload-cloud-2-line text-4xl text-gray-400 mb-3"></i>
                         <h3 class="text-lg font-medium text-gray-900 mb-2">서류 제출하기</h3>
-                        <p class="text-sm text-gray-500 mb-4">참가신청서를 작성하신 후 업로드해주세요</p>
+                        <p class="text-sm text-gray-500 mb-4">참가신청서를 작성하신 후 PDF 또는 이미지 파일로 업로드해주세요</p>
                         <div class="flex items-center justify-center">
-                            <label for="fileUpload" class="cursor-pointer inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                            <label for="documentUpload" class="cursor-pointer inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
                                 <i class="ri-upload-2-line mr-2"></i>
                                 파일 선택
-                                <input type="file" id="fileUpload" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.hwp,.hwpx">
+                                <input type="file" id="documentUpload" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.hwp,.hwpx">
                             </label>
                         </div>
-                        <p id="selectedFileName" class="mt-2 text-sm text-gray-500"></p>
+                        <p id="selectedDocumentName" class="mt-2 text-sm text-gray-500"></p>
                     </div>
                 </div>
             </div>
@@ -748,8 +748,8 @@
                 });
             }
 
-            // 파일 업로드 처리 (완전히 분리된 독립적인 기능)
-            async function handleFileUpload(file) {
+            // 서류 제출 처리 (완전히 분리된 독립적인 기능)
+            async function handleDocumentUpload(file) {
                 try {
                     const form = new FormData();
                     form.append('file', file);
@@ -772,10 +772,10 @@
                     if (result.result === 'success') {
                         alert('파일이 성공적으로 업로드되었습니다.');
                         // 파일 선택 초기화
-                        const fileInput = document.getElementById('fileUpload');
+                        const fileInput = document.getElementById('documentUpload');
                         if (fileInput) {
                             fileInput.value = '';
-                            document.getElementById('selectedFileName').textContent = '';
+                            document.getElementById('selectedDocumentName').textContent = '';
                         }
                     } else {
                         throw new Error(result.message || '파일 업로드 실패');
@@ -790,14 +790,14 @@
                 }
             }
 
-            // 파일 업로드 이벤트 리스너 설정 (독립적으로 동작)
-            const fileUpload = document.getElementById('fileUpload');
-            if (fileUpload) {
-                fileUpload.addEventListener('change', function(e) {
+            // 서류 제출 이벤트 리스너 설정 (독립적으로 동작)
+            const documentUpload = document.getElementById('documentUpload');
+            if (documentUpload) {
+                documentUpload.addEventListener('change', function(e) {
                     const file = e.target.files[0];
                     if (file) {
-                        document.getElementById('selectedFileName').textContent = `선택된 파일: ${file.name}`;
-                        handleFileUpload(file);
+                        document.getElementById('selectedDocumentName').textContent = `선택된 파일: ${file.name}`;
+                        handleDocumentUpload(file);
                     }
                 });
             }
