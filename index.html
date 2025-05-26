@@ -771,22 +771,32 @@
                   
                   fetch('https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec', {
                     method: 'POST',
+                    mode: 'no-cors',
                     body: form
                   })
-                  .then(res => res.json())
-                  .then(result => {
-                    console.log('서버 응답:', result);
-                    if (result.result === 'success') {
-                      alert('파일이 성공적으로 업로드되었습니다.');
-                      documentUpload.value = '';
-                      document.getElementById('selectedDocumentName').textContent = '';
-                    } else {
-                      alert(result.message || '업로드 실패');
+                  .then(response => {
+                    console.log('응답 상태:', response.status);
+                    return response.text();
+                  })
+                  .then(text => {
+                    console.log('서버 응답:', text);
+                    try {
+                      const result = JSON.parse(text);
+                      if (result.result === 'success') {
+                        alert('파일이 성공적으로 업로드되었습니다.');
+                        documentUpload.value = '';
+                        document.getElementById('selectedDocumentName').textContent = '';
+                      } else {
+                        alert(result.message || '업로드 실패');
+                      }
+                    } catch (e) {
+                      console.error('JSON 파싱 오류:', e);
+                      alert('서버 응답 처리 중 오류가 발생했습니다.');
                     }
                   })
                   .catch(err => {
                     console.error('업로드 오류:', err);
-                    alert('업로드 중 오류: ' + err.message);
+                    alert('업로드 중 오류가 발생했습니다.');
                   })
                   .finally(() => {
                     if (loadingIndicator) loadingIndicator.classList.add('hidden');
