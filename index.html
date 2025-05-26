@@ -764,67 +764,36 @@
                   // 디버깅을 위한 로그
                   console.log('파일 업로드 시작:', file.name, file.type);
                   
-                  // iframe 생성
-                  const iframe = document.createElement('iframe');
-                  iframe.style.display = 'none';
-                  document.body.appendChild(iframe);
+                  // FormData 생성
+                  const formData = new FormData();
+                  formData.append('file', file);
+                  formData.append('fileName', file.name);
+                  formData.append('fileType', file.type);
                   
-                  // form 생성
-                  const form = document.createElement('form');
-                  form.method = 'POST';
-                  form.action = 'https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec';
-                  form.enctype = 'multipart/form-data';
-                  form.target = iframe.name;
-                  
-                  // 파일 입력 필드 추가
-                  const fileInput = document.createElement('input');
-                  fileInput.type = 'file';
-                  fileInput.name = 'file';
-                  fileInput.files = e.target.files;
-                  form.appendChild(fileInput);
-                  
-                  // 파일명 필드 추가
-                  const fileNameInput = document.createElement('input');
-                  fileNameInput.type = 'hidden';
-                  fileNameInput.name = 'fileName';
-                  fileNameInput.value = file.name;
-                  form.appendChild(fileNameInput);
-                  
-                  // 파일 타입 필드 추가
-                  const fileTypeInput = document.createElement('input');
-                  fileTypeInput.type = 'hidden';
-                  fileTypeInput.name = 'fileType';
-                  fileTypeInput.value = file.type;
-                  form.appendChild(fileTypeInput);
-                  
-                  // form을 body에 추가하고 제출
-                  document.body.appendChild(form);
-                  form.submit();
-                  
-                  // iframe 로드 이벤트 처리
-                  iframe.onload = function() {
-                    try {
-                      const response = iframe.contentDocument.body.textContent;
-                      console.log('서버 응답:', response);
-                      
-                      const result = JSON.parse(response);
-                      if (result.result === 'success') {
-                        alert('파일이 성공적으로 업로드되었습니다.');
-                        documentUpload.value = '';
-                        document.getElementById('selectedDocumentName').textContent = '';
-                      } else {
-                        alert(result.message || '업로드 실패');
-                      }
-                    } catch (e) {
-                      console.error('응답 처리 오류:', e);
-                      alert('서버 응답 처리 중 오류가 발생했습니다.');
+                  // fetch를 사용하여 파일 업로드
+                  fetch('https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec', {
+                    method: 'POST',
+                    body: formData,
+                    mode: 'cors'
+                  })
+                  .then(response => response.json())
+                  .then(result => {
+                    console.log('서버 응답:', result);
+                    if (result.result === 'success') {
+                      alert('파일이 성공적으로 업로드되었습니다.');
+                      documentUpload.value = '';
+                      document.getElementById('selectedDocumentName').textContent = '';
+                    } else {
+                      alert(result.message || '업로드 실패');
                     }
-                    
-                    // 정리
-                    document.body.removeChild(form);
-                    document.body.removeChild(iframe);
+                  })
+                  .catch(error => {
+                    console.error('업로드 오류:', error);
+                    alert('파일 업로드 중 오류가 발생했습니다.');
+                  })
+                  .finally(() => {
                     if (loadingIndicator) loadingIndicator.classList.add('hidden');
-                  };
+                  });
                 }
               });
             }
