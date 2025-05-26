@@ -754,11 +754,6 @@
               documentUpload.addEventListener('change', function(e) {
                 const file = e.target.files[0];
                 if (file) {
-                  const form = new FormData();
-                  form.append('file', file);
-                  form.append('fileName', file.name);
-                  form.append('fileType', file.type);
-                  
                   // 파일명 표시
                   document.getElementById('selectedDocumentName').textContent = `선택된 파일: ${file.name}`;
                   
@@ -769,19 +764,50 @@
                   // 디버깅을 위한 로그
                   console.log('파일 업로드 시작:', file.name, file.type);
                   
-                  // 구글 앱스 스크립트 URL
-                  const scriptURL = 'https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec';
+                  // iframe 생성
+                  const iframe = document.createElement('iframe');
+                  iframe.style.display = 'none';
+                  document.body.appendChild(iframe);
                   
-                  // XMLHttpRequest를 사용하여 파일 업로드
-                  const xhr = new XMLHttpRequest();
-                  xhr.open('POST', scriptURL, true);
+                  // form 생성
+                  const form = document.createElement('form');
+                  form.method = 'POST';
+                  form.action = 'https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec';
+                  form.enctype = 'multipart/form-data';
+                  form.target = iframe.name;
                   
-                  xhr.onload = function() {
-                    console.log('응답 상태:', xhr.status);
-                    console.log('응답 텍스트:', xhr.responseText);
-                    
+                  // 파일 입력 필드 추가
+                  const fileInput = document.createElement('input');
+                  fileInput.type = 'file';
+                  fileInput.name = 'file';
+                  fileInput.files = e.target.files;
+                  form.appendChild(fileInput);
+                  
+                  // 파일명 필드 추가
+                  const fileNameInput = document.createElement('input');
+                  fileNameInput.type = 'hidden';
+                  fileNameInput.name = 'fileName';
+                  fileNameInput.value = file.name;
+                  form.appendChild(fileNameInput);
+                  
+                  // 파일 타입 필드 추가
+                  const fileTypeInput = document.createElement('input');
+                  fileTypeInput.type = 'hidden';
+                  fileTypeInput.name = 'fileType';
+                  fileTypeInput.value = file.type;
+                  form.appendChild(fileTypeInput);
+                  
+                  // form을 body에 추가하고 제출
+                  document.body.appendChild(form);
+                  form.submit();
+                  
+                  // iframe 로드 이벤트 처리
+                  iframe.onload = function() {
                     try {
-                      const result = JSON.parse(xhr.responseText);
+                      const response = iframe.contentDocument.body.textContent;
+                      console.log('서버 응답:', response);
+                      
+                      const result = JSON.parse(response);
                       if (result.result === 'success') {
                         alert('파일이 성공적으로 업로드되었습니다.');
                         documentUpload.value = '';
@@ -790,20 +816,15 @@
                         alert(result.message || '업로드 실패');
                       }
                     } catch (e) {
-                      console.error('JSON 파싱 오류:', e);
+                      console.error('응답 처리 오류:', e);
                       alert('서버 응답 처리 중 오류가 발생했습니다.');
                     }
                     
+                    // 정리
+                    document.body.removeChild(form);
+                    document.body.removeChild(iframe);
                     if (loadingIndicator) loadingIndicator.classList.add('hidden');
                   };
-                  
-                  xhr.onerror = function() {
-                    console.error('업로드 오류 발생');
-                    alert('업로드 중 오류가 발생했습니다.');
-                    if (loadingIndicator) loadingIndicator.classList.add('hidden');
-                  };
-                  
-                  xhr.send(form);
                 }
               });
             }
