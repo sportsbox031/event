@@ -143,11 +143,28 @@
                                 </div>
                                 <p class="text-gray-700">1차(7/7), 2차(7/8), 3차(7/9)</p>
                             </div>
-                            <a href="https://raw.githubusercontent.com/sportsbox031/event/main/%EC%8A%A4%ED%8F%AC%EC%B8%A0%EB%B0%95%EC%8A%A4%20%EC%88%98%EC%83%81%ED%95%9C%EB%86%80%EC%9D%B4%20%EC%B0%B8%EA%B0%80%EC%8B%A0%EC%B2%AD%EC%84%9C.hwpx" 
-                               class="mt-4 inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
-                                <i class="ri-file-download-line mr-2"></i>
-                                참가신청서 다운로드
-                            </a>
+                            <div class="flex flex-col space-y-3 mt-4">
+                                <a href="https://raw.githubusercontent.com/sportsbox031/event/main/%EC%8A%A4%ED%8F%AC%EC%B8%A0%EB%B0%95%EC%8A%A4%20%EC%88%98%EC%83%81%ED%95%9C%EB%86%80%EC%9D%B4%20%EC%B0%B8%EA%B0%80%EC%8B%A0%EC%B2%AD%EC%84%9C.hwpx" 
+                                   class="inline-flex items-center justify-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                                    <i class="ri-file-download-line mr-2"></i>
+                                    참가신청서 다운로드
+                                </a>
+                                <div class="bg-gray-50 rounded-lg p-4 border-2 border-dashed border-gray-300">
+                                    <div class="text-center">
+                                        <i class="ri-upload-cloud-2-line text-4xl text-gray-400 mb-2"></i>
+                                        <h3 class="text-lg font-medium text-gray-900 mb-1">서류 제출하기</h3>
+                                        <p class="text-sm text-gray-500 mb-3">참가신청서를 작성하신 후 PDF 또는 이미지 파일로 업로드해주세요</p>
+                                        <div class="flex items-center justify-center">
+                                            <label for="fileUpload" class="cursor-pointer inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
+                                                <i class="ri-upload-2-line mr-2"></i>
+                                                파일 선택
+                                                <input type="file" id="fileUpload" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.hwp,.hwpx">
+                                            </label>
+                                        </div>
+                                        <p id="selectedFileName" class="mt-2 text-sm text-gray-500"></p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="md:w-5/12">
@@ -258,7 +275,7 @@
                                         <label for="fileUpload" class="cursor-pointer inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
                                             <i class="ri-upload-2-line mr-2"></i>
                                             파일 선택
-                                            <input type="file" id="fileUpload" class="hidden" accept=".pdf,.jpg,.jpeg,.png">
+                                            <input type="file" id="fileUpload" class="hidden" accept=".pdf,.jpg,.jpeg,.png,.hwp,.hwpx">
                                         </label>
                                     </div>
                                     <p id="selectedFileName" class="mt-2 text-sm text-gray-500"></p>
