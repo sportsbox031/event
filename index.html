@@ -764,6 +764,7 @@
                         
                         // 디버깅을 위한 로그
                         console.log('파일 업로드 시작:', file.name, file.type);
+                        console.log('파일 크기:', file.size, 'bytes');
                         
                         // FormData 생성
                         const formData = new FormData();
@@ -779,12 +780,21 @@
                                 body: formData
                             });
                             
+                            // 응답 상태 로깅
+                            console.log('응답 상태:', response.status);
+                            console.log('응답 헤더:', Object.fromEntries(response.headers.entries()));
+                            
                             // no-cors 모드에서는 response를 직접 확인할 수 없으므로
                             // 성공으로 간주하고 사용자에게 알림
                             uploadStatus.textContent = '파일이 성공적으로 업로드되었습니다.';
                             uploadStatus.style.color = 'green';
                             documentUpload.value = '';
                             document.getElementById('selectedDocumentName').textContent = '';
+                            
+                            // 3초 후 상태 메시지 제거
+                            setTimeout(() => {
+                                uploadStatus.textContent = '';
+                            }, 3000);
                             
                         } catch (error) {
                             console.error('업로드 오류:', error);
