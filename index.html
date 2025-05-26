@@ -764,36 +764,45 @@
                   // 디버깅을 위한 로그
                   console.log('파일 업로드 시작:', file.name, file.type);
                   
-                  // FormData 생성
+                  // XMLHttpRequest 사용
+                  const xhr = new XMLHttpRequest();
                   const formData = new FormData();
                   formData.append('file', file);
                   formData.append('fileName', file.name);
                   formData.append('fileType', file.type);
                   
-                  // fetch를 사용하여 파일 업로드
-                  fetch('https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec', {
-                    method: 'POST',
-                    body: formData,
-                    mode: 'cors'
-                  })
-                  .then(response => response.json())
-                  .then(result => {
-                    console.log('서버 응답:', result);
-                    if (result.result === 'success') {
-                      alert('파일이 성공적으로 업로드되었습니다.');
-                      documentUpload.value = '';
-                      document.getElementById('selectedDocumentName').textContent = '';
+                  xhr.open('POST', 'https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec', true);
+                  
+                  xhr.onload = function() {
+                    if (xhr.status === 200) {
+                      try {
+                        const result = JSON.parse(xhr.responseText);
+                        console.log('서버 응답:', result);
+                        if (result.result === 'success') {
+                          alert('파일이 성공적으로 업로드되었습니다.');
+                          documentUpload.value = '';
+                          document.getElementById('selectedDocumentName').textContent = '';
+                        } else {
+                          alert(result.message || '업로드 실패');
+                        }
+                      } catch (e) {
+                        console.error('응답 처리 오류:', e);
+                        alert('서버 응답 처리 중 오류가 발생했습니다.');
+                      }
                     } else {
-                      alert(result.message || '업로드 실패');
+                      console.error('업로드 오류:', xhr.status);
+                      alert('파일 업로드 중 오류가 발생했습니다.');
                     }
-                  })
-                  .catch(error => {
-                    console.error('업로드 오류:', error);
-                    alert('파일 업로드 중 오류가 발생했습니다.');
-                  })
-                  .finally(() => {
                     if (loadingIndicator) loadingIndicator.classList.add('hidden');
-                  });
+                  };
+                  
+                  xhr.onerror = function() {
+                    console.error('업로드 오류 발생');
+                    alert('파일 업로드 중 오류가 발생했습니다.');
+                    if (loadingIndicator) loadingIndicator.classList.add('hidden');
+                  };
+                  
+                  xhr.send(formData);
                 }
               });
             }
