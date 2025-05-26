@@ -783,11 +783,9 @@
                                 const response = await fetch('https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec', {
                                     method: 'POST',
                                     headers: {
-                                        'Content-Type': 'application/json',
-                                        'Accept': 'application/json'
+                                        'Content-Type': 'application/json'
                                     },
                                     mode: 'cors',
-                                    credentials: 'include',
                                     body: JSON.stringify(requestData)
                                 });
                                 
