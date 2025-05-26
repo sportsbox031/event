@@ -831,8 +831,6 @@
                         '선택한 날짜': document.getElementById('selectedDate').value
                     };
                     
-                    console.log('폼 데이터:', formData); // 디버깅용 로그
-                        
                     // Google Apps Script 웹앱 URL
                     const scriptURL = 'https://script.google.com/macros/s/AKfycbz7-TSzBeFQDoc9iKP7kR-x2tSt07ml_VmsxyA_hKKpVtW9CutxBaedyLfpkCOzaWKP/exec';
                     
@@ -866,6 +864,43 @@
                         alert('제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.');
                         submitButton.disabled = false;
                     });
+                }
+            });
+            
+            // 파일 업로드 처리
+            document.getElementById('fileUpload').addEventListener('change', async function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    document.getElementById('selectedFileName').textContent = `선택된 파일: ${file.name}`;
+                    
+                    try {
+                        const formData = new FormData();
+                        formData.append('file', file);
+                        formData.append('action', 'uploadFile');
+                        
+                        // 로딩 인디케이터 표시
+                        const loadingIndicator = document.getElementById('loadingIndicator');
+                        if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+                        
+                        const response = await fetch('https://script.google.com/macros/s/AKfycbz7-TSzBeFQDoc9iKP7kR-x2tSt07ml_VmsxyA_hKKpVtW9CutxBaedyLfpkCOzaWKP/exec', {
+                            method: 'POST',
+                            body: formData
+                        });
+                        
+                        if (response.ok) {
+                            alert('파일이 성공적으로 업로드되었습니다.');
+                            // 파일 선택 초기화
+                            e.target.value = '';
+                            document.getElementById('selectedFileName').textContent = '';
+                        } else {
+                            throw new Error('파일 업로드 실패');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('파일 업로드 중 오류가 발생했습니다.');
+                    } finally {
+                        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+                    }
                 }
             });
             
