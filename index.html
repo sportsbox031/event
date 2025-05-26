@@ -71,6 +71,10 @@
                 form.append('file', file);
                 form.append('action', 'uploadFile');
 
+                // 로딩 인디케이터 표시
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+
                 // Google Apps Script를 통해 파일 업로드
                 const response = await fetch('https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec', {
                     method: 'POST',
@@ -79,21 +83,36 @@
 
                 if (response.ok) {
                     alert('파일이 성공적으로 업로드되었습니다.');
+                    // 파일 선택 초기화
+                    const fileInput = document.getElementById('fileUpload');
+                    if (fileInput) {
+                        fileInput.value = '';
+                        document.getElementById('selectedFileName').textContent = '';
+                    }
                 } else {
                     throw new Error('파일 업로드 실패');
                 }
             } catch (error) {
                 console.error('Error:', error);
                 alert('파일 업로드 중 오류가 발생했습니다.');
+            } finally {
+                // 로딩 인디케이터 숨기기
+                const loadingIndicator = document.getElementById('loadingIndicator');
+                if (loadingIndicator) loadingIndicator.classList.add('hidden');
             }
         }
 
-        // 파일 선택 이벤트 처리
-        document.getElementById('fileUpload').addEventListener('change', function(e) {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('selectedFileName').textContent = `선택된 파일: ${file.name}`;
-                handleFileUpload(file);
+        // DOM이 로드된 후에 이벤트 리스너 추가
+        document.addEventListener('DOMContentLoaded', function() {
+            const fileUpload = document.getElementById('fileUpload');
+            if (fileUpload) {
+                fileUpload.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (file) {
+                        document.getElementById('selectedFileName').textContent = `선택된 파일: ${file.name}`;
+                        handleFileUpload(file);
+                    }
+                });
             }
         });
     </script>
@@ -148,7 +167,7 @@
                                     <div class="text-center">
                                         <i class="ri-upload-cloud-2-line text-4xl text-gray-400 mb-3"></i>
                                         <h3 class="text-lg font-medium text-gray-900 mb-2">서류 제출하기</h3>
-                                        <p class="text-sm text-gray-500 mb-4">참가신청서를 작성하신 후 PDF 또는 이미지 파일로 업로드해주세요</p>
+                                        <p class="text-sm text-gray-500 mb-4">참가신청서를 작성하신 후 업로드해주세요</p>
                                         <div class="flex items-center justify-center">
                                             <label for="fileUpload" class="cursor-pointer inline-flex items-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
                                                 <i class="ri-upload-2-line mr-2"></i>
