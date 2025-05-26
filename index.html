@@ -769,19 +769,19 @@
                   // 디버깅을 위한 로그
                   console.log('파일 업로드 시작:', file.name, file.type);
                   
-                  fetch('https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec', {
-                    method: 'POST',
-                    mode: 'no-cors',
-                    body: form
-                  })
-                  .then(response => {
-                    console.log('응답 상태:', response.status);
-                    return response.text();
-                  })
-                  .then(text => {
-                    console.log('서버 응답:', text);
+                  // 구글 앱스 스크립트 URL
+                  const scriptURL = 'https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec';
+                  
+                  // XMLHttpRequest를 사용하여 파일 업로드
+                  const xhr = new XMLHttpRequest();
+                  xhr.open('POST', scriptURL, true);
+                  
+                  xhr.onload = function() {
+                    console.log('응답 상태:', xhr.status);
+                    console.log('응답 텍스트:', xhr.responseText);
+                    
                     try {
-                      const result = JSON.parse(text);
+                      const result = JSON.parse(xhr.responseText);
                       if (result.result === 'success') {
                         alert('파일이 성공적으로 업로드되었습니다.');
                         documentUpload.value = '';
@@ -793,14 +793,17 @@
                       console.error('JSON 파싱 오류:', e);
                       alert('서버 응답 처리 중 오류가 발생했습니다.');
                     }
-                  })
-                  .catch(err => {
-                    console.error('업로드 오류:', err);
-                    alert('업로드 중 오류가 발생했습니다.');
-                  })
-                  .finally(() => {
+                    
                     if (loadingIndicator) loadingIndicator.classList.add('hidden');
-                  });
+                  };
+                  
+                  xhr.onerror = function() {
+                    console.error('업로드 오류 발생');
+                    alert('업로드 중 오류가 발생했습니다.');
+                    if (loadingIndicator) loadingIndicator.classList.add('hidden');
+                  };
+                  
+                  xhr.send(form);
                 }
               });
             }
