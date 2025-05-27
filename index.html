@@ -492,8 +492,10 @@
             fetch(`${scriptURL}?action=getStatus`, {
                 method: 'GET',
                 mode: 'cors',
+                credentials: 'omit',
                 headers: {
-                    'Accept': 'application/json'
+                    'Accept': 'application/json',
+                    'Origin': 'https://sportsbox031.github.io'
                 }
             })
             .then(response => {
