@@ -489,48 +489,58 @@
         function checkReservationStatus() {
             const scriptURL = 'https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec';
             
-            fetch(`${scriptURL}?action=getStatus`)
-                .then(response => response.json())
-                .then(data => {
-                    const statusText = document.getElementById('statusText');
-                    const statusDisplay = document.getElementById('reservationStatusDisplay');
-                    const calendarDays = document.querySelectorAll('.calendar-day');
-                    const submitButton = document.getElementById('submitButton');
+            fetch(`${scriptURL}?action=getStatus`, {
+                method: 'GET',
+                mode: 'cors',
+                headers: {
+                    'Accept': 'application/json'
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const statusText = document.getElementById('statusText');
+                const statusDisplay = document.getElementById('reservationStatusDisplay');
+                const calendarDays = document.querySelectorAll('.calendar-day');
+                const submitButton = document.getElementById('submitButton');
+                
+                if (data.result === 'success') {
+                    const isOpen = data.status === 'open';
                     
-                    if (data.result === 'success') {
-                        const isOpen = data.status === 'open';
-                        
-                        // 상태 텍스트 업데이트
-                        statusText.textContent = isOpen ? '예약 진행 중' : '예약 중지';
-                        statusDisplay.className = `mb-4 p-3 rounded-lg text-center ${isOpen ? 'bg-green-100' : 'bg-red-100'}`;
-                        
-                        // 캘린더와 제출 버튼 상태 업데이트
-                        calendarDays.forEach(day => {
-                            day.style.pointerEvents = isOpen ? 'auto' : 'none';
-                            day.style.opacity = isOpen ? '1' : '0.5';
-                            if (!isOpen) {
-                                day.title = '현재 예약이 중지되었습니다.';
-                            } else {
-                                day.title = '';
-                            }
-                        });
-                        
-                        submitButton.disabled = !isOpen;
+                    // 상태 텍스트 업데이트
+                    statusText.textContent = isOpen ? '예약 진행 중' : '예약 중지';
+                    statusDisplay.className = `mb-4 p-3 rounded-lg text-center ${isOpen ? 'bg-green-100' : 'bg-red-100'}`;
+                    
+                    // 캘린더와 제출 버튼 상태 업데이트
+                    calendarDays.forEach(day => {
+                        day.style.pointerEvents = isOpen ? 'auto' : 'none';
+                        day.style.opacity = isOpen ? '1' : '0.5';
                         if (!isOpen) {
-                            submitButton.title = '현재 예약이 중지되었습니다.';
+                            day.title = '현재 예약이 중지되었습니다.';
                         } else {
-                            submitButton.title = '';
+                            day.title = '';
                         }
+                    });
+                    
+                    submitButton.disabled = !isOpen;
+                    if (!isOpen) {
+                        submitButton.title = '현재 예약이 중지되었습니다.';
+                    } else {
+                        submitButton.title = '';
                     }
-                })
-                .catch(error => {
-                    console.error('Error checking status:', error);
-                    // 오류 발생 시 상태 표시 업데이트
-                    const statusText = document.getElementById('statusText');
-                    const statusDisplay = document.getElementById('reservationStatusDisplay');
-                    statusText.textContent = '상태 확인 중 오류 발생';
-                    statusDisplay.className = 'mb-4 p-3 rounded-lg text-center bg-yellow-100';
-                });
+                }
+            })
+            .catch(error => {
+                console.error('Error checking status:', error);
+                const statusText = document.getElementById('statusText');
+                const statusDisplay = document.getElementById('reservationStatusDisplay');
+                statusText.textContent = '상태 확인 중 오류 발생';
+                statusDisplay.className = 'mb-4 p-3 rounded-lg text-center bg-yellow-100';
+            });
         }
 
         // 관리자 패널에서 상태 변경 시 메인 페이지 상태도 업데이트
@@ -755,16 +765,27 @@
                 documentUpload.addEventListener('change', async function(e) {
                     const file = e.target.files[0];
                     if (file) {
+                        // 파일 크기 제한 (10MB)
+                        if (file.size > 10 * 1024 * 1024) {
+                            uploadStatus.textContent = '파일 크기는 10MB를 초과할 수 없습니다.';
+                            uploadStatus.style.color = 'red';
+                            return;
+                        }
+
+                        // 파일 타입 검증
+                        const allowedTypes = ['application/pdf', 'image/jpeg', 'image/png', 'application/x-hwp', 'application/x-hwpx'];
+                        if (!allowedTypes.includes(file.type)) {
+                            uploadStatus.textContent = '지원하지 않는 파일 형식입니다.';
+                            uploadStatus.style.color = 'red';
+                            return;
+                        }
+
                         // 파일명 표시
                         document.getElementById('selectedDocumentName').textContent = `선택된 파일: ${file.name}`;
                         
                         // 로딩 인디케이터 표시
                         const loadingIndicator = document.getElementById('loadingIndicator');
                         if (loadingIndicator) loadingIndicator.classList.remove('hidden');
-                        
-                        // 디버깅을 위한 로그
-                        console.log('파일 업로드 시작:', file.name, file.type);
-                        console.log('파일 크기:', file.size, 'bytes');
                         
                         try {
                             // 파일을 base64로 변환
@@ -791,14 +812,8 @@
                                     body: JSON.stringify(requestData)
                                 });
                                 
-                                // 응답 상태 로깅
-                                console.log('응답 상태:', response.status);
-                                console.log('응답 헤더:', Object.fromEntries(response.headers.entries()));
-                                
                                 if (response.ok) {
                                     const result = await response.json();
-                                    console.log('업로드 결과:', result);
-                                    
                                     if (result.result === 'success') {
                                         uploadStatus.textContent = '파일이 성공적으로 업로드되었습니다.';
                                         uploadStatus.style.color = 'green';
@@ -829,15 +844,21 @@
                 });
             }
 
-            // 이벤트 신청 폼 제출 처리
+            // 폼 제출 처리 개선
             if (registrationForm) {
                 registrationForm.addEventListener('submit', async function(e) {
                     e.preventDefault();
                     
+                    // 중복 제출 방지
+                    const submitButton = document.getElementById('submitButton');
+                    if (submitButton.disabled) return;
+                    submitButton.disabled = true;
+
                     // 참가 인원에 대한 명시적 검증
                     const participantCount = parseInt(document.getElementById('participantCount').value);
                     if (isNaN(participantCount) || participantCount < 10) {
                         document.getElementById('lowParticipantModal').classList.remove('hidden');
+                        submitButton.disabled = false;
                         return;
                     }
 
@@ -846,19 +867,16 @@
                         const loadingIndicator = document.getElementById('loadingIndicator');
                         if (loadingIndicator) loadingIndicator.classList.remove('hidden');
                         
-                        const submitButton = document.getElementById('submitButton');
-                        submitButton.disabled = true;
-                        
-                        // 폼 데이터 수집
-                        const formData = {
-                            '단체명': document.getElementById('groupName').value,
-                            '담당자 성함': document.getElementById('managerName').value,
-                            '담당자 연락처': document.getElementById('contactNumber').value,
-                            '참가 인원': document.getElementById('participantCount').value,
-                            '선택한 날짜': document.getElementById('selectedDate').value
-                        };
-                        
                         try {
+                            // 폼 데이터 수집
+                            const formData = {
+                                '단체명': document.getElementById('groupName').value,
+                                '담당자 성함': document.getElementById('managerName').value,
+                                '담당자 연락처': document.getElementById('contactNumber').value,
+                                '참가 인원': document.getElementById('participantCount').value,
+                                '선택한 날짜': document.getElementById('selectedDate').value
+                            };
+                            
                             const response = await fetch('https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec', {
                                 method: 'POST',
                                 headers: {
@@ -877,7 +895,6 @@
                                 registrationForm.reset();
                                 const calendarDays = document.querySelectorAll('.calendar-day');
                                 calendarDays.forEach(day => day.classList.remove('selected'));
-                                submitButton.disabled = true;
                             } else {
                                 throw new Error(result.message || '신청 처리 중 오류가 발생했습니다.');
                             }
@@ -888,6 +905,8 @@
                             if (loadingIndicator) loadingIndicator.classList.add('hidden');
                             submitButton.disabled = false;
                         }
+                    } else {
+                        submitButton.disabled = false;
                     }
                 });
             }
