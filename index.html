@@ -487,98 +487,137 @@
     <script>
         // 예약 상태 확인 함수를 먼저 정의
         function checkReservationStatus() {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec';
+    const callbackName = 'handleStatusResponse' + Date.now();
+    
+    // 전역 콜백 함수 생성
+    window[callbackName] = function(data) {
+        try {
+            const statusText = document.getElementById('statusText');
+            const statusDisplay = document.getElementById('reservationStatusDisplay');
+            const calendarDays = document.querySelectorAll('.calendar-day');
+            const submitButton = document.getElementById('submitButton');
             
-            fetch(`${scriptURL}?action=getStatus`, {
-                method: 'GET',
-                mode: 'cors',
-                credentials: 'omit',
-                headers: {
-                    'Accept': 'application/json',
-                    'Origin': 'https://sportsbox031.github.io'
-                }
-            })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                const statusText = document.getElementById('statusText');
-                const statusDisplay = document.getElementById('reservationStatusDisplay');
-                const calendarDays = document.querySelectorAll('.calendar-day');
-                const submitButton = document.getElementById('submitButton');
+            if (data.result === 'success') {
+                const isOpen = data.status === 'open';
                 
-                if (data.result === 'success') {
-                    const isOpen = data.status === 'open';
-                    
-                    // 상태 텍스트 업데이트
-                    statusText.textContent = isOpen ? '예약 진행 중' : '예약 중지';
-                    statusDisplay.className = `mb-4 p-3 rounded-lg text-center ${isOpen ? 'bg-green-100' : 'bg-red-100'}`;
-                    
-                    // 캘린더와 제출 버튼 상태 업데이트
-                    calendarDays.forEach(day => {
-                        day.style.pointerEvents = isOpen ? 'auto' : 'none';
-                        day.style.opacity = isOpen ? '1' : '0.5';
-                        if (!isOpen) {
-                            day.title = '현재 예약이 중지되었습니다.';
-                        } else {
-                            day.title = '';
-                        }
-                    });
-                    
-                    submitButton.disabled = !isOpen;
+                // 상태 텍스트 업데이트
+                statusText.textContent = isOpen ? '예약 진행 중' : '예약 중지';
+                statusDisplay.className = `mb-4 p-3 rounded-lg text-center ${isOpen ? 'bg-green-100' : 'bg-red-100'}`;
+                
+                // 캘린더와 제출 버튼 상태 업데이트
+                calendarDays.forEach(day => {
+                    day.style.pointerEvents = isOpen ? 'auto' : 'none';
+                    day.style.opacity = isOpen ? '1' : '0.5';
                     if (!isOpen) {
-                        submitButton.title = '현재 예약이 중지되었습니다.';
+                        day.title = '현재 예약이 중지되었습니다.';
                     } else {
-                        submitButton.title = '';
+                        day.title = '';
                     }
+                });
+                
+                submitButton.disabled = !isOpen;
+                if (!isOpen) {
+                    submitButton.title = '현재 예약이 중지되었습니다.';
+                } else {
+                    submitButton.title = '';
                 }
-            })
-            .catch(error => {
-                console.error('Error checking status:', error);
-                const statusText = document.getElementById('statusText');
-                const statusDisplay = document.getElementById('reservationStatusDisplay');
-                statusText.textContent = '상태 확인 중 오류 발생';
-                statusDisplay.className = 'mb-4 p-3 rounded-lg text-center bg-yellow-100';
-            });
+            } else {
+                throw new Error('응답 오류');
+            }
+        } catch (error) {
+            console.error('Error processing status:', error);
+            const statusText = document.getElementById('statusText');
+            const statusDisplay = document.getElementById('reservationStatusDisplay');
+            if (statusText) statusText.textContent = '상태 확인 중 오류 발생';
+            if (statusDisplay) statusDisplay.className = 'mb-4 p-3 rounded-lg text-center bg-yellow-100';
+        } finally {
+            // 정리 작업
+            const script = document.getElementById('jsonp-script-' + callbackName);
+            if (script) {
+                script.remove();
+            }
+            delete window[callbackName];
         }
+    };
+    
+    // JSONP 스크립트 태그 생성
+    const script = document.createElement('script');
+    script.id = 'jsonp-script-' + callbackName;
+    script.src = `${scriptURL}?action=getStatus&callback=${callbackName}`;
+    script.onerror = function() {
+        console.error('JSONP 요청 실패');
+        const statusText = document.getElementById('statusText');
+        const statusDisplay = document.getElementById('reservationStatusDisplay');
+        if (statusText) statusText.textContent = '상태 확인 중 오류 발생';
+        if (statusDisplay) statusDisplay.className = 'mb-4 p-3 rounded-lg text-center bg-yellow-100';
+        
+        // 정리 작업
+        script.remove();
+        delete window[callbackName];
+    };
+    
+    document.head.appendChild(script);
+}
 
         // 관리자 패널에서 상태 변경 시 메인 페이지 상태도 업데이트
         function toggleReservation() {
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec';
-            
-            // 로딩 상태 표시
-            const statusDiv = document.getElementById('reservationStatus');
-            if (statusDiv) {
-                statusDiv.textContent = '처리 중...';
-                statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
-            }
-            
-            fetch(`${scriptURL}?action=toggleStatus`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.result === 'success') {
-                        // 메인 페이지의 예약 상태 먼저 업데이트
-                        checkReservationStatus();
-                        // 그 다음 관리자 패널 상태 업데이트
-                        setTimeout(() => {
-                            loadAdminData();
-                        }, 500);
-                    } else {
-                        alert(data.message || '상태 변경 중 오류가 발생했습니다.');
-                        if (data.message && data.message.includes('세션이 만료')) {
-                            closeAdminPanel();
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.error('Error:', error);
-                    alert('상태 변경 중 오류가 발생했습니다.');
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec';
+    const callbackName = 'toggleResponse' + Date.now();
+    
+    // 로딩 상태 표시
+    const statusDiv = document.getElementById('reservationStatus');
+    if (statusDiv) {
+        statusDiv.textContent = '처리 중...';
+        statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
+    }
+    
+    // 전역 콜백 함수 생성
+    window[callbackName] = function(data) {
+        try {
+            if (data.result === 'success') {
+                // 메인 페이지의 예약 상태 먼저 업데이트
+                checkReservationStatus();
+                // 그 다음 관리자 패널 상태 업데이트
+                setTimeout(() => {
                     loadAdminData();
-                });
+                }, 500);
+            } else {
+                alert(data.message || '상태 변경 중 오류가 발생했습니다.');
+                if (data.message && data.message.includes('세션이 만료')) {
+                    closeAdminPanel();
+                }
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('상태 변경 중 오류가 발생했습니다.');
+            loadAdminData();
+        } finally {
+            // 정리 작업
+            const script = document.getElementById('jsonp-script-' + callbackName);
+            if (script) {
+                script.remove();
+            }
+            delete window[callbackName];
         }
+    };
+    
+    // JSONP 스크립트 태그 생성
+    const script = document.createElement('script');
+    script.id = 'jsonp-script-' + callbackName;
+    script.src = `${scriptURL}?action=toggleStatus&callback=${callbackName}`;
+    script.onerror = function() {
+        console.error('JSONP 요청 실패');
+        alert('상태 변경 중 오류가 발생했습니다.');
+        loadAdminData();
+        
+        // 정리 작업
+        script.remove();
+        delete window[callbackName];
+    };
+    
+    document.head.appendChild(script);
+}
 
         function loadAdminData() {
             const scriptURL = 'https://script.google.com/macros/s/AKfycbxL__o6MiMhSMYd-gE95nZl7Rvw5_1FajXBzW3-JM8NuGta4yJAuUynjU4DEVZtw8j8/exec';
