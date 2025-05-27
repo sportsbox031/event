@@ -55,17 +55,18 @@
 </head>
 <body>
     <div class="min-h-screen flex flex-col">
-        <!-- 헤더/네비게이션 바 추가 -->
-<header class="bg-white shadow-sm py-4 px-4 md:px-8">
-    <div class="container mx-auto max-w-6xl flex items-center justify-between">
-        <a href="#" class="flex items-center">
-            <img src="https://raw.githubusercontent.com/sportsbox031/event/main/KakaoTalk_20250423_132034560.png" alt="스포츠박스 로고" class="h-12 w-auto">
-        </a>
-        <div class="text-right">
-            <span class="text-gray-700">문의: 031-250-0474~7</span>
-        </div>
-    </div>
-</header>
+        <!-- 헤더/네비게이션 바 -->
+        <header class="bg-white shadow-sm py-4 px-4 md:px-8">
+            <div class="container mx-auto max-w-6xl flex items-center justify-between">
+                <a href="#" class="flex items-center">
+                    <img src="https://raw.githubusercontent.com/sportsbox031/event/main/KakaoTalk_20250423_132034560.png" alt="스포츠박스 로고" class="h-12 w-auto">
+                </a>
+                <div class="text-right">
+                    <span class="text-gray-700">문의: 031-250-0474~7</span>
+                </div>
+            </div>
+        </header>
+
         <!-- Hero Section -->
         <div class="w-full bg-gradient-to-r from-blue-50 to-blue-100 py-16">
             <div class="container mx-auto px-4 md:px-8 max-w-6xl">
@@ -73,14 +74,17 @@
                     <div class="md:w-1/2 mb-8 md:mb-0">
                         <h1 class="text-4xl md:text-5xl font-bold text-gray-900 mb-4">스포츠박스 하계 이벤트</h1>
                         <p class="text-xl text-gray-700 mb-6">2025년 7월 7일 - 7월 9일</p>
-                        <!-- 예약 상태 표시 추가 -->
-                        <div id="reservationStatusDisplay" class="mb-4 p-3 rounded-lg text-center">
+                        
+                        <!-- 예약 상태 표시 -->
+                        <div id="reservationStatusDisplay" class="mb-6 p-3 rounded-lg text-center">
                             <div class="inline-flex items-center px-4 py-2 rounded-full">
                                 <span class="mr-2">예약 상태:</span>
                                 <span id="statusText" class="font-semibold">확인 중...</span>
                             </div>
                         </div>
-                        <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100">
+                        
+                        <!-- 이벤트 정보 -->
+                        <div class="bg-white rounded-lg p-4 shadow-sm border border-gray-100 mb-6">
                             <div class="flex items-center mb-2">
                                 <div class="w-8 h-8 flex items-center justify-center bg-primary rounded-full text-white mr-3">
                                     <i class="ri-user-line"></i>
@@ -93,47 +97,71 @@
                                 </div>
                                 <p class="text-gray-700">1차(7/7), 2차(7/8), 3차(7/9)</p>
                             </div>
-                            <div class="flex flex-col space-y-3 mt-4">
-                                <a href="https://raw.githubusercontent.com/sportsbox031/event/main/%EC%8A%A4%ED%8F%AC%EC%B8%A0%EB%B0%95%EC%8A%A4%20%EC%88%98%EC%83%81%ED%95%9C%EB%86%80%EC%9D%B4%20%EC%B0%B8%EA%B0%80%EC%8B%A0%EC%B2%AD%EC%84%9C.hwpx" 
-                                   class="inline-flex items-center justify-center px-4 py-2 bg-primary text-white rounded-lg hover:bg-blue-600 transition-colors duration-200">
-                                    <i class="ri-file-download-line mr-2"></i>
-                                    참가신청서 다운로드
-                                </a>
+                        </div>
+                    </div>
+                    <div class="md:w-5/12">
+                        <img src="https://raw.githubusercontent.com/sportsbox031/event/main/IMG_1463.JPG" alt="하계 이벤트 이미지" class="rounded-lg shadow-lg w-full h-auto object-cover object-center">
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 참가신청서 다운로드 및 서류 제출 안내 섹션 -->
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl py-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <!-- 참가신청서 다운로드 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <div class="w-8 h-8 flex items-center justify-center bg-green-100 text-green-600 rounded-full mr-3">
+                            <i class="ri-file-download-line"></i>
+                        </div>
+                        참가신청서 다운로드
+                    </h2>
+                    <p class="text-gray-600 mb-4">참가 신청을 위해 신청서를 다운로드하여 작성해주세요.</p>
+                    <a href="https://raw.githubusercontent.com/sportsbox031/event/main/%EC%8A%A4%ED%8F%AC%EC%B8%A0%EB%B0%95%EC%8A%A4%20%EC%88%98%EC%83%81%ED%95%9C%EB%86%80%EC%9D%B4%20%EC%B0%B8%EA%B0%80%EC%8B%A0%EC%B2%AD%EC%84%9C.hwpx" 
+                       class="w-full inline-flex items-center justify-center px-4 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors duration-200">
+                        <i class="ri-file-download-line mr-2"></i>
+                        신청서 다운로드
+                    </a>
+                </div>
+
+                <!-- 서류 제출 안내 -->
+                <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full mr-3">
+                            <i class="ri-mail-send-line"></i>
+                        </div>
+                        서류 제출 안내
+                    </h2>
+                    <p class="text-gray-600 mb-4">작성하신 참가신청서를 아래 방법으로 제출해주세요.</p>
+                    <div class="space-y-3">
+                        <div class="flex items-center p-3 bg-blue-50 rounded-lg">
+                            <div class="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full mr-3">
+                                <i class="ri-mail-line"></i>
                             </div>
-                            
-                            <!-- 서류 제출 안내 섹션 추가 -->
-                            <div class="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
-                                <h4 class="text-lg font-semibold text-gray-800 mb-3 flex items-center">
-                                    <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full mr-2">
-                                        <i class="ri-file-text-line"></i>
-                                    </div>
-                                    서류 제출 안내
-                                </h4>
-                                <div class="space-y-2 text-sm text-gray-700">
-                                    <div class="flex items-center">
-                                        <div class="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full mr-2">
-                                            <i class="ri-mail-line"></i>
-                                        </div>
-                                        <span><strong>이메일:</strong> p705321@ggsc.or.kr</span>
-                                    </div>
-                                    <div class="flex items-center">
-                                        <div class="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full mr-2">
-                                            <i class="ri-phone-line"></i>
-                                        </div>
-                                        <span><strong>전화:</strong> 031-250-0474~7</span>
-                                    </div>
-                                    <p class="text-center mt-3 p-3 bg-white rounded border text-gray-600">
-                                        참가신청서를 작성하신 후 <strong>이메일로 첨부하여 보내주세요.
-                                    </p>
-                                </div>
+                            <div>
+                                <p class="font-medium text-gray-800">이메일 제출</p>
+                                <p class="text-sm text-gray-600">p705321@ggsc.or.kr</p>
                             </div>
+                        </div>
+                        <div class="flex items-center p-3 bg-blue-50 rounded-lg">
+                            <div class="w-6 h-6 flex items-center justify-center bg-blue-100 text-blue-600 rounded-full mr-3">
+                                <i class="ri-phone-line"></i>
+                            </div>
+                            <div>
+                                <p class="font-medium text-gray-800">전화 문의</p>
+                                <p class="text-sm text-gray-600">031-250-0474~7</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
 
         <!-- Main Content -->
         <div class="container mx-auto px-4 md:px-8 max-w-6xl py-12">
             <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
-                <h2 class="text-2xl font-bold text-gray-800 mb-6">이벤트 신청하기</h2>
+                <h2 class="text-2xl font-bold text-gray-800 mb-6">온라인 신청하기</h2>
                 
                 <!-- Calendar Section -->
                 <div class="mb-8">
@@ -255,7 +283,7 @@
                                 </div>
                                 <input type="number" id="participantCount" name="participantCount" min="10" max="44" class="block w-full pl-10 pr-3 py-2.5 border border-gray-300 rounded text-gray-900 placeholder-gray-400 focus:ring-2 focus:ring-primary focus:ring-opacity-20" placeholder="참가 인원을 입력해주세요 (최소 10명)" required>
                             </div>
-                            <p class="text-sm text-gray-500 mt-1"><strong class="text-primary">인솔자 포함 최소 10명</strong>, 최대 44명</strong>까지 가능합니다</p>
+                            <p class="text-sm text-gray-500 mt-1"><strong class="text-primary">인솔자 포함 최소 10명</strong>, 최대 44명까지 가능합니다</p>
                             <p class="error-message text-sm text-red-500 mt-1 hidden">유효한 참가 인원을 입력해주세요 (10-44명)</p>
                         </div>
                     </div>
@@ -280,9 +308,11 @@
                     </div>
                 </form>
             </div>
+        </div>
             
-            <!-- Additional Information -->
-            <div class="mt-12 bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
+        <!-- Additional Information -->
+        <div class="container mx-auto px-4 md:px-8 max-w-6xl pb-12">
+            <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6 md:p-8">
                 <h2 class="text-2xl font-bold text-gray-800 mb-6">이벤트 안내사항</h2>
                 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
@@ -321,26 +351,27 @@
                         </ul>
                     </div>
                 
-                <div class="mt-8 p-4 bg-gray-50 rounded-lg">
-                    <h3 class="text-lg font-semibold text-gray-700 mb-2 flex items-center">
-                        <div class="w-6 h-6 flex items-center justify-center text-primary mr-2">
-                            <i class="ri-customer-service-2-line"></i>
-                        </div>
-                        문의 연락처
-                    </h3>
-                    <p class="text-gray-600">궁금한 사항은 아래 연락처로 문의해 주세요:</p>
-                    <div class="mt-2 flex flex-col sm:flex-row sm:space-x-6">
-                        <div class="flex items-center mt-2">
-                            <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-primary rounded-full mr-2">
-                                <i class="ri-phone-line"></i>
+                    <div class="mt-8 p-4 bg-gray-50 rounded-lg">
+                        <h3 class="text-lg font-semibold text-gray-700 mb-2 flex items-center">
+                            <div class="w-6 h-6 flex items-center justify-center text-primary mr-2">
+                                <i class="ri-customer-service-2-line"></i>
                             </div>
-                            <span class="text-gray-700">031-250-0474~7</span>
-                        </div>
-                        <div class="flex items-center mt-2">
-                            <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-primary rounded-full mr-2">
-                                <i class="ri-mail-line"></i>
+                            문의 연락처
+                        </h3>
+                        <p class="text-gray-600">궁금한 사항은 아래 연락처로 문의해 주세요:</p>
+                        <div class="mt-2 flex flex-col sm:flex-row sm:space-x-6">
+                            <div class="flex items-center mt-2">
+                                <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-primary rounded-full mr-2">
+                                    <i class="ri-phone-line"></i>
+                                </div>
+                                <span class="text-gray-700">031-250-0474~7</span>
                             </div>
-                            <span class="text-gray-700">p705321@ggsc.or.kr</span>
+                            <div class="flex items-center mt-2">
+                                <div class="w-8 h-8 flex items-center justify-center bg-blue-100 text-primary rounded-full mr-2">
+                                    <i class="ri-mail-line"></i>
+                                </div>
+                                <span class="text-gray-700">p705321@ggsc.or.kr</span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -415,21 +446,21 @@
     </div>
 
     <!-- Low Participant Count Modal -->
-<div id="lowParticipantModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
-    <div class="absolute inset-0 bg-black bg-opacity-50"></div>
-    <div class="bg-white rounded-lg p-8 max-w-md w-full relative z-10">
-        <div class="text-center">
-            <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <i class="ri-error-warning-line text-yellow-500 text-3xl"></i>
+    <div id="lowParticipantModal" class="fixed inset-0 flex items-center justify-center z-50 hidden">
+        <div class="absolute inset-0 bg-black bg-opacity-50"></div>
+        <div class="bg-white rounded-lg p-8 max-w-md w-full relative z-10">
+            <div class="text-center">
+                <div class="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="ri-error-warning-line text-yellow-500 text-3xl"></i>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-2">참가 인원 부족</h3>
+                <p class="text-gray-600 mb-6">참가 인원은 최소 10명 이상이어야 합니다.</p>
+                <button id="closeLowParticipantModal" class="px-6 py-2 bg-primary text-white font-medium rounded-button shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors whitespace-nowrap">
+                    확인
+                </button>
             </div>
-            <h3 class="text-xl font-bold text-gray-900 mb-2">참가 인원 부족</h3>
-            <p class="text-gray-600 mb-6">참가 인원은 최소 10명 이상이어야 합니다.</p>
-            <button id="closeLowParticipantModal" class="px-6 py-2 bg-primary text-white font-medium rounded-button shadow-sm hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors whitespace-nowrap">
-                확인
-            </button>
         </div>
     </div>
-</div>
 
     <!-- Admin Panel Modal -->
     <div id="adminPanel" class="fixed inset-0 flex items-center justify-center z-50 hidden">
@@ -485,140 +516,141 @@
     <script>
         // 예약 상태 확인 함수를 먼저 정의
         function checkReservationStatus() {
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzFRDLOlhtTfhG9JZPHBX6oxtAlyOQupgDhwN7Iy2SJVgW1uTpBIuVxGx4YgCEKbFOv/exec';
-    const callbackName = 'handleStatusResponse' + Date.now();
-    
-    // 전역 콜백 함수 생성
-    window[callbackName] = function(data) {
-        try {
-            const statusText = document.getElementById('statusText');
-            const statusDisplay = document.getElementById('reservationStatusDisplay');
-            const calendarDays = document.querySelectorAll('.calendar-day');
-            const submitButton = document.getElementById('submitButton');
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzFRDLOlhtTfhG9JZPHBX6oxtAlyOQupgDhwN7Iy2SJVgW1uTpBIuVxGx4YgCEKbFOv/exec';
+            const callbackName = 'handleStatusResponse' + Date.now();
             
-            if (data.result === 'success') {
-                const isOpen = data.status === 'open';
-                
-                // 상태 텍스트 업데이트
-                statusText.textContent = isOpen ? '예약 진행 중' : '예약 중지';
-                statusDisplay.className = `mb-4 p-3 rounded-lg text-center ${isOpen ? 'bg-green-100' : 'bg-red-100'}`;
-                
-                // 캘린더와 제출 버튼 상태 업데이트
-                calendarDays.forEach(day => {
-                    day.style.pointerEvents = isOpen ? 'auto' : 'none';
-                    day.style.opacity = isOpen ? '1' : '0.5';
-                    if (!isOpen) {
-                        day.title = '현재 예약이 중지되었습니다.';
+            // 전역 콜백 함수 생성
+            window[callbackName] = function(data) {
+                try {
+                    const statusText = document.getElementById('statusText');
+                    const statusDisplay = document.getElementById('reservationStatusDisplay');
+                    const calendarDays = document.querySelectorAll('.calendar-day');
+                    const submitButton = document.getElementById('submitButton');
+                    
+                    if (data.result === 'success') {
+                        const isOpen = data.status === 'open';
+                        
+                        // 상태 텍스트 업데이트
+                        statusText.textContent = isOpen ? '예약 진행 중' : '예약 중지';
+                        statusDisplay.className = `mb-6 p-3 rounded-lg text-center ${isOpen ? 'bg-green-100' : 'bg-red-100'}`;
+                        
+                        // 캘린더와 제출 버튼 상태 업데이트
+                        calendarDays.forEach(day => {
+                            day.style.pointerEvents = isOpen ? 'auto' : 'none';
+                            day.style.opacity = isOpen ? '1' : '0.5';
+                            if (!isOpen) {
+                                day.title = '현재 예약이 중지되었습니다.';
+                            } else {
+                                day.title = '';
+                            }
+                        });
+                        
+                        submitButton.disabled = !isOpen;
+                        if (!isOpen) {
+                            submitButton.title = '현재 예약이 중지되었습니다.';
+                        } else {
+                            submitButton.title = '';
+                        }
                     } else {
-                        day.title = '';
+                        throw new Error('응답 오류');
                     }
-                });
-                
-                submitButton.disabled = !isOpen;
-                if (!isOpen) {
-                    submitButton.title = '현재 예약이 중지되었습니다.';
-                } else {
-                    submitButton.title = '';
+                } catch (error) {
+                    console.error('Error processing status:', error);
+                    const statusText = document.getElementById('statusText');
+                    const statusDisplay = document.getElementById('reservationStatusDisplay');
+                    if (statusText) statusText.textContent = '상태 확인 중 오류 발생';
+                    if (statusDisplay) statusDisplay.className = 'mb-6 p-3 rounded-lg text-center bg-yellow-100';
+                } finally {
+                    // 정리 작업
+                    const script = document.getElementById('jsonp-script-' + callbackName);
+                    if (script) {
+                        script.remove();
+                    }
+                    delete window[callbackName];
                 }
-            } else {
-                throw new Error('응답 오류');
-            }
-        } catch (error) {
-            console.error('Error processing status:', error);
-            const statusText = document.getElementById('statusText');
-            const statusDisplay = document.getElementById('reservationStatusDisplay');
-            if (statusText) statusText.textContent = '상태 확인 중 오류 발생';
-            if (statusDisplay) statusDisplay.className = 'mb-4 p-3 rounded-lg text-center bg-yellow-100';
-        } finally {
-            // 정리 작업
-            const script = document.getElementById('jsonp-script-' + callbackName);
-            if (script) {
+            };
+            
+            // JSONP 스크립트 태그 생성
+            const script = document.createElement('script');
+            script.id = 'jsonp-script-' + callbackName;
+            script.src = `${scriptURL}?action=getStatus&callback=${callbackName}`;
+            script.onerror = function() {
+                console.error('JSONP 요청 실패');
+                const statusText = document.getElementById('statusText');
+                const statusDisplay = document.getElementById('reservationStatusDisplay');
+                if (statusText) statusText.textContent = '상태 확인 중 오류 발생';
+                if (statusDisplay) statusDisplay.className = 'mb-6 p-3 rounded-lg text-center bg-yellow-100';
+                
+                // 정리 작업
                 script.remove();
-            }
-            delete window[callbackName];
+                delete window[callbackName];
+            };
+            
+            document.head.appendChild(script);
         }
-    };
-    
-    // JSONP 스크립트 태그 생성
-    const script = document.createElement('script');
-    script.id = 'jsonp-script-' + callbackName;
-    script.src = `${scriptURL}?action=getStatus&callback=${callbackName}`;
-    script.onerror = function() {
-        console.error('JSONP 요청 실패');
-        const statusText = document.getElementById('statusText');
-        const statusDisplay = document.getElementById('reservationStatusDisplay');
-        if (statusText) statusText.textContent = '상태 확인 중 오류 발생';
-        if (statusDisplay) statusDisplay.className = 'mb-4 p-3 rounded-lg text-center bg-yellow-100';
-        
-        // 정리 작업
-        script.remove();
-        delete window[callbackName];
-    };
-    
-    document.head.appendChild(script);
-}
 
         // 관리자 패널에서 상태 변경 시 메인 페이지 상태도 업데이트
         function toggleReservation() {
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbzFRDLOlhtTfhG9JZPHBX6oxtAlyOQupgDhwN7Iy2SJVgW1uTpBIuVxGx4YgCEKbFOv/exec';
-    const callbackName = 'toggleResponse' + Date.now();
-    
-    // 로딩 상태 표시
-    const statusDiv = document.getElementById('reservationStatus');
-    if (statusDiv) {
-        statusDiv.textContent = '처리 중...';
-        statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
-    }
-    
-    // 전역 콜백 함수 생성
-    window[callbackName] = function(data) {
-        try {
-            if (data.result === 'success') {
-                // 메인 페이지의 예약 상태 먼저 업데이트
-                checkReservationStatus();
-                // 그 다음 관리자 패널 상태 업데이트
-                setTimeout(() => {
+            const scriptURL = 'https://script.google.com/macros/s/AKfycbzFRDLOlhtTfhG9JZPHBX6oxtAlyOQupgDhwN7Iy2SJVgW1uTpBIuVxGx4YgCEKbFOv/exec';
+            const callbackName = 'toggleResponse' + Date.now();
+            
+            // 로딩 상태 표시
+            const statusDiv = document.getElementById('reservationStatus');
+            if (statusDiv) {
+                statusDiv.textContent = '처리 중...';
+                statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
+            }
+            
+            // 전역 콜백 함수 생성
+            window[callbackName] = function(data) {
+                try {
+                    if (data.result === 'success') {
+                        // 메인 페이지의 예약 상태 먼저 업데이트
+                        checkReservationStatus();
+                        // 그 다음 관리자 패널 상태 업데이트
+                        setTimeout(() => {
+                            loadAdminData();
+                        }, 500);
+                    } else {
+                        alert(data.message || '상태 변경 중 오류가 발생했습니다.');
+                        if (data.message && data.message.includes('세션이 만료')) {
+                            closeAdminPanel();
+                        }
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('상태 변경 중 오류가 발생했습니다.');
                     loadAdminData();
-                }, 500);
-            } else {
-                alert(data.message || '상태 변경 중 오류가 발생했습니다.');
-                if (data.message && data.message.includes('세션이 만료')) {
-                    closeAdminPanel();
+                } finally {
+                    // 정리 작업
+                    const script = document.getElementById('jsonp-script-' + callbackName);
+                    if (script) {
+                        script.remove();
+                    }
+                    delete window[callbackName];
                 }
-            }
-        } catch (error) {
-            console.error('Error:', error);
-            alert('상태 변경 중 오류가 발생했습니다.');
-            loadAdminData();
-        } finally {
-            // 정리 작업
-            const script = document.getElementById('jsonp-script-' + callbackName);
-            if (script) {
+            };
+            
+            // JSONP 스크립트 태그 생성
+            const script = document.createElement('script');
+            script.id = 'jsonp-script-' + callbackName;
+            script.src = `${scriptURL}?action=toggleStatus&callback=${callbackName}`;
+            script.onerror = function() {
+                console.error('JSONP 요청 실패');
+                alert('상태 변경 중 오류가 발생했습니다.');
+                loadAdminData();
+                
+                // 정리 작업
                 script.remove();
-            }
-            delete window[callbackName];
+                delete window[callbackName];
+            };
+            
+            document.head.appendChild(script);
         }
-    };
-    
-    // JSONP 스크립트 태그 생성
-    const script = document.createElement('script');
-    script.id = 'jsonp-script-' + callbackName;
-    script.src = `${scriptURL}?action=toggleStatus&callback=${callbackName}`;
-    script.onerror = function() {
-        console.error('JSONP 요청 실패');
-        alert('상태 변경 중 오류가 발생했습니다.');
-        loadAdminData();
-        
-        // 정리 작업
-        script.remove();
-        delete window[callbackName];
-    };
-    
-    document.head.appendChild(script);
-}
 
         function loadAdminData() {
             const scriptURL = 'https://script.google.com/macros/s/AKfycbzFRDLOlhtTfhG9JZPHBX6oxtAlyOQupgDhwN7Iy2SJVgW1uTpBIuVxGx4YgCEKbFOv/exec';
+            const callbackName = 'loadAdminResponse' + Date.now();
             
             // 로딩 상태 표시
             const statusDiv = document.getElementById('reservationStatus');
@@ -627,9 +659,9 @@
                 statusDiv.className = 'text-center p-2 rounded mb-3 bg-gray-100 text-gray-700';
             }
             
-            fetch(`${scriptURL}?action=getStatus`)
-                .then(response => response.json())
-                .then(data => {
+            // 전역 콜백 함수 생성
+            window[callbackName] = function(data) {
+                try {
                     if (data.result === 'success') {
                         if (statusDiv) {
                             statusDiv.textContent = `현재 상태: ${data.status === 'open' ? '예약 진행 중' : '예약 중지'}`;
@@ -644,14 +676,39 @@
                             closeAdminPanel();
                         }
                     }
-                })
-                .catch(error => {
+                } catch (error) {
                     console.error('Error loading status:', error);
                     if (statusDiv) {
                         statusDiv.textContent = '상태를 불러오는 중 오류가 발생했습니다.';
                         statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
                     }
-                });
+                } finally {
+                    // 정리 작업
+                    const script = document.getElementById('jsonp-script-' + callbackName);
+                    if (script) {
+                        script.remove();
+                    }
+                    delete window[callbackName];
+                }
+            };
+            
+            // JSONP 스크립트 태그 생성
+            const script = document.createElement('script');
+            script.id = 'jsonp-script-' + callbackName;
+            script.src = `${scriptURL}?action=getStatus&callback=${callbackName}`;
+            script.onerror = function() {
+                console.error('JSONP 요청 실패');
+                if (statusDiv) {
+                    statusDiv.textContent = '상태를 불러오는 중 오류가 발생했습니다.';
+                    statusDiv.className = 'text-center p-2 rounded mb-3 bg-red-100 text-red-700';
+                }
+                
+                // 정리 작업
+                script.remove();
+                delete window[callbackName];
+            };
+            
+            document.head.appendChild(script);
         }
 
         document.addEventListener('DOMContentLoaded', function() {
@@ -796,6 +853,84 @@
                 });
             }
 
+            // 폼 제출 처리 개선
+            if (registrationForm) {
+                registrationForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    
+                    // 중복 제출 방지
+                    const submitButton = document.getElementById('submitButton');
+                    if (submitButton.disabled) return;
+                    submitButton.disabled = true;
+
+                    // 참가 인원에 대한 명시적 검증
+                    const participantCount = parseInt(document.getElementById('participantCount').value);
+                    if (isNaN(participantCount) || participantCount < 10) {
+                        document.getElementById('lowParticipantModal').classList.remove('hidden');
+                        submitButton.disabled = false;
+                        return;
+                    }
+
+                    if (validateForm()) {
+                        // 로딩 인디케이터 표시
+                        const loadingIndicator = document.getElementById('loadingIndicator');
+                        if (loadingIndicator) loadingIndicator.classList.remove('hidden');
+                        
+                        try {
+                            // 폼 데이터 수집
+                            const formData = {
+                                '단체명': document.getElementById('groupName').value,
+                                '담당자 성함': document.getElementById('managerName').value,
+                                '담당자 연락처': document.getElementById('contactNumber').value,
+                                '참가 인원': document.getElementById('participantCount').value,
+                                '선택한 날짜': document.getElementById('selectedDate').value
+                            };
+                            
+                            const response = await fetch('https://script.google.com/macros/s/AKfycbzFRDLOlhtTfhG9JZPHBX6oxtAlyOQupgDhwN7Iy2SJVgW1uTpBIuVxGx4YgCEKbFOv/exec', {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/x-www-form-urlencoded',
+                                },
+                                body: new URLSearchParams(formData).toString()
+                            });
+
+                            const result = await response.json();
+                            
+                            if (result.result === 'success') {
+                                const successModal = document.getElementById('successModal');
+                                if (successModal) successModal.classList.remove('hidden');
+                                
+                                // 폼 초기화
+                                registrationForm.reset();
+                                const calendarDays = document.querySelectorAll('.calendar-day');
+                                calendarDays.forEach(day => day.classList.remove('selected'));
+                            } else {
+                                throw new Error(result.message || '신청 처리 중 오류가 발생했습니다.');
+                            }
+                        } catch (error) {
+                            console.error('Error:', error);
+                            alert('신청 처리 중 오류가 발생했습니다: ' + error.message);
+                        } finally {
+                            if (loadingIndicator) loadingIndicator.classList.add('hidden');
+                            submitButton.disabled = false;
+                        }
+                    } else {
+                        submitButton.disabled = false;
+                    }
+                });
+            }
+            
+            // Close success modal
+            closeSuccessModal.addEventListener('click', function() {
+                successModal.classList.add('hidden');
+            });
+            
+            // Close duplicate modal
+            closeDuplicateModal.addEventListener('click', function() {
+                duplicateModal.classList.add('hidden');
+            });
+        });
+
         // 관리자 패널 관련 함수들
         function showAdminPanel() {
             document.getElementById('adminPanel').classList.remove('hidden');
@@ -880,35 +1015,6 @@
                 });
         }
 
-        function addAdmin() {
-            const email = document.getElementById('newAdminEmail').value;
-            if (!email) {
-                alert('이메일 주소를 입력해주세요.');
-                return;
-            }
-
-            const scriptURL = 'https://script.google.com/macros/s/AKfycbzFRDLOlhtTfhG9JZPHBX6oxtAlyOQupgDhwN7Iy2SJVgW1uTpBIuVxGx4YgCEKbFOv/exec';
-            
-            fetch(`${scriptURL}?action=addAdmin&email=${encodeURIComponent(email)}`)
-                .then(response => response.json())
-                .then(() => {
-                    document.getElementById('newAdminEmail').value = '';
-                    loadAdminData();
-                });
-        }
-
-        function removeAdmin(email) {
-            if (confirm('정말로 이 관리자를 삭제하시겠습니까?')) {
-                const scriptURL = 'https://script.google.com/macros/s/AKfycbzFRDLOlhtTfhG9JZPHBX6oxtAlyOQupgDhwN7Iy2SJVgW1uTpBIuVxGx4YgCEKbFOv/exec';
-                
-                fetch(`${scriptURL}?action=removeAdmin&email=${encodeURIComponent(email)}`)
-                    .then(response => response.json())
-                    .then(() => {
-                        loadAdminData();
-                    });
-            }
-        }
-
         // 관리자 로그인 처리 수정
         document.getElementById('adminLoginBtn').addEventListener('click', function() {
             const email = prompt('관리자 이메일을 입력해주세요:');
@@ -916,37 +1022,63 @@
                 const password = prompt('비밀번호를 입력해주세요:');
                 if (password) {
                     const scriptURL = 'https://script.google.com/macros/s/AKfycbzFRDLOlhtTfhG9JZPHBX6oxtAlyOQupgDhwN7Iy2SJVgW1uTpBIuVxGx4YgCEKbFOv/exec';
+                    const callbackName = 'adminLoginResponse' + Date.now();
                     
                     // 로딩 상태 표시
                     const loadingIndicator = document.getElementById('loadingIndicator');
                     if (loadingIndicator) loadingIndicator.classList.remove('hidden');
                     
-                    // URL 파라미터 인코딩
-                    const params = new URLSearchParams({
-                        page: 'admin',
-                        email: email,
-                        password: password
-                    });
-                    
-                    fetch(`${scriptURL}?${params.toString()}`)
-                        .then(response => response.json())
-                        .then(data => {
+                    // 전역 콜백 함수 생성
+                    window[callbackName] = function(data) {
+                        try {
                             if (data.result === 'success') {
                                 showAdminPanel();
                             } else {
                                 alert(data.message || '로그인에 실패했습니다.');
                             }
-                        })
-                        .catch(error => {
+                        } catch (error) {
                             console.error('Error:', error);
                             alert('로그인 중 오류가 발생했습니다.');
-                        })
-                        .finally(() => {
+                        } finally {
                             if (loadingIndicator) loadingIndicator.classList.add('hidden');
-                        });
+                            
+                            // 정리 작업
+                            const script = document.getElementById('jsonp-script-' + callbackName);
+                            if (script) {
+                                script.remove();
+                            }
+                            delete window[callbackName];
+                        }
+                    };
+                    
+                    // JSONP 스크립트 태그 생성
+                    const script = document.createElement('script');
+                    script.id = 'jsonp-script-' + callbackName;
+                    
+                    // URL 파라미터 인코딩
+                    const params = new URLSearchParams({
+                        page: 'admin',
+                        email: email,
+                        password: password,
+                        callback: callbackName
+                    });
+                    
+                    script.src = `${scriptURL}?${params.toString()}`;
+                    script.onerror = function() {
+                        console.error('JSONP 요청 실패');
+                        alert('로그인 중 오류가 발생했습니다.');
+                        
+                        if (loadingIndicator) loadingIndicator.classList.add('hidden');
+                        
+                        // 정리 작업
+                        script.remove();
+                        delete window[callbackName];
+                    };
+                    
+                    document.head.appendChild(script);
                 }
             }
         });
     </script>
 </body>
-</html>
+</html>                                            
