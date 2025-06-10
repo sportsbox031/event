@@ -3172,6 +3172,7 @@ const noticeEditModalHTML = `
                     class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-400"></textarea>
             </div>
             
+            <!-- ⭐ 이 부분이 누락되어 있었습니다! ⭐ -->
             <!-- 첨부파일 필드 추가 -->
             <div>
                 <label class="block text-gray-700 text-sm font-bold mb-2">첨부파일</label>
@@ -3186,6 +3187,12 @@ const noticeEditModalHTML = `
                     <span id="editSelectedFileName" class="text-sm text-gray-600">선택된 파일 없음</span>
                 </div>
                 <p class="text-xs text-gray-500 mt-1">최대 파일 크기: 10MB (새 파일을 선택하지 않으면 기존 파일 유지)</p>
+                <!-- 기존 첨부파일 표시 영역 추가 -->
+                <div id="currentAttachmentInfo" class="mt-2 hidden">
+                    <p class="text-sm text-blue-600">
+                        현재 첨부파일: <span id="currentAttachmentName"></span>
+                    </p>
+                </div>
             </div>
             
             <div>
@@ -3225,7 +3232,6 @@ function editNotice() {
     // 현재 공지사항 정보 가져오기
     const notice = window.noticesData.find(n => n.id === window.currentNoticeId);
     if (!notice) {
-        // ID로 찾지 못한 경우 모든 공지사항 확인
         console.log('ID로 찾지 못함, 전체 데이터:', window.noticesData);
         showAlert('공지사항 정보를 찾을 수 없습니다.', 'error');
         return;
@@ -3237,12 +3243,27 @@ function editNotice() {
     document.getElementById('editNoticeRegion').value = notice.region || 'all';
     document.getElementById('editNoticeImportant').checked = notice.is_important === 1;
     
-    // ⭐ content_type 설정 추가 ⭐
+    // content_type 설정
     const contentTypeRadios = document.querySelectorAll('input[name="editContentType"]');
     const noticeContentType = notice.content_type || 'plain';
     contentTypeRadios.forEach(radio => {
         radio.checked = radio.value === noticeContentType;
     });
+    
+    // ⭐ 첨부파일 정보 표시 추가 ⭐
+    const currentAttachmentInfo = document.getElementById('currentAttachmentInfo');
+    const currentAttachmentName = document.getElementById('currentAttachmentName');
+    
+    if (notice.attachment_url && notice.attachment_name) {
+        currentAttachmentName.textContent = notice.attachment_name;
+        currentAttachmentInfo.classList.remove('hidden');
+    } else {
+        currentAttachmentInfo.classList.add('hidden');
+    }
+    
+    // 파일 선택 초기화
+    document.getElementById('editSelectedFileName').textContent = '선택된 파일 없음';
+    document.getElementById('editSelectedFileName').className = 'text-sm text-gray-600';
 
     // 공지사항 상세 모달 닫기
     document.getElementById('independentNoticeModal').style.display = 'none';
@@ -3637,25 +3658,51 @@ document.addEventListener('visibilitychange', function() {
     
     // 파일 선택 이벤트 리스너 추가
     setTimeout(() => {
-        const fileInput = document.getElementById('noticeFile');
-        if (fileInput) {
-            fileInput.addEventListener('change', function() {
-                const fileNameSpan = document.getElementById('selectedFileName');
-                if (this.files.length > 0) {
-                    const fileName = this.files[0].name;
-                    const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2); // MB 단위
-                    fileNameSpan.textContent = `${fileName} (${fileSize}MB)`;
-                    fileNameSpan.classList.remove('text-gray-600');
-                    fileNameSpan.classList.add('text-blue-600');
-                } else {
-                    fileNameSpan.textContent = '선택된 파일 없음';
-                    fileNameSpan.classList.remove('text-blue-600');
-                    fileNameSpan.classList.add('text-gray-600');
-                }
-            });
-        }
-    }, 2000);
-});
+    // 기존 공지사항 작성 모달 파일 선택 이벤트
+    const fileInput = document.getElementById('noticeFile');
+    if (fileInput) {
+        fileInput.addEventListener('change', function() {
+            const fileNameSpan = document.getElementById('selectedFileName');
+            if (this.files.length > 0) {
+                const fileName = this.files[0].name;
+                const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2); // MB 단위
+                fileNameSpan.textContent = `${fileName} (${fileSize}MB)`;
+                fileNameSpan.classList.remove('text-gray-600');
+                fileNameSpan.classList.add('text-blue-600');
+            } else {
+                fileNameSpan.textContent = '선택된 파일 없음';
+                fileNameSpan.classList.remove('text-blue-600');
+                fileNameSpan.classList.add('text-gray-600');
+            }
+        });
+    }
+    
+    // ⭐ 새로 추가: 수정 모달 파일 선택 이벤트 ⭐
+    const editFileInput = document.getElementById('editNoticeFile');
+    if (editFileInput) {
+        // 기존 이벤트 리스너 제거 (중복 방지)
+        const newEditFileInput = editFileInput.cloneNode(true);
+        editFileInput.parentNode.replaceChild(newEditFileInput, editFileInput);
+        
+        // 새 이벤트 리스너 추가
+        newEditFileInput.addEventListener('change', function() {
+            const fileNameSpan = document.getElementById('editSelectedFileName');
+            if (this.files.length > 0) {
+                const fileName = this.files[0].name;
+                const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2);
+                fileNameSpan.textContent = `${fileName} (${fileSize}MB)`;
+                fileNameSpan.classList.remove('text-gray-600');
+                fileNameSpan.classList.add('text-blue-600');
+            } else {
+                fileNameSpan.textContent = '선택된 파일 없음';
+                fileNameSpan.classList.remove('text-blue-600');
+                fileNameSpan.classList.add('text-gray-600');
+            }
+        });
+        
+        console.log('수정 모달 파일 선택 이벤트 리스너 추가됨');
+    }
+}, 2000);
 
 // 첨부파일 다운로드 링크 수정을 위한 주기적 확인
 setInterval(function() {
