@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440">
+  <defs>
+    <linearGradient id="skyGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#0D47A1"/>
+      <stop offset="100%" style="stop-color:#42A5F5"/>
+    </linearGradient>
+    <linearGradient id="snowMtn" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#fff"/>
+      <stop offset="100%" style="stop-color:#B0BEC5"/>
+    </linearGradient>
+  </defs>
+  <!-- Sky -->
+  <rect width="680" height="440" fill="url(#skyGrad)"/>
+  <!-- Snow particles -->
+  <circle cx="50" cy="30" r="3" fill="#fff" opacity="0.6"/>
+  <circle cx="150" cy="80" r="2" fill="#fff" opacity="0.5"/>
+  <circle cx="250" cy="50" r="3" fill="#fff" opacity="0.7"/>
+  <circle cx="350" cy="100" r="2" fill="#fff" opacity="0.4"/>
+  <circle cx="450" cy="40" r="3" fill="#fff" opacity="0.6"/>
+  <circle cx="550" cy="70" r="2" fill="#fff" opacity="0.5"/>
+  <circle cx="620" cy="110" r="3" fill="#fff" opacity="0.7"/>
+  <circle cx="100" cy="140" r="2" fill="#fff" opacity="0.4"/>
+  <circle cx="300" cy="160" r="3" fill="#fff" opacity="0.5"/>
+  <circle cx="500" cy="130" r="2" fill="#fff" opacity="0.6"/>
+  <circle cx="80" cy="200" r="2" fill="#fff" opacity="0.3"/>
+  <circle cx="200" cy="180" r="3" fill="#fff" opacity="0.5"/>
+  <circle cx="400" cy="170" r="2" fill="#fff" opacity="0.4"/>
+  <circle cx="580" cy="190" r="3" fill="#fff" opacity="0.6"/>
+  <!-- Mountains Background -->
+  <polygon points="0,300 80,140 200,220 300,100 420,200 500,130 600,210 680,160 680,440 0,440" fill="url(#snowMtn)" opacity="0.3"/>
+  <!-- Main Snow Mountain -->
+  <polygon points="0,440 0,280 160,160 340,240 500,120 680,220 680,440" fill="#E3F2FD"/>
+  <polygon points="0,440 0,300 160,180 340,260 500,140 680,240 680,440" fill="#fff"/>
+  <!-- Ski slope line -->
+  <path d="M500,140 Q520,200 400,280 Q350,320 300,350 Q250,370 180,390" stroke="#90CAF5" stroke-width="3" fill="none" stroke-dasharray="8,4" opacity="0.6"/>
+  <!-- Trees -->
+  <g transform="translate(80,300)">
+    <polygon points="0,-40 15,0 -15,0" fill="#1B5E20"/>
+    <polygon points="0,-55 12,-20 -12,-20" fill="#2E7D32"/>
+    <polygon points="0,-68 10,-38 -10,-38" fill="#388E3C"/>
+    <rect x="-3" y="0" width="6" height="12" fill="#5D4037"/>
+  </g>
+  <g transform="translate(130,320)">
+    <polygon points="0,-35 12,0 -12,0" fill="#1B5E20"/>
+    <polygon points="0,-48 10,-18 -10,-18" fill="#2E7D32"/>
+    <rect x="-2" y="0" width="4" height="10" fill="#5D4037"/>
+  </g>
+  <g transform="translate(600,310)">
+    <polygon points="0,-40 15,0 -15,0" fill="#1B5E20"/>
+    <polygon points="0,-55 12,-20 -12,-20" fill="#2E7D32"/>
+    <polygon points="0,-68 10,-38 -10,-38" fill="#388E3C"/>
+    <rect x="-3" y="0" width="6" height="12" fill="#5D4037"/>
+  </g>
+  <g transform="translate(640,330)">
+    <polygon points="0,-30 10,0 -10,0" fill="#1B5E20"/>
+    <polygon points="0,-42 8,-15 -8,-15" fill="#2E7D32"/>
+    <rect x="-2" y="0" width="4" height="8" fill="#5D4037"/>
+  </g>
+  <!-- Skier -->
+  <g transform="translate(380,230) rotate(-15)">
+    <!-- Skis -->
+    <line x1="-25" y1="55" x2="30" y2="65" stroke="#F57F17" stroke-width="4" stroke-linecap="round"/>
+    <line x1="-20" y1="60" x2="35" y2="70" stroke="#F57F17" stroke-width="4" stroke-linecap="round"/>
+    <!-- Legs -->
+    <line x1="0" y1="30" x2="-10" y2="55" stroke="#0D47A1" stroke-width="7" stroke-linecap="round"/>
+    <line x1="5" y1="30" x2="10" y2="58" stroke="#0D47A1" stroke-width="7" stroke-linecap="round"/>
+    <!-- Body -->
+    <rect x="-8" y="0" width="22" height="32" fill="#E53935" rx="5"/>
+    <!-- Arms with poles -->
+    <line x1="-5" y1="10" x2="-35" y2="35" stroke="#E53935" stroke-width="5" stroke-linecap="round"/>
+    <line x1="14" y1="10" x2="40" y2="45" stroke="#E53935" stroke-width="5" stroke-linecap="round"/>
+    <!-- Ski poles -->
+    <line x1="-35" y1="35" x2="-40" y2="70" stroke="#666" stroke-width="2"/>
+    <line x1="40" y1="45" x2="45" y2="80" stroke="#666" stroke-width="2"/>
+    <circle cx="-40" cy="70" r="3" fill="#999"/>
+    <circle cx="45" cy="80" r="3" fill="#999"/>
+    <!-- Head -->
+    <circle cx="5" cy="-10" r="14" fill="#FFCC80"/>
+    <!-- Helmet -->
+    <path d="M-9,-14 Q-5,-28 19,-14" fill="#1565C0"/>
+    <rect x="-9" y="-16" width="28" height="5" fill="#0D47A1" rx="2"/>
+    <!-- Goggles -->
+    <rect x="-4" y="-12" width="18" height="7" fill="#FF6F00" rx="3" opacity="0.8"/>
+    <!-- Smile -->
+    <path d="M0,-3 Q5,2 10,-3" stroke="#5D4037" stroke-width="1.5" fill="none"/>
+  </g>
+  <!-- Snow spray effect -->
+  <g transform="translate(400,290)" opacity="0.6">
+    <circle cx="0" cy="0" r="4" fill="#fff"/>
+    <circle cx="10" cy="-5" r="3" fill="#fff"/>
+    <circle cx="-5" cy="5" r="3" fill="#fff"/>
+    <circle cx="15" cy="3" r="2" fill="#fff"/>
+    <circle cx="5" cy="8" r="2" fill="#fff"/>
+  </g>
+  <!-- Text -->
+  <text x="340" y="420" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold" fill="#fff" opacity="0.9">SKIING</text>
+</svg>

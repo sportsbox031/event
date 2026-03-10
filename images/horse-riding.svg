@@ -1,0 +1,82 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 440">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1b5e20"/>
+      <stop offset="100%" style="stop-color:#388e3c"/>
+    </linearGradient>
+    <linearGradient id="sun" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFD54F"/>
+      <stop offset="100%" style="stop-color:#FFA000"/>
+    </linearGradient>
+  </defs>
+  <!-- Background -->
+  <rect width="680" height="440" fill="url(#bg)"/>
+  <!-- Sky area -->
+  <rect width="680" height="280" fill="#81D4FA" opacity="0.3" rx="0"/>
+  <!-- Sun -->
+  <circle cx="580" cy="80" r="50" fill="url(#sun)" opacity="0.8"/>
+  <!-- Mountains -->
+  <polygon points="0,280 120,160 240,280" fill="#2E7D32" opacity="0.5"/>
+  <polygon points="160,280 320,120 480,280" fill="#1B5E20" opacity="0.4"/>
+  <polygon points="400,280 560,180 680,280" fill="#2E7D32" opacity="0.3"/>
+  <!-- Ground -->
+  <rect y="280" width="680" height="160" fill="#33691E" opacity="0.6"/>
+  <ellipse cx="340" cy="290" rx="380" ry="30" fill="#4CAF50" opacity="0.4"/>
+  <!-- Fence -->
+  <line x1="40" y1="310" x2="640" y2="310" stroke="#8D6E63" stroke-width="4"/>
+  <line x1="40" y1="325" x2="640" y2="325" stroke="#8D6E63" stroke-width="3"/>
+  <rect x="60" y="295" width="6" height="40" fill="#795548" rx="2"/>
+  <rect x="160" y="295" width="6" height="40" fill="#795548" rx="2"/>
+  <rect x="260" y="295" width="6" height="40" fill="#795548" rx="2"/>
+  <rect x="360" y="295" width="6" height="40" fill="#795548" rx="2"/>
+  <rect x="460" y="295" width="6" height="40" fill="#795548" rx="2"/>
+  <rect x="560" y="295" width="6" height="40" fill="#795548" rx="2"/>
+  <!-- Horse body -->
+  <ellipse cx="340" cy="230" rx="70" ry="40" fill="#5D4037"/>
+  <!-- Horse neck -->
+  <path d="M290,220 Q270,170 280,150 Q290,140 300,145 L310,200" fill="#5D4037"/>
+  <!-- Horse head -->
+  <ellipse cx="278" cy="145" rx="22" ry="18" fill="#5D4037"/>
+  <ellipse cx="268" cy="138" rx="8" ry="12" fill="#4E342E"/>
+  <!-- Horse eye -->
+  <circle cx="282" cy="140" r="3" fill="#fff"/>
+  <circle cx="282" cy="140" r="1.5" fill="#1a1a1a"/>
+  <!-- Horse ear -->
+  <polygon points="275,128 270,112 285,125" fill="#4E342E"/>
+  <!-- Horse mane -->
+  <path d="M290,130 Q295,150 300,170 Q285,160 280,145" fill="#3E2723" opacity="0.7"/>
+  <!-- Horse legs -->
+  <rect x="300" y="260" width="10" height="50" fill="#4E342E" rx="3"/>
+  <rect x="320" y="262" width="10" height="50" fill="#4E342E" rx="3"/>
+  <rect x="355" y="260" width="10" height="50" fill="#4E342E" rx="3"/>
+  <rect x="375" y="262" width="10" height="50" fill="#4E342E" rx="3"/>
+  <!-- Hooves -->
+  <rect x="298" y="306" width="14" height="6" fill="#3E2723" rx="2"/>
+  <rect x="318" y="308" width="14" height="6" fill="#3E2723" rx="2"/>
+  <rect x="353" y="306" width="14" height="6" fill="#3E2723" rx="2"/>
+  <rect x="373" y="308" width="14" height="6" fill="#3E2723" rx="2"/>
+  <!-- Horse tail -->
+  <path d="M410,215 Q435,220 430,250 Q425,270 415,260" fill="#3E2723" stroke="none"/>
+  <!-- Saddle -->
+  <ellipse cx="340" cy="218" rx="30" ry="12" fill="#C62828"/>
+  <rect x="320" y="210" width="40" height="6" fill="#B71C1C" rx="2"/>
+  <!-- Rider body -->
+  <rect x="330" y="170" width="20" height="40" fill="#1565C0" rx="4"/>
+  <!-- Rider head -->
+  <circle cx="340" cy="158" r="16" fill="#FFCC80"/>
+  <!-- Helmet -->
+  <path d="M324,155 Q330,138 356,155" fill="#1a237e"/>
+  <rect x="324" y="152" width="32" height="5" fill="#283593" rx="2"/>
+  <!-- Rider arms -->
+  <line x1="332" y1="185" x2="310" y2="195" stroke="#1565C0" stroke-width="6" stroke-linecap="round"/>
+  <line x1="348" y1="185" x2="360" y2="200" stroke="#1565C0" stroke-width="6" stroke-linecap="round"/>
+  <!-- Rider legs -->
+  <line x1="333" y1="208" x2="318" y2="245" stroke="#0D47A1" stroke-width="7" stroke-linecap="round"/>
+  <line x1="347" y1="208" x2="360" y2="245" stroke="#0D47A1" stroke-width="7" stroke-linecap="round"/>
+  <!-- Clouds -->
+  <ellipse cx="120" cy="60" rx="50" ry="20" fill="#fff" opacity="0.5"/>
+  <ellipse cx="140" cy="55" rx="35" ry="18" fill="#fff" opacity="0.5"/>
+  <ellipse cx="450" cy="45" rx="60" ry="22" fill="#fff" opacity="0.4"/>
+  <!-- Text -->
+  <text x="340" y="400" text-anchor="middle" font-family="sans-serif" font-size="28" font-weight="bold" fill="#fff" opacity="0.9">HORSE RIDING</text>
+</svg>
