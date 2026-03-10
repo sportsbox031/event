@@ -670,22 +670,184 @@ select.form-input { cursor: pointer; }
     to { transform: rotate(360deg); }
 }
 
-/* ===== Responsive ===== */
+/* ===== Responsive - Tablet (1024px) ===== */
+@media (max-width: 1024px) {
+    .container { padding: 0 20px; }
+    .events-section { padding: 60px 0 80px; }
+    .section-title { font-size: 28px; }
+    .event-card { width: 320px; }
+    .event-card-image { height: 200px; }
+    .admin-sidebar { width: 190px; }
+    .admin-main { padding: 24px; }
+    .hero-stats { padding: 12px 24px; }
+    .stat-item { padding: 0 14px; }
+    .stat-number { font-size: 18px; }
+    .data-table th, .data-table td { padding: 11px 12px; font-size: 13px; }
+}
+
+/* ===== Responsive - Small Tablet / Large Mobile (768px) ===== */
 @media (max-width: 768px) {
-    .hero-stats { flex-direction: column; gap: 8px; padding: 16px 28px; border-radius: var(--radius); }
+    .container { padding: 0 16px; }
+
+    /* Hero */
+    .header { height: 56px; }
+    .logo-icon { width: 36px; height: 36px; }
+    .admin-btn { padding: 6px 14px; font-size: 12px; }
+    .hero-bottom { padding-bottom: 16px; gap: 12px; }
+    .hero-cta { padding: 12px 24px; font-size: 14px; }
+    .hero-stats { flex-direction: column; gap: 6px; padding: 12px 24px; border-radius: var(--radius); }
     .stat-divider { width: 40px; height: 1px; }
-    .events-carousel { flex-direction: column; align-items: center; }
+    .hero-scroll-indicator { display: none; }
+
+    /* Events */
+    .events-section { padding: 48px 0 64px; }
+    .section-header { margin-bottom: 36px; }
+    .section-title { font-size: 24px; }
+    .section-desc { font-size: 14px; }
+    .events-carousel { flex-direction: column; align-items: center; gap: 20px; }
     .event-card { width: 100%; max-width: 420px; }
+    .event-card-image { height: 200px; }
+    .event-card-title { font-size: 17px; }
+    .event-card-desc { font-size: 13px; }
+
+    /* Modals */
     .modal-calendar, .modal-reservation, .modal-success { width: 92vw; max-width: 500px; }
+    .modal-reservation { padding: 0 20px 20px; }
+    .modal-header { padding: 24px 20px 10px; }
+    .modal-header h3 { font-size: 18px; }
+    .calendar-grid { padding: 0 14px; }
+    .cal-day { font-size: 13px; }
+    .cal-month { font-size: 15px; }
+
+    /* Forms */
+    .form-input { padding: 11px 12px; font-size: 14px; }
+    .btn-submit { padding: 12px; font-size: 14px; }
+
+    /* Admin */
     .admin-sidebar { display: none; }
     .admin-content { flex-direction: column; }
     .admin-main { padding: 16px; }
-    .schedule-form-row { flex-direction: column; }
-    .view-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .admin-header .header-inner { padding: 0 12px; }
     .admin-header-right { gap: 4px; }
     .btn-outline { padding: 6px 10px; font-size: 12px; }
-    .hero-scroll-indicator { display: none; }
-    .hero-bottom { padding-bottom: 20px; }
+    .view-header { flex-direction: column; gap: 12px; align-items: flex-start; }
+    .view-header h2 { font-size: 19px; }
+    .schedule-form-row { flex-direction: column; }
+    .login-card { width: 90vw; max-width: 400px; padding: 32px 28px; }
+    .login-logo h2 { font-size: 18px; }
+
+    /* Table horizontal scroll */
+    .event-table-wrap { margin: 0 -16px; padding: 0 16px; }
+    .data-table { min-width: 560px; }
+    .booking-toggle { flex-wrap: wrap; }
+}
+
+/* ===== Responsive - Mobile (480px) ===== */
+@media (max-width: 480px) {
+    .container { padding: 0 12px; }
+
+    /* Hero */
+    .header { height: 50px; }
+    .header-inner { padding: 0 8px; }
+    .logo-icon { width: 32px; height: 32px; }
+    .admin-btn { padding: 5px 10px; font-size: 11px; gap: 4px; }
+    .admin-btn svg { width: 14px; height: 14px; }
+    .hero-bottom { padding-bottom: 12px; gap: 10px; }
+    .hero-cta { padding: 10px 20px; font-size: 13px; gap: 8px; border-radius: 40px; }
+    .hero-stats { padding: 10px 20px; border-radius: 16px; gap: 4px; }
+    .stat-number { font-size: 16px; }
+    .stat-label { font-size: 9px; }
+    .stat-divider { width: 32px; }
+
+    /* Events */
+    .events-section { padding: 36px 0 48px; }
+    .section-header { margin-bottom: 28px; }
+    .section-tag { font-size: 10px; padding: 4px 12px; }
+    .section-title { font-size: 21px; }
+    .section-desc { font-size: 13px; }
+    .events-carousel { gap: 16px; }
+    .event-card { max-width: 100%; }
+    .event-card-image { height: 180px; }
+    .event-card-body { padding: 18px 18px 20px; }
+    .event-card-title { font-size: 16px; }
+    .event-card-desc { font-size: 12px; line-height: 1.6; margin-bottom: 8px; }
+    .event-card-arrow { width: 34px; height: 34px; bottom: 16px; right: 16px; }
+
+    /* Modals */
+    .modal-overlay { align-items: flex-end; }
+    .modal {
+        border-radius: var(--radius) var(--radius) 0 0;
+        max-height: 85vh;
+        width: 100vw !important;
+        max-width: 100vw !important;
+        animation: modalSlideUpMobile 0.35s cubic-bezier(0.23, 1, 0.32, 1);
+    }
+    .modal-close { top: 12px; right: 12px; width: 30px; height: 30px; }
+    .modal-header { padding: 20px 16px 8px; }
+    .modal-header h3 { font-size: 17px; }
+    .modal-subtitle { font-size: 12px; }
+    .modal-icon { width: 38px; height: 38px; border-radius: 10px; margin-bottom: 10px; }
+    .modal-reservation { padding: 0 16px 16px; }
+
+    /* Calendar */
+    .calendar-nav { padding: 6px 16px 10px; gap: 12px; }
+    .cal-nav-btn { width: 32px; height: 32px; border-radius: 8px; }
+    .cal-month { font-size: 14px; min-width: 110px; }
+    .calendar-grid { padding: 0 10px; }
+    .cal-day-name { font-size: 11px; padding: 6px 0; }
+    .cal-day { font-size: 12px; border-radius: 8px; }
+    .cal-day.available::after { width: 3px; height: 3px; bottom: 3px; }
+    .calendar-legend { padding: 14px; font-size: 11px; }
+
+    /* Forms */
+    .form-group { margin-bottom: 12px; }
+    .form-group label { font-size: 11px; margin-bottom: 5px; }
+    .form-input { padding: 10px 12px; font-size: 13px; border-radius: 10px; }
+    .btn-submit { padding: 11px; font-size: 13px; border-radius: 10px; }
+
+    /* Success */
+    .modal-success { padding: 36px 24px 28px; }
+    .success-icon svg { width: 64px; height: 64px; }
+    .modal-success h3 { font-size: 17px; }
+    .success-msg { font-size: 13px; margin-bottom: 22px; }
+    .btn-confirm { padding: 10px 40px; font-size: 14px; }
+
+    /* Admin */
+    .admin-header { height: 52px; }
+    .admin-main { padding: 12px; }
+    .view-header h2 { font-size: 17px; }
+    .btn-primary { padding: 8px 16px; font-size: 13px; }
+    .detail-tabs { gap: 2px; }
+    .tab-btn { padding: 8px 16px; font-size: 13px; }
+    .schedule-form { padding: 16px; }
+    .schedule-form h4 { font-size: 14px; margin-bottom: 10px; }
+    .login-card { padding: 28px 20px; }
+    .login-logo .logo-icon svg { width: 44px; height: 44px; }
+    .login-logo h2 { font-size: 17px; }
+    .btn-sm { padding: 4px 10px; font-size: 11px; }
+    .status-badge { font-size: 10px; padding: 3px 10px; }
+    .event-table-wrap { margin: 0 -12px; padding: 0 12px; }
+
+    /* Footer */
+    .footer { padding: 20px 0; font-size: 11px; }
+}
+
+/* Mobile bottom-sheet modal animation */
+@keyframes modalSlideUpMobile {
+    from { opacity: 0; transform: translateY(100%); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ===== Touch-friendly: increase tap targets ===== */
+@media (hover: none) and (pointer: coarse) {
+    .cal-day.available { min-height: 44px; }
+    .btn-sm { padding: 8px 14px; font-size: 12px; }
+    .btn-outline { padding: 8px 14px; }
+    .admin-btn { padding: 8px 16px; }
+    .modal-close { width: 38px; height: 38px; }
+    .cal-nav-btn { width: 40px; height: 40px; }
+    .tab-btn { padding: 10px 20px; }
+    .event-card { transform: none !important; }
 }
 
 /* ===== Scrollbar ===== */
