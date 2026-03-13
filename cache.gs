@@ -43,6 +43,14 @@ function dashboardCacheKey() {
   return 'admin-dashboard:v2';
 }
 
+function scheduleCountsCacheKey() {
+  return 'schedule-counts:v1';
+}
+
+function reservationCountsCacheKey() {
+  return 'reservation-counts:v1';
+}
+
 function eventDetailCacheKey(eventId) {
   return `event-detail:v2:${eventId}`;
 }
@@ -52,6 +60,8 @@ function invalidateEventCaches(eventId) {
     catalogCacheKey(),
     eventsCacheKey(),
     dashboardCacheKey(),
+    scheduleCountsCacheKey(),
+    reservationCountsCacheKey(),
     schedulesCacheKey(),
     schedulesCacheKey(eventId),
     reservationsCacheKey(),

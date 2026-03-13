@@ -1,6 +1,4 @@
 function doGet(e) {
-  initSheets();
-
   const action = (e && e.parameter && e.parameter.action) || '';
   const params = (e && e.parameter) || {};
 
@@ -25,8 +23,6 @@ function doGet(e) {
 }
 
 function doPost(e) {
-  initSheets();
-
   let body = {};
   try {
     body = JSON.parse((e && e.postData && e.postData.contents) || '{}');

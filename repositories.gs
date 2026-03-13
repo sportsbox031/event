@@ -50,6 +50,28 @@ function readSchedules(eventId) {
   return writeCache(cacheKey, rows);
 }
 
+function readScheduleCounts() {
+  const cacheKey = scheduleCountsCacheKey();
+  const cached = readCache(cacheKey);
+  if (cached) return cached;
+
+  const sheet = ensureSheet(SHEET_SCHEDULES, SCHEDULE_HEADERS);
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) {
+    return writeCache(cacheKey, {});
+  }
+
+  const values = sheet.getRange(2, 1, lastRow - 1, 1).getValues();
+  const counts = {};
+  values.forEach(function(row) {
+    const eventId = String(row[0] || '');
+    if (!eventId) return;
+    counts[eventId] = (counts[eventId] || 0) + 1;
+  });
+
+  return writeCache(cacheKey, counts);
+}
+
 function readReservations(eventId) {
   const cacheKey = reservationsCacheKey(eventId);
   const cached = readCache(cacheKey);
@@ -85,6 +107,28 @@ function readReservations(eventId) {
   });
 
   return writeCache(cacheKey, rows);
+}
+
+function readReservationCounts() {
+  const cacheKey = reservationCountsCacheKey();
+  const cached = readCache(cacheKey);
+  if (cached) return cached;
+
+  const sheet = ensureSheet(SHEET_RESERVATIONS, RESERVATION_HEADERS);
+  const lastRow = sheet.getLastRow();
+  if (lastRow <= 1) {
+    return writeCache(cacheKey, {});
+  }
+
+  const values = sheet.getRange(2, 2, lastRow - 1, 1).getValues();
+  const counts = {};
+  values.forEach(function(row) {
+    const eventId = String(row[0] || '');
+    if (!eventId) return;
+    counts[eventId] = (counts[eventId] || 0) + 1;
+  });
+
+  return writeCache(cacheKey, counts);
 }
 
 function readSettings() {

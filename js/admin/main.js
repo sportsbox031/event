@@ -128,21 +128,22 @@ async function handleLogin(event) {
 
   try {
     const result = await apiPost('adminLogin', { id, hash });
-    if (!result.success) {
-      dom.loginError.textContent = '아이디 또는 비밀번호가 올바르지 않습니다.';
-      return;
-    }
+    const dashboardPayload = result.data?.dashboard ?? null;
+    const resolvedAdminId = result.data?.adminId ?? id;
+    sessionStorage.setItem('admin_logged_in', 'true');
+    sessionStorage.setItem('admin_id', resolvedAdminId);
+    setButtonLoading(dom.loginSubmitBtn, false);
+    showDashboard(dashboardPayload);
+    return;
   } catch (error) {
     console.error(error);
-    dom.loginError.textContent = '로그인 서버 연결에 실패했습니다.';
+    dom.loginError.textContent =
+      error?.message === 'Invalid credentials'
+        ? '아이디 또는 비밀번호가 올바르지 않습니다.'
+        : '로그인 서버 연결에 실패했습니다.';
     setButtonLoading(dom.loginSubmitBtn, false);
     return;
   }
-
-  sessionStorage.setItem('admin_logged_in', 'true');
-  sessionStorage.setItem('admin_id', id);
-  setButtonLoading(dom.loginSubmitBtn, false);
-  await showDashboard();
 }
 
 function handleLogout() {
@@ -151,25 +152,23 @@ function handleLogout() {
   location.reload();
 }
 
-async function showDashboard() {
+function showDashboard(initialDashboard = null) {
   dom.loginScreen.style.display = 'none';
   dom.adminDashboard.style.display = 'block';
   renderEventTableLoading();
-  await loadDashboard();
+  if (initialDashboard) {
+    applyDashboardPayload(initialDashboard);
+    renderEventTable();
+    return;
+  }
+
+  void loadDashboard();
 }
 
 async function loadDashboard() {
   try {
     const payload = await apiGet('getAdminDashboard');
-    state.events = (payload.events ?? []).map(normalizeEventRecord);
-    state.eventIndex = buildEventIndex(state.events);
-    state.dashboardRows = Array.isArray(payload.rows)
-      ? payload.rows
-      : summarizeDashboardRows(
-          state.events,
-          payload.schedules ?? [],
-          payload.reservations ?? [],
-        );
+    applyDashboardPayload(payload);
   } catch (error) {
     console.error('Admin dashboard load failed:', error);
     const fallback = getLocalDashboardFallback();
@@ -179,6 +178,18 @@ async function loadDashboard() {
   }
 
   renderEventTable();
+}
+
+function applyDashboardPayload(payload) {
+  state.events = (payload.events ?? []).map(normalizeEventRecord);
+  state.eventIndex = buildEventIndex(state.events);
+  state.dashboardRows = Array.isArray(payload.rows)
+    ? payload.rows
+    : summarizeDashboardRows(
+        state.events,
+        payload.schedules ?? [],
+        payload.reservations ?? [],
+      );
 }
 
 function getLocalDashboardFallback() {

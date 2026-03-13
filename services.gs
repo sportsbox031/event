@@ -58,8 +58,8 @@ function getAdminDashboard() {
   if (cached) return cached;
 
   const events = readEvents();
-  const scheduleCounts = mapCountBy(readSchedules(), 'eventId');
-  const reservationCounts = mapCountBy(readReservations(), 'eventId');
+  const scheduleCounts = readScheduleCounts();
+  const reservationCounts = readReservationCounts();
 
   const rows = events.map(function(event) {
     return {
@@ -190,7 +190,10 @@ function adminLoginService(data) {
     return errorResponse('Invalid credentials');
   }
 
-  return successResponse(true);
+  return successResponse({
+    adminId: adminId,
+    dashboard: getAdminDashboard(),
+  });
 }
 
 function changePasswordService(data) {
