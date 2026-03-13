@@ -200,6 +200,18 @@ input, select, textarea { font-family: inherit; }
     to { opacity: 1; transform: translateY(0); }
 }
 
+.reveal-init {
+    opacity: 0;
+    transform: translateY(40px);
+    transition: opacity 0.8s cubic-bezier(0.23, 1, 0.32, 1),
+        transform 0.8s cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+.animate-in {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
 /* ===== Events Section ===== */
 .events-section {
     padding: 80px 0 100px;
@@ -234,6 +246,8 @@ input, select, textarea { font-family: inherit; }
     transition: all 0.45s cubic-bezier(0.23, 1, 0.32, 1);
     cursor: pointer; position: relative;
     box-shadow: var(--shadow-md);
+    transform-style: preserve-3d;
+    will-change: transform;
 }
 .event-card:hover {
     transform: translateY(-10px);
@@ -376,6 +390,9 @@ input, select, textarea { font-family: inherit; }
     color: var(--text-muted); position: relative;
     transition: all 0.2s ease;
 }
+.cal-day[data-date] {
+    border: none;
+}
 .cal-day.other { color: rgba(255,255,255,0.2); }
 .cal-day.today {
     font-weight: 800; color: var(--primary);
@@ -467,6 +484,15 @@ select.form-input { cursor: pointer; }
     transform: translateY(-1px);
 }
 .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+
+@media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
 
 /* Success Modal */
 .modal-success {

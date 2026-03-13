@@ -6,6 +6,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>경기도체육회 스포츠박스 | 스포츠이벤트 예약</title>
     <link rel="icon" type="image/png" href="images/01_ci.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="stylesheet" href="css/style.css">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap"
         rel="stylesheet">
@@ -20,13 +22,13 @@
                     <img src="images/01_ci.png" alt="경기도체육회 로고">
                 </span>
             </a>
-            <button class="admin-btn" onclick="location.href='admin.html'">
+            <a class="admin-btn" href="admin.html">
                 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                     <path d="M12 2a5 5 0 015 5v1a5 5 0 01-10 0V7a5 5 0 015-5z" />
                     <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2" />
                 </svg>
                 관리자
-            </button>
+            </a>
         </div>
     </header>
 
@@ -92,7 +94,7 @@
     <!-- Event Action Modal -->
     <div class="modal-overlay" id="eventActionModal">
         <div class="modal modal-reservation modal-glass">
-            <button class="modal-close" onclick="closeEventActionModal()">
+            <button type="button" class="modal-close" data-close-modal="eventActionModal">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
@@ -109,9 +111,9 @@
                 <p class="modal-subtitle" id="actionEventDesc"></p>
             </div>
             <div style="display:flex;flex-direction:column;gap:10px;padding:0 28px 28px;">
-                <button type="button" class="btn-primary" id="btnWatchVideo" onclick="openEventVideo()"
+                <button type="button" class="btn-primary" id="btnWatchVideo"
                     style="width:100%;">영상으로 확인하기</button>
-                <button type="button" class="btn-submit" onclick="startReservationFromAction()">예약하기</button>
+                <button type="button" class="btn-submit" id="btnStartReservation">예약하기</button>
             </div>
         </div>
     </div>
@@ -119,7 +121,7 @@
     <!-- Calendar Modal -->
     <div class="modal-overlay" id="calendarModal">
         <div class="modal modal-calendar modal-glass">
-            <button class="modal-close" onclick="closeCalendarModal()">
+            <button type="button" class="modal-close" data-close-modal="calendarModal">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
@@ -173,7 +175,7 @@
     <!-- Reservation Modal -->
     <div class="modal-overlay" id="reservationModal">
         <div class="modal modal-reservation modal-glass">
-            <button class="modal-close" onclick="closeReservationModal()">
+            <button type="button" class="modal-close" data-close-modal="reservationModal">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
                     <line x1="18" y1="6" x2="6" y2="18" />
                     <line x1="6" y1="6" x2="18" y2="18" />
@@ -189,7 +191,7 @@
                 <h3>예약 신청</h3>
                 <p class="modal-subtitle" id="reservationEventName"></p>
             </div>
-            <form id="reservationForm" onsubmit="submitReservation(event)">
+            <form id="reservationForm">
                 <div class="form-group">
                     <label>예약일자</label>
                     <input type="text" id="resDate" readonly class="form-input form-input-glass">
@@ -233,7 +235,7 @@
             </div>
             <h3>예약이 완료되었습니다</h3>
             <p class="success-msg">내부 심사 후 예약이 확정되면<br>담당자분께 연락드리겠습니다.</p>
-            <button class="btn-confirm" onclick="closeSuccessModal()">확인</button>
+            <button type="button" class="btn-confirm" data-close-modal="successModal">확인</button>
         </div>
     </div>
 
@@ -244,7 +246,7 @@
         </div>
     </footer>
 
-    <script src="js/app.js"></script>
+    <script type="module" src="js/app.js"></script>
 </body>
 
 </html>
