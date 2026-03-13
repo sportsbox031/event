@@ -63,8 +63,7 @@ async function loadEvents() {
             const res = await fetch(`${API_URL}?action=getEvents`);
             const data = await res.json();
             events = data
-                .map(e => ({ ...e, bookingOpen: toBoolean(e.bookingOpen), videoUrl: String(e.videoUrl ?? '') }))
-                .filter(e => e.status === '모집중');
+                .map(e => ({ ...e, bookingOpen: toBoolean(e.bookingOpen), videoUrl: String(e.videoUrl ?? '') }));
         } catch (e) {
             console.error('API Error:', e);
             events = getMockEvents();
