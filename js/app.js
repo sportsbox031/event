@@ -121,7 +121,7 @@ function getMockEvents() {
             id: 'evt1',
             name: '마주(馬走)하는 승마교실',
             description: '말과 함께하는 특별한 체험! 전문 강사의 안전한 지도 아래 승마의 기초부터 배워보세요.',
-            image: 'https://images.unsplash.com/photo-1553426176-ed22e70eaff2?auto=format&fit=crop&q=80&w=800',
+            image: 'images/horse-riding-event.png',
             status: '모집중',
             bookingOpen: false,
             videoUrl: ''
@@ -130,7 +130,7 @@ function getMockEvents() {
             id: 'evt2',
             name: '설래(雪來)는 스키교실',
             description: '겨울 스포츠의 꽃, 스키! 초보자도 쉽게 배울 수 있는 맞춤형 스키 교실입니다.',
-            image: 'https://images.unsplash.com/photo-1551698618-1dfe5d97d256?auto=format&fit=crop&q=80&w=800',
+            image: 'images/skiing-event.png',
             status: '모집중',
             bookingOpen: false,
             videoUrl: 'https://www.youtube.com/watch?v=g8ZcvhQWQ_0'
