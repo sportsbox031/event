@@ -9,6 +9,8 @@ import {
 import {
   buildEventIndex,
   buildScheduleIndex,
+  countBookableEvents,
+  deriveEventStatus,
   summarizeDashboardRows,
 } from '../js/shared/indexing.mjs';
 
@@ -46,7 +48,7 @@ test('buildEventIndex and buildScheduleIndex return constant-time lookup structu
 
 test('summarizeDashboardRows computes counts without repeated client-side filtering', () => {
   const rows = summarizeDashboardRows(
-    [{ id: 'evt1', name: 'A', status: '모집중' }],
+    [{ id: 'evt1', name: 'A', bookingOpen: true }],
     [{ eventId: 'evt1', date: '2026-03-13' }, { eventId: 'evt1', date: '2026-03-14' }],
     [{ eventId: 'evt1' }, { eventId: 'evt1' }, { eventId: 'evt1' }],
   );
@@ -56,8 +58,25 @@ test('summarizeDashboardRows computes counts without repeated client-side filter
       id: 'evt1',
       name: 'A',
       status: '모집중',
+      bookingOpen: true,
       scheduleCount: 2,
       reservationCount: 3,
     },
   ]);
+});
+
+test('deriveEventStatus maps booking state to only 모집중 or 준비중', () => {
+  assert.equal(deriveEventStatus({ bookingOpen: true }), '모집중');
+  assert.equal(deriveEventStatus({ bookingOpen: false }), '준비중');
+  assert.equal(deriveEventStatus({ bookingOpen: 'true' }), '모집중');
+});
+
+test('countBookableEvents counts only 예약중 events', () => {
+  const count = countBookableEvents([
+    { id: 'evt1', bookingOpen: true, status: '준비중' },
+    { id: 'evt2', bookingOpen: false, status: '모집중' },
+    { id: 'evt3', bookingOpen: 'true', status: '모집마감' },
+  ]);
+
+  assert.equal(count, 2);
 });

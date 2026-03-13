@@ -65,7 +65,8 @@ function getAdminDashboard() {
     return {
       id: event.id,
       name: event.name,
-      status: event.status,
+      status: event.bookingOpen ? '모집중' : '준비중',
+      bookingOpen: event.bookingOpen,
       scheduleCount: scheduleCounts[event.id] || 0,
       reservationCount: reservationCounts[event.id] || 0,
     };
@@ -95,13 +96,14 @@ function getEventDetail(eventId) {
 
 function saveEventService(data) {
   return withScriptLock(function() {
+    const bookingOpen = toBoolean(data.bookingOpen);
     const eventRecord = {
       id: data.id || `evt_${Date.now()}`,
       name: String(data.name || '').trim(),
       description: String(data.description || '').trim(),
       image: String(data.image || 'images/hero-bg.png').trim(),
-      status: String(data.status || '모집중').trim(),
-      bookingOpen: toBoolean(data.bookingOpen),
+      status: bookingOpen ? '모집중' : '준비중',
+      bookingOpen: bookingOpen,
       videoUrl: String(data.videoUrl || '').trim(),
     };
 

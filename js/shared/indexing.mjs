@@ -1,13 +1,25 @@
 import { normalizeDateString, toBoolean } from './date.mjs';
 
+export function deriveEventStatus(record = {}) {
+  return toBoolean(record.bookingOpen) ? '모집중' : '준비중';
+}
+
+export function countBookableEvents(events = []) {
+  return events.reduce(
+    (count, event) => count + (toBoolean(event.bookingOpen) ? 1 : 0),
+    0,
+  );
+}
+
 export function normalizeEventRecord(record = {}) {
+  const bookingOpen = toBoolean(record.bookingOpen);
   return {
     id: String(record.id ?? ''),
     name: String(record.name ?? ''),
     description: String(record.description ?? ''),
     image: String(record.image ?? ''),
-    status: String(record.status ?? ''),
-    bookingOpen: toBoolean(record.bookingOpen),
+    status: deriveEventStatus({ bookingOpen }),
+    bookingOpen,
     videoUrl: String(record.videoUrl ?? ''),
   };
 }
@@ -101,7 +113,8 @@ export function summarizeDashboardRows(events = [], schedules = [], reservations
   return events.map((event) => ({
     id: String(event.id ?? ''),
     name: String(event.name ?? ''),
-    status: String(event.status ?? ''),
+    status: deriveEventStatus(event),
+    bookingOpen: toBoolean(event.bookingOpen),
     scheduleCount: scheduleCounts.get(String(event.id ?? '')) ?? 0,
     reservationCount: reservationCounts.get(String(event.id ?? '')) ?? 0,
   }));

@@ -2,6 +2,7 @@ import { apiGet, apiPost } from '../shared/http.js';
 import { formatTimestamp, normalizeDateString, toBoolean } from '../shared/date.mjs';
 import {
   buildEventIndex,
+  deriveEventStatus,
   normalizeEventRecord,
   normalizeReservationRecord,
   normalizeScheduleRecord,
@@ -62,7 +63,6 @@ function cacheDom() {
   dom.eventFormDesc = document.getElementById('eventFormDesc');
   dom.eventFormImage = document.getElementById('eventFormImage');
   dom.eventFormVideo = document.getElementById('eventFormVideo');
-  dom.eventFormStatus = document.getElementById('eventFormStatus');
   dom.eventFormSubmitBtn = document.getElementById('eventFormSubmitBtn');
   dom.passwordModal = document.getElementById('passwordModal');
   dom.passwordForm = document.getElementById('passwordForm');
@@ -199,11 +199,9 @@ function renderEventTable() {
     .map((row, index) => {
       const event = state.eventIndex.get(row.id);
       const statusClass =
-        row.status === '모집중'
+        row.bookingOpen
           ? 'status-open'
-          : row.status === '모집마감'
-            ? 'status-closed'
-            : 'status-preparing';
+          : 'status-preparing';
 
       return `
         <tr>
@@ -360,7 +358,6 @@ function openEventFormModal(eventId = '') {
   dom.eventFormDesc.value = eventRecord?.description ?? '';
   dom.eventFormImage.value = eventRecord?.image ?? '';
   dom.eventFormVideo.value = eventRecord?.videoUrl ?? '';
-  dom.eventFormStatus.value = eventRecord?.status ?? '모집중';
   dom.eventFormModal.classList.add('active');
 }
 
@@ -375,7 +372,6 @@ async function saveEvent(event) {
     description: dom.eventFormDesc.value.trim(),
     image: dom.eventFormImage.value.trim() || 'images/hero-bg.png',
     videoUrl: dom.eventFormVideo.value.trim(),
-    status: dom.eventFormStatus.value,
     bookingOpen: eventId ? Boolean(state.eventIndex.get(eventId)?.bookingOpen) : false,
   };
 
@@ -605,7 +601,7 @@ function getStoredEvents() {
       description:
         '말과 함께하는 특별한 체험! 전문 강사의 안전한 지도 아래 승마의 기초부터 배워보세요.',
       image: 'images/horse-riding.svg',
-      status: '모집중',
+      status: deriveEventStatus({ bookingOpen: false }),
       bookingOpen: false,
       videoUrl: '',
     },
@@ -614,7 +610,7 @@ function getStoredEvents() {
       name: '설래(雪來)는 스키교실',
       description: '겨울 스포츠의 꽃, 스키! 초보자도 쉽게 배울 수 있는 맞춤형 스키 교실입니다.',
       image: 'images/skiing.svg',
-      status: '모집중',
+      status: deriveEventStatus({ bookingOpen: false }),
       bookingOpen: false,
       videoUrl: 'https://www.youtube.com/watch?v=g8ZcvhQWQ_0',
     },

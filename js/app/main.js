@@ -1,5 +1,6 @@
 import { apiPost } from '../shared/http.js';
 import { formatTimestamp } from '../shared/date.mjs';
+import { countBookableEvents } from '../shared/indexing.mjs';
 import {
   ensureSchedules,
   getActionEventId,
@@ -31,7 +32,7 @@ export async function initApp() {
 
   const { events } = await loadCatalog();
   renderEvents(dom.eventsCarousel, events);
-  dom.statEvents.textContent = String(events.length);
+  dom.statEvents.textContent = String(countBookableEvents(events));
   observeRevealTargets();
 }
 
