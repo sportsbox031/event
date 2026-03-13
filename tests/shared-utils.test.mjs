@@ -13,6 +13,7 @@ import {
   deriveEventStatus,
   summarizeDashboardRows,
 } from '../js/shared/indexing.mjs';
+import { createAdminTableMessage } from '../js/admin/view-state.mjs';
 
 test('normalizeDateString returns yyyy-mm-dd for parseable values', () => {
   assert.equal(normalizeDateString('2026-03-13'), '2026-03-13');
@@ -79,4 +80,11 @@ test('countBookableEvents counts only 예약중 events', () => {
   ]);
 
   assert.equal(count, 2);
+});
+
+test('createAdminTableMessage renders a friendly loading row', () => {
+  assert.equal(
+    createAdminTableMessage(2, '일정을 확인하고 있습니다.'),
+    '<tr><td colspan="2" style="text-align:center;color:#999;padding:40px;">일정을 확인하고 있습니다.</td></tr>',
+  );
 });

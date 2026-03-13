@@ -1,4 +1,5 @@
 import { apiGet, apiPost } from '../shared/http.js';
+import { createAdminTableMessage } from './view-state.mjs';
 import { formatTimestamp, normalizeDateString, toBoolean } from '../shared/date.mjs';
 import {
   buildEventIndex,
@@ -255,11 +256,17 @@ async function openEventDetail(eventId) {
   dom.viewEventDetail.style.display = 'block';
   dom.detailEventTitle.textContent = eventRecord.name;
   switchTab('schedules');
+  renderDetailLoadingState();
 
   const detail = await getEventDetail(eventId);
   renderBookingToggle();
   renderSchedules(detail.schedules);
   renderReservations(detail.reservations);
+}
+
+function renderDetailLoadingState() {
+  dom.scheduleTableBody.innerHTML = createAdminTableMessage(2, '일정을 확인하고 있습니다.');
+  dom.reservationTableBody.innerHTML = createAdminTableMessage(7, '신청 내역 데이터를 가져오고 있습니다.');
 }
 
 async function getEventDetail(eventId) {
@@ -452,8 +459,7 @@ async function addSchedule(button) {
 function renderSchedules(schedules) {
   const sorted = [...schedules].sort((left, right) => left.date.localeCompare(right.date));
   if (!sorted.length) {
-    dom.scheduleTableBody.innerHTML =
-      '<tr><td colspan="2" style="text-align:center;color:#999;padding:40px;">등록된 일정이 없습니다.</td></tr>';
+    dom.scheduleTableBody.innerHTML = createAdminTableMessage(2, '등록된 일정이 없습니다.');
     return;
   }
 
@@ -505,8 +511,7 @@ function renderReservations(reservations) {
   );
 
   if (!sorted.length) {
-    dom.reservationTableBody.innerHTML =
-      '<tr><td colspan="7" style="text-align:center;color:#999;padding:40px;">신청 내역이 없습니다.</td></tr>';
+    dom.reservationTableBody.innerHTML = createAdminTableMessage(7, '신청 내역이 없습니다.');
     return;
   }
 
