@@ -1,5 +1,6 @@
 .claude/
 .codex-esm-check/
+.git-temp/
 .codex-dev-server.out.log
 .codex-dev-server.err.log
 AGENTS.md
