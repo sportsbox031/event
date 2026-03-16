@@ -51,9 +51,11 @@ function cacheDom() {
   dom.bookingToggleWrap = document.getElementById('bookingToggleWrap');
   dom.scheduleTableBody = document.getElementById('scheduleTableBody');
   dom.reservationTableBody = document.getElementById('reservationTableBody');
+  dom.documentTableBody = document.getElementById('documentTableBody');
   dom.tabButtons = [...document.querySelectorAll('.tab-btn')];
   dom.tabSchedules = document.getElementById('tabSchedules');
   dom.tabReservations = document.getElementById('tabReservations');
+  dom.tabDocuments = document.getElementById('tabDocuments');
   dom.scheduleDate = document.getElementById('scheduleDate');
   dom.addScheduleBtn = document.getElementById('addScheduleBtn');
   dom.eventFormModal = document.getElementById('eventFormModal');
@@ -263,11 +265,13 @@ async function openEventDetail(eventId) {
   renderBookingToggle();
   renderSchedules(detail.schedules);
   renderReservations(detail.reservations);
+  renderDocumentSubmissions(detail.documentSubmissions);
 }
 
 function renderDetailLoadingState() {
   dom.scheduleTableBody.innerHTML = createAdminTableMessage(2, '일정을 확인하고 있습니다.');
   dom.reservationTableBody.innerHTML = createAdminTableMessage(7, '신청 내역 데이터를 가져오고 있습니다.');
+  dom.documentTableBody.innerHTML = createAdminTableMessage(7, '제출 서류 데이터를 가져오고 있습니다.');
 }
 
 async function getEventDetail(eventId) {
@@ -281,6 +285,7 @@ async function getEventDetail(eventId) {
       event: normalizeEventRecord(payload.event),
       schedules: (payload.schedules ?? []).map(normalizeScheduleRecord),
       reservations: (payload.reservations ?? []).map(normalizeReservationRecord),
+      documentSubmissions: Array.isArray(payload.documentSubmissions) ? payload.documentSubmissions : [],
     };
     state.detailCache.set(eventId, detail);
     return detail;
@@ -294,6 +299,7 @@ async function getEventDetail(eventId) {
       reservations: getStoredReservations()
         .map(normalizeReservationRecord)
         .filter((item) => item.eventId === eventId),
+      documentSubmissions: getStoredDocumentSubmissions().filter((item) => item.eventId === eventId),
     };
     state.detailCache.set(eventId, fallback);
     return fallback;
@@ -359,6 +365,7 @@ function switchTab(tab) {
   });
   dom.tabSchedules.style.display = tab === 'schedules' ? 'block' : 'none';
   dom.tabReservations.style.display = tab === 'reservations' ? 'block' : 'none';
+  dom.tabDocuments.style.display = tab === 'documents' ? 'block' : 'none';
 }
 
 async function backToEventList() {
@@ -535,6 +542,48 @@ function renderReservations(reservations) {
     .join('');
 }
 
+function renderDocumentSubmissions(documentSubmissions) {
+  const sorted = [...documentSubmissions].sort((left, right) =>
+    String(right.createdAt).localeCompare(String(left.createdAt)),
+  );
+
+  if (!sorted.length) {
+    dom.documentTableBody.innerHTML = createAdminTableMessage(7, '제출된 서류가 없습니다.');
+    return;
+  }
+
+  dom.documentTableBody.innerHTML = sorted
+    .map(
+      (submission, index) => `
+        <tr>
+          <td>${index + 1}</td>
+          <td>${escapeHtml(submission.groupName)}</td>
+          <td>${escapeHtml(submission.manager)}</td>
+          <td>${escapeHtml(submission.contact)}</td>
+          <td>${escapeHtml(submission.fileName)}</td>
+          <td>${escapeHtml(submission.createdAt)}</td>
+          <td>${renderDocumentLink(submission)}</td>
+        </tr>
+      `,
+    )
+    .join('');
+}
+
+function renderDocumentLink(submission) {
+  if (!submission.fileUrl) {
+    return '<span class="status-badge status-closed">링크 없음</span>';
+  }
+
+  return `
+    <a
+      class="btn-sm btn-detail"
+      href="${escapeHtml(submission.fileUrl)}"
+      target="_blank"
+      rel="noopener noreferrer"
+    >파일 열기</a>
+  `;
+}
+
 function openPasswordModal() {
   dom.pwCurrent.value = '';
   dom.pwNew.value = '';
@@ -651,6 +700,22 @@ function getStoredReservations() {
     ...item,
     date: normalizeDateString(item.date),
     createdAt: item.createdAt || formatTimestamp(new Date().toISOString()),
+  }));
+}
+
+function getStoredDocumentSubmissions() {
+  return JSON.parse(localStorage.getItem('document_submissions') || '[]').map((item) => ({
+    id: String(item.id || ''),
+    eventId: String(item.eventId || ''),
+    eventName: String(item.eventName || ''),
+    groupName: String(item.groupName || ''),
+    manager: String(item.manager || ''),
+    contact: String(item.contact || ''),
+    fileName: String(item.fileName || ''),
+    fileUrl: String(item.fileUrl || ''),
+    fileId: String(item.fileId || ''),
+    mimeType: String(item.mimeType || ''),
+    createdAt: String(item.createdAt || formatTimestamp(new Date().toISOString())),
   }));
 }
 

@@ -114,7 +114,43 @@
                 <button type="button" class="btn-primary" id="btnWatchVideo"
                     style="width:100%;">영상으로 확인하기</button>
                 <button type="button" class="btn-submit" id="btnStartReservation">예약하기</button>
+                <button type="button" class="btn-secondary" id="btnOpenDocumentSubmission">서류제출하기</button>
             </div>
+        </div>
+    </div>
+
+    <!-- Document Submission Modal -->
+    <div class="modal-overlay" id="documentSubmissionModal">
+        <div class="modal modal-reservation modal-glass">
+            <button type="button" class="modal-close" data-close-modal="documentSubmissionModal">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                </svg>
+            </button>
+            <div class="modal-header">
+                <div class="modal-icon purple">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 3v12" />
+                        <path d="M7 10l5 5 5-5" />
+                        <path d="M5 21h14" />
+                    </svg>
+                </div>
+                <h3 id="documentEventTitle">서류 제출</h3>
+                <p class="modal-subtitle" id="documentEventDesc">양식을 내려받아 작성한 뒤 업로드해 주세요.</p>
+            </div>
+            <form id="documentSubmissionForm">
+                <div class="form-group">
+                    <button type="button" class="btn-secondary" id="btnDownloadTemplate">양식 다운로드</button>
+                </div>
+                <div class="form-group">
+                    <label>작성한 서류 업로드 <span class="required">*</span></label>
+                    <input type="file" id="docFile" required class="form-input" accept=".pdf,.hwpx,.hwp,.doc,.docx,.jpg,.jpeg,.png">
+                    <p class="form-help">예약과 별도로 제출됩니다. 권장 형식: HWPX, PDF, DOCX.</p>
+                </div>
+                <p class="form-error" id="docError" style="display:none;"></p>
+                <button type="submit" class="btn-submit" id="btnSubmitDocument">제출하기</button>
+            </form>
         </div>
     </div>
 
@@ -236,6 +272,22 @@
             <h3>예약이 완료되었습니다</h3>
             <p class="success-msg">내부 심사 후 예약이 확정되면<br>담당자분께 연락드리겠습니다.</p>
             <button type="button" class="btn-confirm" data-close-modal="successModal">확인</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="documentSuccessModal">
+        <div class="modal modal-success modal-glass">
+            <div class="success-icon">
+                <div class="success-ring"></div>
+                <svg viewBox="0 0 80 80" fill="none">
+                    <circle cx="40" cy="40" r="36" fill="rgba(76,175,80,0.15)" />
+                    <path d="M24 40 L35 51 L56 30" stroke="#4CAF50" stroke-width="4" stroke-linecap="round"
+                        stroke-linejoin="round" fill="none" class="check-path" />
+                </svg>
+            </div>
+            <h3>서류 제출이 완료되었습니다</h3>
+            <p class="success-msg">제출한 파일은 담당자 구글 드라이브에 저장됩니다.<br>필요 시 추가 안내를 드리겠습니다.</p>
+            <button type="button" class="btn-confirm" data-close-modal="documentSuccessModal">확인</button>
         </div>
     </div>
 

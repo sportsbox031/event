@@ -89,6 +89,7 @@ function getEventDetail(eventId) {
     event: eventRecord,
     schedules: readSchedules(eventId),
     reservations: readReservations(eventId),
+    documentSubmissions: readDocumentSubmissions(eventId),
   };
 
   return writeCache(cacheKey, payload);
@@ -105,6 +106,7 @@ function saveEventService(data) {
       status: bookingOpen ? '모집중' : '준비중',
       bookingOpen: bookingOpen,
       videoUrl: String(data.videoUrl || '').trim(),
+      documentTemplateUrl: String(data.documentTemplateUrl || '').trim(),
     };
 
     if (!eventRecord.name) {
@@ -114,6 +116,58 @@ function saveEventService(data) {
     upsertEventRecord(eventRecord);
     invalidateEventCaches(eventRecord.id);
     return successResponse(eventRecord);
+  });
+}
+
+function submitDocumentService(data) {
+  return withScriptLock(function() {
+    const eventId = String(data.eventId || '').trim();
+    const fileName = String(data.fileName || '').trim();
+    const mimeType = String(data.mimeType || '').trim();
+    const base64 = String(data.base64 || '').trim();
+
+    if (!eventId || !fileName || !mimeType || !base64) {
+      return errorResponse('Invalid payload');
+    }
+
+    const eventRecord = readEvents().filter(function(item) {
+      return item.id === eventId;
+    })[0] || null;
+    if (!eventRecord) {
+      return errorResponse('Event not found');
+    }
+
+    const submission = {
+      id: `doc_${Date.now()}`,
+      eventId: eventId,
+      eventName: String(data.eventName || eventRecord.name || '').trim(),
+      groupName: String(data.groupName || '').trim(),
+      manager: String(data.manager || '').trim(),
+      contact: String(data.contact || '').trim(),
+      fileName: fileName,
+      mimeType: mimeType,
+      createdAt: String(data.createdAt || createTimestamp()),
+    };
+
+    const upload = saveBase64FileToDrive({
+      eventName: eventRecord.name,
+      groupName: submission.groupName,
+      manager: submission.manager,
+      fileName: submission.fileName,
+      mimeType: submission.mimeType,
+      base64: base64,
+    });
+
+    submission.fileUrl = upload.fileUrl;
+    submission.fileId = upload.fileId;
+
+    insertDocumentSubmissionRecord(submission);
+    invalidateEventCaches(eventId);
+    return successResponse({
+      id: submission.id,
+      fileUrl: submission.fileUrl,
+      fileId: submission.fileId,
+    });
   });
 }
 
@@ -214,6 +268,67 @@ function changePasswordService(data) {
     updateSettingValue('admin_pw', String(data.newHash));
     return successResponse(true);
   });
+}
+
+function saveBase64FileToDrive(options) {
+  const folder = getDocumentDriveFolder();
+  const uniqueFileName = buildUniqueDriveFileName(folder, String(options.fileName || 'document'));
+  const blob = Utilities.newBlob(
+    Utilities.base64Decode(options.base64),
+    options.mimeType,
+    uniqueFileName,
+  );
+  const file = folder.createFile(blob);
+  file.setDescription(
+    options.groupName || options.manager
+      ? `${options.eventName} 제출서류 / ${options.groupName} / ${options.manager}`
+      : `${options.eventName} 제출서류`,
+  );
+
+  return {
+    fileId: file.getId(),
+    fileUrl: file.getUrl(),
+  };
+}
+
+function buildUniqueDriveFileName(folder, fileName) {
+  const originalName = String(fileName || 'document').trim() || 'document';
+  if (!folder.getFilesByName(originalName).hasNext()) {
+    return originalName;
+  }
+
+  const parts = splitFileName(originalName);
+  let suffix = 2;
+
+  while (folder.getFilesByName(`${parts.base} (${suffix})${parts.extension}`).hasNext()) {
+    suffix += 1;
+  }
+
+  return `${parts.base} (${suffix})${parts.extension}`;
+}
+
+function splitFileName(fileName) {
+  const match = String(fileName || '').match(/^(.*?)(\.[^.]*)?$/);
+  return {
+    base: String(match && match[1] ? match[1] : 'document') || 'document',
+    extension: String(match && match[2] ? match[2] : ''),
+  };
+}
+
+function getDocumentDriveFolder() {
+  const settings = readSettings();
+  const configuredId = String(settings.document_drive_folder_id || '').trim();
+
+  if (configuredId) {
+    return DriveApp.getFolderById(configuredId);
+  }
+
+  const folders = DriveApp.getFoldersByName(DEFAULT_DOCUMENT_FOLDER_NAME);
+  if (folders.hasNext()) {
+    return folders.next();
+  }
+
+  return DriveApp.createFolder(DEFAULT_DOCUMENT_FOLDER_NAME);
 }
 
 function migrateLegacyAdminPassword() {

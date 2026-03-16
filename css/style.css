@@ -471,6 +471,12 @@ input, select, textarea { font-family: inherit; }
 .form-input::placeholder { color: #aaa; }
 textarea.form-input { resize: vertical; }
 select.form-input { cursor: pointer; }
+.form-help {
+    margin-top: 6px;
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.6;
+}
 .btn-submit {
     width: 100%; padding: 13px; border-radius: var(--radius-sm);
     background: var(--primary);
@@ -484,6 +490,27 @@ select.form-input { cursor: pointer; }
     transform: translateY(-1px);
 }
 .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-secondary {
+    width: 100%;
+    padding: 13px;
+    border-radius: var(--radius-sm);
+    background: rgba(255, 255, 255, 0.08);
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 700;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    transition: all 0.3s;
+}
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(0, 242, 254, 0.35);
+    transform: translateY(-1px);
+}
+.btn-secondary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+}
 
 @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -786,6 +813,7 @@ select.form-input { cursor: pointer; }
     /* Forms */
     .form-input { padding: 11px 12px; font-size: 14px; }
     .btn-submit { padding: 12px; font-size: 14px; }
+    .btn-secondary { padding: 12px; font-size: 14px; }
 
     /* Admin */
     .admin-sidebar { display: none; }
@@ -868,6 +896,7 @@ select.form-input { cursor: pointer; }
     .form-group label { font-size: 11px; margin-bottom: 5px; }
     .form-input { padding: 10px 12px; font-size: 13px; border-radius: 10px; }
     .btn-submit { padding: 11px; font-size: 13px; border-radius: 10px; }
+    .btn-secondary { padding: 11px; font-size: 13px; border-radius: 10px; }
 
     /* Success */
     .modal-success { padding: 36px 24px 28px; }

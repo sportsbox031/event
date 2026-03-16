@@ -52,6 +52,9 @@ function cacheDom() {
   dom.documentEventTitle = document.getElementById('documentEventTitle');
   dom.documentEventDesc = document.getElementById('documentEventDesc');
   dom.btnDownloadTemplate = document.getElementById('btnDownloadTemplate');
+  dom.docGroup = document.getElementById('docGroup');
+  dom.docManager = document.getElementById('docManager');
+  dom.docContact = document.getElementById('docContact');
   dom.docFile = document.getElementById('docFile');
   dom.docError = document.getElementById('docError');
   dom.btnSubmitDocument = document.getElementById('btnSubmitDocument');
@@ -81,9 +84,7 @@ function bindStaticEvents() {
   dom.btnWatchVideo.addEventListener('click', openEventVideo);
   dom.btnOpenDocumentSubmission.addEventListener('click', openDocumentSubmissionModal);
   dom.btnStartReservation.addEventListener('click', startReservationFromAction);
-  dom.btnDownloadTemplate.addEventListener('click', () => {
-    void downloadDocumentTemplate();
-  });
+  dom.btnDownloadTemplate.addEventListener('click', downloadDocumentTemplate);
   dom.calPrev.addEventListener('click', () => {
     shiftCalendarMonth(-1);
     paintCalendar();
@@ -262,46 +263,22 @@ function openDocumentSubmissionModal() {
 
   dom.documentEventTitle.textContent = `${event.name} 서류 제출`;
   dom.documentEventDesc.textContent = '양식을 내려받아 작성 후 파일을 업로드해 주세요.';
+  dom.docGroup.value = '';
+  dom.docManager.value = '';
+  dom.docContact.value = '';
   dom.docFile.value = '';
   hideDocumentError();
   dom.documentSubmissionModal.classList.add('active');
 }
 
-async function downloadDocumentTemplate() {
+function downloadDocumentTemplate() {
   const event = getEvent(getActionEventId());
   if (!event?.documentTemplateUrl) {
     alert('등록된 양식 링크가 없습니다.');
     return;
   }
 
-  const button = dom.btnDownloadTemplate;
-  const defaultLabel = button.textContent;
-  button.disabled = true;
-  button.textContent = '다운로드 준비중...';
-
-  try {
-    const downloadUrl = resolveTemplateDownloadUrl(event.documentTemplateUrl);
-    const response = await fetch(downloadUrl, { mode: 'cors' });
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const blob = await response.blob();
-    const objectUrl = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = objectUrl;
-    link.download = resolveTemplateFileName(event, downloadUrl);
-    document.body.append(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(objectUrl);
-  } catch (error) {
-    console.error('Template download failed:', error);
-    alert('양식 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.');
-  } finally {
-    button.disabled = false;
-    button.textContent = defaultLabel;
-  }
+  window.open(resolveTemplateDownloadUrl(event.documentTemplateUrl), '_blank', 'noopener');
 }
 
 async function openCalendarModal(eventId) {
@@ -441,14 +418,21 @@ async function submitDocument(event) {
   const payload = {
     eventId: currentEvent.id,
     eventName: currentEvent.name,
-    groupName: '',
-    manager: '',
-    contact: '',
+    groupName: dom.docGroup.value.trim(),
+    manager: dom.docManager.value.trim(),
+    contact: dom.docContact.value.trim(),
     fileName: file.name,
     mimeType: file.type || guessMimeType(file.name),
     base64: await fileToBase64(file),
     createdAt: formatTimestamp(new Date().toISOString()),
   };
+
+  if (!payload.groupName || !payload.manager || !payload.contact) {
+    showDocumentError('단체명, 담당자, 연락처를 모두 입력해 주세요.');
+    dom.btnSubmitDocument.disabled = false;
+    dom.btnSubmitDocument.textContent = '제출하기';
+    return;
+  }
 
   try {
     await apiPost('submitDocument', payload);
@@ -516,17 +500,4 @@ function resolveTemplateDownloadUrl(url) {
 
   const [, owner, repo, path] = githubBlobMatch;
   return `https://raw.githubusercontent.com/${owner}/${repo}/${path}`;
-}
-
-function resolveTemplateFileName(event, downloadUrl) {
-  const rawUrl = String(downloadUrl || '');
-  const lastSegment = rawUrl.split('/').pop() || '';
-  try {
-    const decoded = decodeURIComponent(lastSegment);
-    if (decoded) return decoded;
-  } catch (error) {
-    console.warn('Failed to decode template filename:', error);
-  }
-
-  return `${String(event?.name || 'document').trim()}.hwpx`;
 }

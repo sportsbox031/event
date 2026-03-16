@@ -24,23 +24,23 @@ function deleteCacheKeys(keys) {
 }
 
 function catalogCacheKey() {
-  return 'catalog:v2';
+  return 'catalog:v3';
 }
 
 function eventsCacheKey() {
-  return 'events:v2';
+  return 'events:v3';
 }
 
 function schedulesCacheKey(eventId) {
-  return eventId ? `schedules:v2:${eventId}` : 'schedules:v2:all';
+  return eventId ? `schedules:v3:${eventId}` : 'schedules:v3:all';
 }
 
 function reservationsCacheKey(eventId) {
-  return eventId ? `reservations:v2:${eventId}` : 'reservations:v2:all';
+  return eventId ? `reservations:v3:${eventId}` : 'reservations:v3:all';
 }
 
 function dashboardCacheKey() {
-  return 'admin-dashboard:v2';
+  return 'admin-dashboard:v3';
 }
 
 function scheduleCountsCacheKey() {
@@ -52,7 +52,7 @@ function reservationCountsCacheKey() {
 }
 
 function eventDetailCacheKey(eventId) {
-  return `event-detail:v2:${eventId}`;
+  return `event-detail:v3:${eventId}`;
 }
 
 function invalidateEventCaches(eventId) {

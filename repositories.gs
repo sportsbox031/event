@@ -5,14 +5,17 @@ function readEvents() {
   const sheet = ensureSheet(SHEET_EVENTS, EVENT_HEADERS);
   const data = sheet.getDataRange().getValues();
   const rows = data.slice(1).map(function(row) {
+    const eventId = String(row[0] || '');
+    const documentTemplateUrl = String(row[7] || '');
     return {
-      id: String(row[0] || ''),
+      id: eventId,
       name: String(row[1] || ''),
       description: String(row[2] || ''),
       image: String(row[3] || ''),
       status: String(row[4] || ''),
       bookingOpen: toBoolean(row[5]),
       videoUrl: String(row[6] || ''),
+      documentTemplateUrl: documentTemplateUrl || (eventId === 'evt1' ? DEFAULT_HORSE_EVENT_TEMPLATE_URL : ''),
     };
   }).filter(function(item) {
     return item.id;
@@ -109,6 +112,40 @@ function readReservations(eventId) {
   return writeCache(cacheKey, rows);
 }
 
+function readDocumentSubmissions(eventId) {
+  const sheet = ensureSheet(SHEET_DOCUMENT_SUBMISSIONS, DOCUMENT_SUBMISSION_HEADERS);
+  const data = sheet.getDataRange().getValues();
+  let rows = data.slice(1).map(function(row) {
+    return {
+      id: String(row[0] || ''),
+      eventId: String(row[1] || ''),
+      eventName: String(row[2] || ''),
+      groupName: String(row[3] || ''),
+      manager: String(row[4] || ''),
+      contact: String(row[5] || ''),
+      fileName: String(row[6] || ''),
+      fileUrl: String(row[7] || ''),
+      fileId: String(row[8] || ''),
+      mimeType: String(row[9] || ''),
+      createdAt: String(row[10] || ''),
+    };
+  }).filter(function(item) {
+    return item.id && item.eventId;
+  });
+
+  if (eventId) {
+    rows = rows.filter(function(item) {
+      return item.eventId === eventId;
+    });
+  }
+
+  rows.sort(function(left, right) {
+    return String(right.createdAt).localeCompare(String(left.createdAt));
+  });
+
+  return rows;
+}
+
 function readReservationCounts() {
   const cacheKey = reservationCountsCacheKey();
   const cached = readCache(cacheKey);
@@ -153,6 +190,7 @@ function upsertEventRecord(eventRecord) {
     eventRecord.status,
     toBoolean(eventRecord.bookingOpen),
     eventRecord.videoUrl || '',
+    eventRecord.documentTemplateUrl || '',
   ];
 
   for (let index = 1; index < data.length; index += 1) {
@@ -212,6 +250,24 @@ function insertReservationRecord(record) {
     sanitizeContact(record.contact),
     record.participants,
     record.status,
+    record.createdAt,
+  ]);
+  return record;
+}
+
+function insertDocumentSubmissionRecord(record) {
+  const sheet = ensureSheet(SHEET_DOCUMENT_SUBMISSIONS, DOCUMENT_SUBMISSION_HEADERS);
+  sheet.appendRow([
+    record.id,
+    record.eventId,
+    record.eventName,
+    record.groupName,
+    record.manager,
+    sanitizeContact(record.contact),
+    record.fileName,
+    record.fileUrl,
+    record.fileId,
+    record.mimeType,
     record.createdAt,
   ]);
   return record;
