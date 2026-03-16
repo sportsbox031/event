@@ -1,0 +1,5 @@
+.claude/
+.codex-esm-check/
+.codex-dev-server.out.log
+.codex-dev-server.err.log
+AGENTS.md
