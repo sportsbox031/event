@@ -8,6 +8,27 @@ import {
 } from '../shared/indexing.mjs';
 import { formatDate } from '../shared/date.mjs';
 
+const LOCAL_CACHE_KEY = 'sportsbox_catalog_v2';
+const LOCAL_CACHE_MAX_AGE_MS = 10 * 60 * 1000; // 10분
+
+function readLocalCache() {
+  try {
+    const raw = localStorage.getItem(LOCAL_CACHE_KEY);
+    if (!raw) return null;
+    const { payload, ts } = JSON.parse(raw);
+    if (Date.now() - ts > LOCAL_CACHE_MAX_AGE_MS) return null;
+    return payload;
+  } catch {
+    return null;
+  }
+}
+
+function writeLocalCache(payload) {
+  try {
+    localStorage.setItem(LOCAL_CACHE_KEY, JSON.stringify({ payload, ts: Date.now() }));
+  } catch {}
+}
+
 const fallbackEvents = [
   {
     id: 'evt1',
@@ -91,8 +112,31 @@ function ingestCatalog(payload) {
 export async function loadCatalog() {
   if (!state.catalogPromise) {
     state.catalogPromise = (async () => {
+      const cached = readLocalCache();
+
+      if (cached) {
+        // 캐시 즉시 렌더 후 백그라운드 갱신
+        ingestCatalog(cached);
+
+        const revalidatePromise = apiGet('getCatalog')
+          .then((fresh) => {
+            writeLocalCache(fresh);
+            ingestCatalog(fresh);
+            return { events: state.events, scheduleIndex: state.scheduleIndex };
+          })
+          .catch(() => null);
+
+        return {
+          events: state.events,
+          scheduleIndex: state.scheduleIndex,
+          revalidatePromise,
+        };
+      }
+
+      // 캐시 없음 — API 대기
       try {
         const payload = await apiGet('getCatalog');
+        writeLocalCache(payload);
         ingestCatalog(payload);
       } catch (error) {
         console.error('Failed to load catalog:', error);
@@ -103,11 +147,7 @@ export async function loadCatalog() {
         );
       }
 
-      return {
-        events: state.events,
-        scheduleIndex: state.scheduleIndex,
-
-      };
+      return { events: state.events, scheduleIndex: state.scheduleIndex };
     })();
   }
 

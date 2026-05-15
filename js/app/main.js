@@ -31,7 +31,17 @@ export async function initApp() {
   setupHeaderScroll();
   setupCardHover();
 
-  const { events } = await loadCatalog();
+  const { events, revalidatePromise } = await loadCatalog();
+  applyEventsCatalog(events);
+
+  if (revalidatePromise) {
+    revalidatePromise.then((fresh) => {
+      if (fresh) applyEventsCatalog(fresh.events);
+    });
+  }
+}
+
+function applyEventsCatalog(events) {
   const { active, preparing, ended } = partitionEventsByStatus(events);
 
   renderEvents(dom.eventsCarousel, [...active, ...preparing]);
@@ -40,6 +50,8 @@ export async function initApp() {
   if (ended.length > 0) {
     dom.endedSection.style.display = '';
     renderEvents(dom.endedCarousel, ended);
+  } else {
+    dom.endedSection.style.display = 'none';
   }
   observeRevealTargets();
 }
