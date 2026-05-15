@@ -1,6 +1,6 @@
 import { apiPost } from '../shared/http.js';
 import { formatTimestamp } from '../shared/date.mjs';
-import { countBookableEvents } from '../shared/indexing.mjs';
+import { countBookableEvents, partitionEventsByStatus } from '../shared/indexing.mjs';
 import {
   ensureSchedules,
   getActionEventId,
@@ -32,14 +32,23 @@ export async function initApp() {
   setupCardHover();
 
   const { events } = await loadCatalog();
-  renderEvents(dom.eventsCarousel, events);
-  dom.statEvents.textContent = String(countBookableEvents(events));
+  const { active, preparing, ended } = partitionEventsByStatus(events);
+
+  renderEvents(dom.eventsCarousel, [...active, ...preparing]);
+  dom.statEvents.textContent = String(active.length + preparing.length);
+
+  if (ended.length > 0) {
+    dom.endedSection.style.display = '';
+    renderEvents(dom.endedCarousel, ended);
+  }
   observeRevealTargets();
 }
 
 function cacheDom() {
   dom.header = document.querySelector('.header');
   dom.eventsCarousel = document.getElementById('eventsCarousel');
+  dom.endedSection = document.getElementById('endedEvents');
+  dom.endedCarousel = document.getElementById('endedCarousel');
   dom.statEvents = document.getElementById('statEvents');
   dom.eventActionModal = document.getElementById('eventActionModal');
   dom.actionEventTitle = document.getElementById('actionEventTitle');
@@ -77,13 +86,13 @@ function cacheDom() {
 }
 
 function bindStaticEvents() {
-  dom.eventsCarousel.addEventListener('click', handleEventCardClick);
+  [dom.eventsCarousel, dom.endedCarousel].forEach((carousel) => {
+    carousel.addEventListener('click', handleEventCardClick);
+  });
   dom.btnWatchVideo.addEventListener('click', openEventVideo);
   dom.btnOpenDocumentSubmission.addEventListener('click', openDocumentSubmissionModal);
   dom.btnStartReservation.addEventListener('click', startReservationFromAction);
-  dom.btnDownloadTemplate.addEventListener('click', () => {
-    void downloadDocumentTemplate();
-  });
+  dom.btnDownloadTemplate.addEventListener('click', downloadDocumentTemplate);
   dom.calPrev.addEventListener('click', () => {
     shiftCalendarMonth(-1);
     paintCalendar();
@@ -177,19 +186,21 @@ function setupCardHover() {
     pointerY: 0,
   };
 
-  dom.eventsCarousel.addEventListener('pointermove', (event) => {
-    const card = event.target.closest('.event-card');
-    if (!card) return;
+  [dom.eventsCarousel, dom.endedCarousel].forEach((carousel) => {
+    carousel.addEventListener('pointermove', (event) => {
+      const card = event.target.closest('.event-card');
+      if (!card) return;
 
-    hoverState.activeCard = card;
-    hoverState.pointerX = event.clientX;
-    hoverState.pointerY = event.clientY;
+      hoverState.activeCard = card;
+      hoverState.pointerX = event.clientX;
+      hoverState.pointerY = event.clientY;
 
-    if (hoverState.frameId) return;
-    hoverState.frameId = window.requestAnimationFrame(applyCardTilt);
+      if (hoverState.frameId) return;
+      hoverState.frameId = window.requestAnimationFrame(applyCardTilt);
+    });
+
+    carousel.addEventListener('pointerleave', resetCardTilt);
   });
-
-  dom.eventsCarousel.addEventListener('pointerleave', resetCardTilt);
 }
 
 function applyCardTilt() {
@@ -226,7 +237,11 @@ function openEventActionModal(eventId) {
   dom.actionEventDesc.textContent = event.description;
   dom.btnWatchVideo.disabled = !event.videoUrl;
   dom.btnWatchVideo.textContent = event.videoUrl ? '영상으로 확인하기' : '등록된 영상이 없습니다';
-  dom.btnOpenDocumentSubmission.hidden = !event.documentTemplateUrl;
+  const isEnded = event.status === '종료됨';
+  dom.btnOpenDocumentSubmission.hidden = !event.documentTemplateUrl || isEnded;
+  dom.btnStartReservation.disabled = isEnded;
+  dom.btnStartReservation.textContent = isEnded ? '모집 종료됨' : '예약하기';
+
   dom.eventActionModal.classList.add('active');
 
   if (event.bookingOpen) {
@@ -267,41 +282,21 @@ function openDocumentSubmissionModal() {
   dom.documentSubmissionModal.classList.add('active');
 }
 
-async function downloadDocumentTemplate() {
+function downloadDocumentTemplate() {
   const event = getEvent(getActionEventId());
   if (!event?.documentTemplateUrl) {
     alert('등록된 양식 링크가 없습니다.');
     return;
   }
 
-  const button = dom.btnDownloadTemplate;
-  const defaultLabel = button.textContent;
-  button.disabled = true;
-  button.textContent = '다운로드 준비중...';
-
-  try {
-    const downloadUrl = resolveTemplateDownloadUrl(event.documentTemplateUrl);
-    const response = await fetch(downloadUrl, { mode: 'cors' });
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}`);
-    }
-
-    const blob = await response.blob();
-    const objectUrl = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.href = objectUrl;
-    link.download = resolveTemplateFileName(event, downloadUrl);
-    document.body.append(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(objectUrl);
-  } catch (error) {
-    console.error('Template download failed:', error);
-    alert('양식 다운로드에 실패했습니다. 잠시 후 다시 시도해 주세요.');
-  } finally {
-    button.disabled = false;
-    button.textContent = defaultLabel;
-  }
+  const url = resolveTemplateDownloadUrl(event.documentTemplateUrl);
+  const link = document.createElement('a');
+  link.href = url;
+  link.target = '_blank';
+  link.rel = 'noopener';
+  document.body.append(link);
+  link.click();
+  link.remove();
 }
 
 async function openCalendarModal(eventId) {

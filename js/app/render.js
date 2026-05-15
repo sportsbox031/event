@@ -25,7 +25,7 @@ export function renderEvents(container, events) {
         <article class="event-card reveal-init" data-event-id="${escapeAttribute(event.id)}" style="animation-delay:${index * 0.08}s">
           <div class="event-card-image">
             <img src="${escapeAttribute(event.image)}" alt="${escapeAttribute(event.name)}" loading="lazy">
-            <span class="event-card-badge ${getBadgeClass(event.bookingOpen)}">${escapeHtml(getEventBadgeLabel(event.bookingOpen))}</span>
+            <span class="event-card-badge ${getBadgeClass(event)}">${escapeHtml(getEventBadgeLabel(event))}</span>
           </div>
           <div class="event-card-body">
             <h3 class="event-card-title">${escapeHtml(event.name)}</h3>
@@ -40,12 +40,14 @@ export function renderEvents(container, events) {
     .join('');
 }
 
-function getBadgeClass(bookingOpen) {
-  return bookingOpen ? '' : 'preparing';
+function getBadgeClass(event) {
+  if (event.status === '종료됨') return 'closed';
+  return event.bookingOpen ? '' : 'preparing';
 }
 
-function getEventBadgeLabel(bookingOpen) {
-  return bookingOpen ? '모집중' : '준비중';
+function getEventBadgeLabel(event) {
+  if (event.status === '종료됨') return '종료됨';
+  return event.bookingOpen ? '모집중' : '준비중';
 }
 
 export function renderCalendarSkeleton(container) {

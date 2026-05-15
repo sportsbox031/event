@@ -26,9 +26,14 @@ function getCatalog() {
     }, {});
   }
 
+  const settings = readSettings();
   const payload = {
     events: events,
     scheduleIndex: scheduleIndex,
+    sectionSettings: {
+      showPreparing: String(settings.show_preparing_section) !== 'false',
+      showEnded: String(settings.show_ended_section) !== 'false',
+    },
     meta: {
       scheduleMode: allSchedules.length <= CATALOG_PREFETCH_LIMIT ? 'all' : 'bookingOpenOnly',
     },
@@ -62,17 +67,27 @@ function getAdminDashboard() {
   const reservationCounts = readReservationCounts();
 
   const rows = events.map(function(event) {
+    var rawStatus = String(event.status || '');
+    var status = (rawStatus === '종료됨' || rawStatus === '모집마감') ? '종료됨' : '준비중';
     return {
       id: event.id,
       name: event.name,
-      status: event.bookingOpen ? '모집중' : '준비중',
+      status: status,
       bookingOpen: event.bookingOpen,
       scheduleCount: scheduleCounts[event.id] || 0,
       reservationCount: reservationCounts[event.id] || 0,
     };
   });
 
-  const payload = { events: events, rows: rows };
+  const settings = readSettings();
+  const payload = {
+    events: events,
+    rows: rows,
+    sectionSettings: {
+      showPreparing: String(settings.show_preparing_section) !== 'false',
+      showEnded: String(settings.show_ended_section) !== 'false',
+    },
+  };
   return writeCache(dashboardCacheKey(), payload);
 }
 
@@ -97,16 +112,44 @@ function getEventDetail(eventId) {
 
 function saveEventService(data) {
   return withScriptLock(function() {
-    const bookingOpen = toBoolean(data.bookingOpen);
-    const eventRecord = {
-      id: data.id || `evt_${Date.now()}`,
+    // Determine image URL (upload if new file provided)
+    var imageUrl = String(data.image || 'images/hero-bg.png').trim();
+    if (data.imageBase64 && data.imageFileName) {
+      var imageUpload = uploadPublicFileToDrive({
+        fileName: String(data.imageFileName),
+        mimeType: String(data.imageMimeType || 'image/jpeg'),
+        base64: String(data.imageBase64),
+        folderName: '스포츠박스 이벤트 이미지',
+      });
+      imageUrl = imageUpload.directUrl;
+    }
+
+    // Determine document template URL (upload if new file provided)
+    var docTemplateUrl = String(data.documentTemplateUrl || '').trim();
+    if (data.documentTemplateBase64 && data.documentTemplateFileName) {
+      var docUpload = uploadPublicFileToDrive({
+        fileName: String(data.documentTemplateFileName),
+        mimeType: String(data.documentTemplateMimeType || 'application/octet-stream'),
+        base64: String(data.documentTemplateBase64),
+        folderName: '스포츠박스 서류양식',
+      });
+      docTemplateUrl = docUpload.downloadUrl;
+    }
+
+    // 진행상황(status)과 예약상태(bookingOpen)는 완전히 독립적
+    var rawStatus = String(data.status || '').trim();
+    var status = (rawStatus === '종료됨' || rawStatus === '모집마감') ? '종료됨' : '준비중';
+    var bookingOpen = toBoolean(data.bookingOpen);
+
+    var eventRecord = {
+      id: data.id || ('evt_' + Date.now()),
       name: String(data.name || '').trim(),
       description: String(data.description || '').trim(),
-      image: String(data.image || 'images/hero-bg.png').trim(),
-      status: bookingOpen ? '모집중' : '준비중',
+      image: imageUrl,
+      status: status,
       bookingOpen: bookingOpen,
       videoUrl: String(data.videoUrl || '').trim(),
-      documentTemplateUrl: String(data.documentTemplateUrl || '').trim(),
+      documentTemplateUrl: docTemplateUrl,
     };
 
     if (!eventRecord.name) {
@@ -117,6 +160,58 @@ function saveEventService(data) {
     invalidateEventCaches(eventRecord.id);
     return successResponse(eventRecord);
   });
+}
+
+function saveSettingsService(data) {
+  return withScriptLock(function() {
+    var allowed = ['show_preparing_section', 'show_ended_section'];
+    for (var i = 0; i < allowed.length; i++) {
+      var key = allowed[i];
+      if (key in data) {
+        updateSettingValue(key, String(data[key]));
+      }
+    }
+    deleteCacheKeys([catalogCacheKey(), dashboardCacheKey()]);
+    return successResponse(true);
+  });
+}
+
+function uploadPublicFileToDrive(options) {
+  var folderName = options.folderName || DEFAULT_DOCUMENT_FOLDER_NAME;
+  var folder;
+  var folders = DriveApp.getFoldersByName(folderName);
+  if (folders.hasNext()) {
+    folder = folders.next();
+  } else {
+    folder = DriveApp.createFolder(folderName);
+  }
+
+  var originalName = String(options.fileName || 'file').trim() || 'file';
+  var uniqueName = originalName;
+  if (folder.getFilesByName(uniqueName).hasNext()) {
+    var parts = splitFileName(originalName);
+    var suffix = 2;
+    while (folder.getFilesByName(parts.base + ' (' + suffix + ')' + parts.extension).hasNext()) {
+      suffix += 1;
+    }
+    uniqueName = parts.base + ' (' + suffix + ')' + parts.extension;
+  }
+
+  var blob = Utilities.newBlob(
+    Utilities.base64Decode(options.base64),
+    options.mimeType,
+    uniqueName,
+  );
+  var file = folder.createFile(blob);
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+
+  var fileId = file.getId();
+  return {
+    fileId: fileId,
+    directUrl: 'https://drive.google.com/thumbnail?id=' + fileId + '&sz=w800',
+    downloadUrl: 'https://drive.google.com/uc?export=download&id=' + fileId,
+    viewUrl: file.getUrl(),
+  };
 }
 
 function submitDocumentService(data) {

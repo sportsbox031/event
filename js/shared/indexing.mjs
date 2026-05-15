@@ -1,7 +1,9 @@
 import { normalizeDateString, toBoolean } from './date.mjs';
 
 export function deriveEventStatus(record = {}) {
-  return toBoolean(record.bookingOpen) ? '모집중' : '준비중';
+  const raw = String(record.status ?? '');
+  if (raw === '종료됨' || raw === '모집마감') return '종료됨';
+  return '준비중';
 }
 
 export function countBookableEvents(events = []) {
@@ -13,16 +15,28 @@ export function countBookableEvents(events = []) {
 
 export function normalizeEventRecord(record = {}) {
   const bookingOpen = toBoolean(record.bookingOpen);
+  const status = deriveEventStatus({ status: record.status });
   return {
     id: String(record.id ?? ''),
     name: String(record.name ?? ''),
     description: String(record.description ?? ''),
     image: String(record.image ?? ''),
-    status: deriveEventStatus({ bookingOpen }),
+    status,
     bookingOpen,
     videoUrl: String(record.videoUrl ?? ''),
     documentTemplateUrl: String(record.documentTemplateUrl ?? ''),
   };
+}
+
+export function partitionEventsByStatus(events = []) {
+  const active = [];
+  const preparing = [];
+  const ended = [];
+  for (const event of events) {
+    if (event.status === '종료됨') ended.push(event);
+    else preparing.push(event);
+  }
+  return { active, preparing, ended };
 }
 
 export function normalizeScheduleRecord(record = {}) {
@@ -114,7 +128,7 @@ export function summarizeDashboardRows(events = [], schedules = [], reservations
   return events.map((event) => ({
     id: String(event.id ?? ''),
     name: String(event.name ?? ''),
-    status: deriveEventStatus(event),
+    status: deriveEventStatus({ status: event.status }),
     bookingOpen: toBoolean(event.bookingOpen),
     scheduleCount: scheduleCounts.get(String(event.id ?? '')) ?? 0,
     reservationCount: reservationCounts.get(String(event.id ?? '')) ?? 0,

@@ -62,10 +62,19 @@ function cacheDom() {
   dom.eventFormId = document.getElementById('eventFormId');
   dom.eventFormName = document.getElementById('eventFormName');
   dom.eventFormDesc = document.getElementById('eventFormDesc');
+  dom.eventFormStatus = document.getElementById('eventFormStatus');
   dom.eventFormImage = document.getElementById('eventFormImage');
+  dom.eventFormImageFile = document.getElementById('eventFormImageFile');
+  dom.eventFormImagePreview = document.getElementById('eventFormImagePreview');
+  dom.eventFormImagePreviewImg = document.getElementById('eventFormImagePreviewImg');
   dom.eventFormVideo = document.getElementById('eventFormVideo');
   dom.eventFormDocumentTemplate = document.getElementById('eventFormDocumentTemplate');
+  dom.eventFormDocumentTemplateFile = document.getElementById('eventFormDocumentTemplateFile');
+  dom.eventFormDocCurrentWrap = document.getElementById('eventFormDocCurrentWrap');
+  dom.eventFormDocCurrentText = document.getElementById('eventFormDocCurrentText');
   dom.eventFormSubmitBtn = document.getElementById('eventFormSubmitBtn');
+
+  dom.loginLoading = document.getElementById('loginLoading');
   dom.passwordModal = document.getElementById('passwordModal');
   dom.passwordForm = document.getElementById('passwordForm');
   dom.pwCurrent = document.getElementById('pwCurrent');
@@ -88,6 +97,7 @@ function bindEvents() {
   dom.eventTableBody.addEventListener('click', handleEventTableClick);
   dom.scheduleTableBody.addEventListener('click', handleScheduleTableClick);
   dom.bookingToggleWrap.addEventListener('click', handleBookingToggleClick);
+
   dom.tabButtons.forEach((button) => {
     button.addEventListener('click', () => switchTab(button.dataset.tab));
   });
@@ -123,6 +133,7 @@ function renderEventTableLoading() {
 async function handleLogin(event) {
   event.preventDefault();
   dom.loginError.textContent = '';
+  dom.loginLoading.classList.add('active');
   setButtonLoading(dom.loginSubmitBtn, true, '처리중...');
 
   const id = dom.loginId.value.trim();
@@ -134,6 +145,7 @@ async function handleLogin(event) {
     const resolvedAdminId = result.data?.adminId ?? id;
     sessionStorage.setItem('admin_logged_in', 'true');
     sessionStorage.setItem('admin_id', resolvedAdminId);
+    dom.loginLoading.classList.remove('active');
     setButtonLoading(dom.loginSubmitBtn, false);
     showDashboard(dashboardPayload);
     return;
@@ -143,6 +155,7 @@ async function handleLogin(event) {
       error?.message === 'Invalid credentials'
         ? '아이디 또는 비밀번호가 올바르지 않습니다.'
         : '로그인 서버 연결에 실패했습니다.';
+    dom.loginLoading.classList.remove('active');
     setButtonLoading(dom.loginSubmitBtn, false);
     return;
   }
@@ -182,6 +195,7 @@ async function loadDashboard() {
   renderEventTable();
 }
 
+
 function applyDashboardPayload(payload) {
   state.events = (payload.events ?? []).map(normalizeEventRecord);
   state.eventIndex = buildEventIndex(state.events);
@@ -211,16 +225,17 @@ function renderEventTable() {
   dom.eventTableBody.innerHTML = state.dashboardRows
     .map((row, index) => {
       const event = state.eventIndex.get(row.id);
-      const statusClass =
-        row.bookingOpen
-          ? 'status-open'
-          : 'status-preparing';
+      const phaseClass = row.status === '종료됨' ? 'status-closed' : 'status-preparing';
+      const bookingClass = row.bookingOpen ? 'status-open' : 'status-closed';
 
       return `
         <tr>
           <td>${index + 1}</td>
           <td><strong>${escapeHtml(event?.name ?? row.name)}</strong></td>
-          <td><span class="status-badge ${statusClass}">${escapeHtml(row.status)}</span></td>
+          <td>
+            <span class="status-badge ${phaseClass}">${escapeHtml(row.status)}</span>
+            <span class="status-badge ${bookingClass}" style="margin-left:4px;">${row.bookingOpen ? '예약중' : '예약종료'}</span>
+          </td>
           <td>${row.scheduleCount}개</td>
           <td>${row.reservationCount}건</td>
           <td>
@@ -375,9 +390,21 @@ function openEventFormModal(eventId = '') {
   dom.eventFormId.value = eventId;
   dom.eventFormName.value = eventRecord?.name ?? '';
   dom.eventFormDesc.value = eventRecord?.description ?? '';
+  dom.eventFormStatus.value = eventRecord?.status ?? '준비중';
   dom.eventFormImage.value = eventRecord?.image ?? '';
+  dom.eventFormImageFile.value = '';
   dom.eventFormVideo.value = eventRecord?.videoUrl ?? '';
   dom.eventFormDocumentTemplate.value = eventRecord?.documentTemplateUrl ?? '';
+  dom.eventFormDocumentTemplateFile.value = '';
+
+  const hasImage = eventRecord?.image && !eventRecord.image.startsWith('images/');
+  dom.eventFormImagePreview.style.display = hasImage ? '' : 'none';
+  if (hasImage) dom.eventFormImagePreviewImg.src = eventRecord.image;
+
+  const hasDoc = Boolean(eventRecord?.documentTemplateUrl);
+  dom.eventFormDocCurrentWrap.style.display = hasDoc ? '' : 'none';
+  if (hasDoc) dom.eventFormDocCurrentText.textContent = '현재 파일 등록됨 (새 파일 선택 시 교체)';
+
   dom.eventFormModal.classList.add('active');
 }
 
@@ -386,6 +413,10 @@ async function saveEvent(event) {
   setButtonLoading(dom.eventFormSubmitBtn, true, '저장중...');
 
   const eventId = dom.eventFormId.value.trim();
+  const status = dom.eventFormStatus.value;
+  const imageFile = dom.eventFormImageFile.files?.[0];
+  const docTemplateFile = dom.eventFormDocumentTemplateFile.files?.[0];
+
   const payload = {
     id: eventId || undefined,
     name: dom.eventFormName.value.trim(),
@@ -393,15 +424,44 @@ async function saveEvent(event) {
     image: dom.eventFormImage.value.trim() || 'images/hero-bg.png',
     videoUrl: dom.eventFormVideo.value.trim(),
     documentTemplateUrl: dom.eventFormDocumentTemplate.value.trim(),
+    status,
     bookingOpen: eventId ? Boolean(state.eventIndex.get(eventId)?.bookingOpen) : false,
   };
 
+  if (imageFile) {
+    payload.imageBase64 = await fileToBase64(imageFile);
+    payload.imageFileName = imageFile.name;
+    payload.imageMimeType = imageFile.type || 'image/jpeg';
+  }
+
+  if (docTemplateFile) {
+    payload.documentTemplateBase64 = await fileToBase64(docTemplateFile);
+    payload.documentTemplateFileName = docTemplateFile.name;
+    payload.documentTemplateMimeType = docTemplateFile.type || 'application/octet-stream';
+  }
+
+  const hasFileUpload = Boolean(imageFile || docTemplateFile);
   try {
-    const result = await apiPost('saveEvent', payload);
+    const result = await apiPost('saveEvent', payload, hasFileUpload ? { timeoutMs: 60000 } : {});
     if (!result.success) throw new Error(result.error ?? 'saveEvent failed');
+
     dom.eventFormModal.classList.remove('active');
     state.detailCache.delete(eventId);
-    await loadDashboard();
+
+    // 저장 즉시 로컬 상태 업데이트 → 서버 응답 기다리지 않고 바로 반영
+    if (result.data) {
+      const updated = normalizeEventRecord(result.data);
+      updateEventRecord(updated);
+      state.dashboardRows = state.dashboardRows.map((row) =>
+        row.id === updated.id
+          ? { ...row, status: updated.status, bookingOpen: updated.bookingOpen }
+          : row,
+      );
+      renderEventTable();
+    }
+
+    // 서버 최신 데이터로 백그라운드 갱신 (실패해도 화면은 이미 업데이트됨)
+    void loadDashboard();
   } catch (error) {
     console.error(error);
     alert('이벤트 저장에 실패했습니다.');
@@ -652,6 +712,19 @@ function getStoredReservations() {
     date: normalizeDateString(item.date),
     createdAt: item.createdAt || formatTimestamp(new Date().toISOString()),
   }));
+}
+
+function fileToBase64(file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const dataUrl = String(reader.result || '');
+      const commaIndex = dataUrl.indexOf(',');
+      resolve(commaIndex >= 0 ? dataUrl.slice(commaIndex + 1) : dataUrl);
+    };
+    reader.onerror = () => reject(reader.error || new Error('File read failed'));
+    reader.readAsDataURL(file);
+  });
 }
 
 function escapeHtml(value) {

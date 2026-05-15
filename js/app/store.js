@@ -63,6 +63,7 @@ const state = {
   calendarYear: new Date().getFullYear(),
   calendarMonth: new Date().getMonth(),
   calendarFixedMonth: null,
+
 };
 
 function setCatalog(events, scheduleIndex) {
@@ -105,6 +106,7 @@ export async function loadCatalog() {
       return {
         events: state.events,
         scheduleIndex: state.scheduleIndex,
+
       };
     })();
   }
@@ -206,6 +208,7 @@ export function shiftCalendarMonth(direction) {
 
   return getCalendarState();
 }
+
 
 export function invalidateSchedules(eventId) {
   const remaining = flattenScheduleIndex(state.scheduleIndex).filter(

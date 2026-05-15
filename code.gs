@@ -50,6 +50,8 @@ function doPost(e) {
       return jsonOutput(adminLoginService(data));
     case 'submitDocument':
       return jsonOutput(submitDocumentService(data));
+    case 'saveSettings':
+      return jsonOutput(saveSettingsService(data));
     default:
       return jsonOutput(errorResponse('Unknown action'));
   }

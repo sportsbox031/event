@@ -35,10 +35,11 @@ export async function apiGet(action, params = {}) {
   return requestJSON(`${API_URL}?${query.toString()}`);
 }
 
-export async function apiPost(action, data = {}) {
+export async function apiPost(action, data = {}, options = {}) {
   return requestJSON(API_URL, {
     method: 'POST',
     headers: { 'Content-Type': 'text/plain' },
     body: JSON.stringify({ action, data }),
+    ...options,
   });
 }
