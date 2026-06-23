@@ -76,14 +76,17 @@ function readScheduleCounts() {
 }
 
 function readReservations(eventId) {
-  const cacheKey = reservationsCacheKey(eventId);
-  const cached = readCache(cacheKey);
+  var cacheKey = reservationsCacheKey(eventId);
+  var cached = readCache(cacheKey);
   if (cached) return cached;
 
-  const sheet = ensureSheet(SHEET_RESERVATIONS, RESERVATION_HEADERS);
-  const data = sheet.getDataRange().getValues();
-  let rows = data.slice(1).map(function(row) {
-    return {
+  var sheet = ensureSheet(SHEET_RESERVATIONS, RESERVATION_HEADERS);
+  var data = sheet.getDataRange().getValues();
+  var rows = [];
+
+  for (var i = 1; i < data.length; i += 1) {
+    var row = data[i];
+    var item = {
       id: String(row[0] || ''),
       eventId: String(row[1] || ''),
       eventName: String(row[2] || ''),
@@ -93,11 +96,13 @@ function readReservations(eventId) {
       contact: String(row[6] || ''),
       participants: Number(row[7] || 0),
       status: String(row[8] || ''),
-      createdAt: String(row[9] || ''),
+      createdAt: String(row[9] || '')
     };
-  }).filter(function(item) {
-    return item.id && item.eventId;
-  });
+
+    if (item.id && item.eventId) {
+      rows.push(item);
+    }
+  }
 
   if (eventId) {
     rows = rows.filter(function(item) {
@@ -253,6 +258,43 @@ function insertReservationRecord(record) {
     record.createdAt,
   ]);
   return record;
+}
+
+function updateReservationRecord(record) {
+  var sheet = ensureSheet(SHEET_RESERVATIONS, RESERVATION_HEADERS);
+  var data = sheet.getDataRange().getValues();
+  var payload = [
+    record.id,
+    record.eventId,
+    record.eventName,
+    record.date,
+    record.groupName,
+    record.manager,
+    sanitizeContact(record.contact),
+    record.participants,
+    record.status,
+    record.createdAt
+  ];
+
+  for (var index = 1; index < data.length; index += 1) {
+    if (String(data[index][0] || '') === record.id) {
+      sheet.getRange(index + 1, 1, 1, payload.length).setValues([payload]);
+      return record;
+    }
+  }
+
+  return null;
+}
+
+function removeReservationRecord(reservationId, eventId) {
+  var sheet = ensureSheet(SHEET_RESERVATIONS, RESERVATION_HEADERS);
+  var deleted = deleteRowsByMatch(sheet, function(row) {
+    var matchesReservation = String(row[0] || '') === reservationId;
+    var matchesEvent = !eventId || String(row[1] || '') === eventId;
+    return matchesReservation && matchesEvent;
+  });
+
+  return deleted ? successResponse(true) : errorResponse('Not found');
 }
 
 function insertDocumentSubmissionRecord(record) {

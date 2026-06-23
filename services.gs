@@ -92,19 +92,24 @@ function getAdminDashboard() {
 }
 
 function getEventDetail(eventId) {
-  const cacheKey = eventDetailCacheKey(eventId);
-  const cached = readCache(cacheKey);
+  var cacheKey = eventDetailCacheKey(eventId);
+  var cached = readCache(cacheKey);
   if (cached) return cached;
 
-  const eventRecord = readEvents().filter(function(item) {
-    return item.id === eventId;
-  })[0] || null;
+  var events = readEvents();
+  var eventRecord = null;
+  for (var i = 0; i < events.length; i += 1) {
+    if (events[i].id === eventId) {
+      eventRecord = events[i];
+      break;
+    }
+  }
 
-  const payload = {
+  var payload = {
     event: eventRecord,
     schedules: readSchedules(eventId),
     reservations: readReservations(eventId),
-    documentSubmissions: readDocumentSubmissions(eventId),
+    documentSubmissions: readDocumentSubmissions(eventId)
   };
 
   return writeCache(cacheKey, payload);
@@ -325,6 +330,52 @@ function addReservationService(data) {
     insertReservationRecord(reservation);
     invalidateEventCaches(eventId);
     return successResponse({ id: reservation.id });
+  });
+}
+
+function updateReservationService(data) {
+  return withScriptLock(function() {
+    var reservationId = String(data.id || '').trim();
+    var eventId = String(data.eventId || '').trim();
+    var date = normalizeDateValue(data.date);
+    if (!reservationId || !eventId || !date) return errorResponse('Invalid payload');
+
+    var reservation = {
+      id: reservationId,
+      eventId: eventId,
+      eventName: String(data.eventName || ''),
+      date: date,
+      groupName: String(data.groupName || '').trim(),
+      manager: String(data.manager || '').trim(),
+      contact: String(data.contact || '').trim(),
+      participants: Number(data.participants || 0),
+      status: String(data.status || '대기'),
+      createdAt: String(data.createdAt || createTimestamp())
+    };
+
+    if (!reservation.groupName || !reservation.manager || reservation.participants < 1) {
+      return errorResponse('Invalid reservation');
+    }
+
+    var updated = updateReservationRecord(reservation);
+    if (!updated) return errorResponse('Not found');
+
+    invalidateEventCaches(eventId);
+    return successResponse(updated);
+  });
+}
+
+function deleteReservationService(data) {
+  return withScriptLock(function() {
+    var reservationId = String(data.id || '').trim();
+    var eventId = String(data.eventId || '').trim();
+    if (!reservationId) return errorResponse('Missing reservation id');
+
+    var result = removeReservationRecord(reservationId, eventId);
+    if (!result.success) return result;
+
+    invalidateEventCaches(eventId);
+    return result;
   });
 }
 

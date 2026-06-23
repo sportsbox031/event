@@ -36,6 +36,10 @@ function doPost(e) {
   switch (action) {
     case 'addReservation':
       return jsonOutput(addReservationService(data));
+    case 'updateReservation':
+      return jsonOutput(updateReservationService(data));
+    case 'deleteReservation':
+      return jsonOutput(deleteReservationService(data));
     case 'saveEvent':
       return jsonOutput(saveEventService(data));
     case 'deleteEvent':

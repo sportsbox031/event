@@ -127,7 +127,7 @@
                     <div class="tab-content" id="tabReservations" style="display:none;">
                         <table class="data-table">
                             <thead>
-                                <tr><th>No</th><th>예약일</th><th>단체명</th><th>담당자</th><th>연락처</th><th>참여인원</th><th>신청일시</th></tr>
+                                <tr><th>No</th><th>예약일</th><th>단체명</th><th>담당자</th><th>연락처</th><th>참여인원</th><th>신청일시</th><th>관리</th></tr>
                             </thead>
                             <tbody id="reservationTableBody"></tbody>
                         </table>
@@ -188,6 +188,45 @@
                 </div>
                 <div style="padding: 0 28px 28px;">
                     <button type="submit" class="btn-submit" id="eventFormSubmitBtn">저장</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Reservation Edit Modal -->
+    <div class="modal-overlay" id="reservationEditModal">
+        <div class="modal modal-reservation modal-glass">
+            <button type="button" class="modal-close" data-close-modal="reservationEditModal">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            </button>
+            <div class="modal-header">
+                <div class="modal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 013 3L7 19l-4 1 1-4 12.5-12.5z"/></svg></div>
+                <h3>신청 내역 수정</h3>
+            </div>
+            <form id="reservationEditForm">
+                <input type="hidden" id="reservationEditId">
+                <div class="form-group" style="padding: 0 28px;">
+                    <label>예약일 <span class="required">*</span></label>
+                    <input type="date" id="reservationEditDate" required class="form-input">
+                </div>
+                <div class="form-group" style="padding: 0 28px;">
+                    <label>단체명 <span class="required">*</span></label>
+                    <input type="text" id="reservationEditGroup" required class="form-input">
+                </div>
+                <div class="form-group" style="padding: 0 28px;">
+                    <label>담당자 <span class="required">*</span></label>
+                    <input type="text" id="reservationEditManager" required class="form-input">
+                </div>
+                <div class="form-group" style="padding: 0 28px;">
+                    <label>연락처</label>
+                    <input type="text" id="reservationEditContact" class="form-input">
+                </div>
+                <div class="form-group" style="padding: 0 28px;">
+                    <label>참여인원 <span class="required">*</span></label>
+                    <input type="number" id="reservationEditParticipants" required min="1" class="form-input">
+                </div>
+                <div style="padding: 0 28px 28px;">
+                    <button type="submit" class="btn-submit" id="reservationEditSubmitBtn">저장</button>
                 </div>
             </form>
         </div>

@@ -51,6 +51,15 @@ function cacheDom() {
   dom.bookingToggleWrap = document.getElementById('bookingToggleWrap');
   dom.scheduleTableBody = document.getElementById('scheduleTableBody');
   dom.reservationTableBody = document.getElementById('reservationTableBody');
+  dom.reservationEditModal = document.getElementById('reservationEditModal');
+  dom.reservationEditForm = document.getElementById('reservationEditForm');
+  dom.reservationEditId = document.getElementById('reservationEditId');
+  dom.reservationEditDate = document.getElementById('reservationEditDate');
+  dom.reservationEditGroup = document.getElementById('reservationEditGroup');
+  dom.reservationEditManager = document.getElementById('reservationEditManager');
+  dom.reservationEditContact = document.getElementById('reservationEditContact');
+  dom.reservationEditParticipants = document.getElementById('reservationEditParticipants');
+  dom.reservationEditSubmitBtn = document.getElementById('reservationEditSubmitBtn');
   dom.tabButtons = [...document.querySelectorAll('.tab-btn')];
   dom.tabSchedules = document.getElementById('tabSchedules');
   dom.tabReservations = document.getElementById('tabReservations');
@@ -92,10 +101,12 @@ function bindEvents() {
   dom.backToEventListBtn.addEventListener('click', () => void backToEventList());
   dom.addScheduleBtn.addEventListener('click', () => void addSchedule(dom.addScheduleBtn));
   dom.eventForm.addEventListener('submit', saveEvent);
+  dom.reservationEditForm.addEventListener('submit', saveReservation);
   dom.passwordForm.addEventListener('submit', changePassword);
 
   dom.eventTableBody.addEventListener('click', handleEventTableClick);
   dom.scheduleTableBody.addEventListener('click', handleScheduleTableClick);
+  dom.reservationTableBody.addEventListener('click', handleReservationTableClick);
   dom.bookingToggleWrap.addEventListener('click', handleBookingToggleClick);
 
   dom.tabButtons.forEach((button) => {
@@ -282,7 +293,7 @@ async function openEventDetail(eventId) {
 
 function renderDetailLoadingState() {
   dom.scheduleTableBody.innerHTML = createAdminTableMessage(2, '일정을 확인하고 있습니다.');
-  dom.reservationTableBody.innerHTML = createAdminTableMessage(7, '신청 내역 데이터를 가져오고 있습니다.');
+  dom.reservationTableBody.innerHTML = createAdminTableMessage(8, '신청 내역 데이터를 가져오고 있습니다.');
 }
 
 async function getEventDetail(eventId) {
@@ -574,7 +585,7 @@ function renderReservations(reservations) {
   );
 
   if (!sorted.length) {
-    dom.reservationTableBody.innerHTML = createAdminTableMessage(7, '신청 내역이 없습니다.');
+    dom.reservationTableBody.innerHTML = createAdminTableMessage(8, '신청 내역이 없습니다.');
     return;
   }
 
@@ -589,10 +600,123 @@ function renderReservations(reservations) {
           <td>${escapeHtml(reservation.contact)}</td>
           <td>${escapeHtml(String(reservation.participants))}명</td>
           <td>${escapeHtml(reservation.createdAt)}</td>
+          <td>
+            <button type="button" class="btn-sm btn-edit" data-action="edit-reservation" data-reservation-id="${escapeHtml(reservation.id)}">수정</button>
+            <button type="button" class="btn-sm btn-delete" data-action="delete-reservation" data-reservation-id="${escapeHtml(reservation.id)}">삭제</button>
+          </td>
         </tr>
       `,
     )
     .join('');
+}
+
+function handleReservationTableClick(event) {
+  const button = event.target.closest('[data-action]');
+  if (!button) return;
+
+  const { action, reservationId } = button.dataset;
+  if (action === 'edit-reservation') {
+    openReservationEditModal(reservationId);
+  } else if (action === 'delete-reservation') {
+    void deleteReservation(reservationId, button);
+  }
+}
+
+async function openReservationEditModal(reservationId) {
+  const detail = await getEventDetail(state.currentDetailEventId);
+  const reservation = detail.reservations.find((item) => item.id === reservationId);
+  if (!reservation) return;
+
+  dom.reservationEditId.value = reservation.id;
+  dom.reservationEditDate.value = reservation.date;
+  dom.reservationEditGroup.value = reservation.groupName;
+  dom.reservationEditManager.value = reservation.manager;
+  dom.reservationEditContact.value = reservation.contact;
+  dom.reservationEditParticipants.value = String(reservation.participants || 1);
+  dom.reservationEditModal.classList.add('active');
+}
+
+async function saveReservation(event) {
+  event.preventDefault();
+
+  const reservationId = dom.reservationEditId.value.trim();
+  const participantCount = Number.parseInt(dom.reservationEditParticipants.value, 10);
+  if (!reservationId || !participantCount || participantCount < 1) {
+    alert('신청 정보를 확인하세요.');
+    return;
+  }
+
+  const detail = await getEventDetail(state.currentDetailEventId);
+  const current = detail.reservations.find((item) => item.id === reservationId);
+  if (!current) return;
+
+  const payload = normalizeReservationRecord({
+    ...current,
+    date: dom.reservationEditDate.value,
+    groupName: dom.reservationEditGroup.value.trim(),
+    manager: dom.reservationEditManager.value.trim(),
+    contact: dom.reservationEditContact.value.trim(),
+    participants: participantCount,
+  });
+
+  setButtonLoading(dom.reservationEditSubmitBtn, true, '저장중...');
+
+  try {
+    const result = await apiPost('updateReservation', payload);
+    if (!result.success) throw new Error(result.error ?? 'updateReservation failed');
+    await applyReservationUpdate(normalizeReservationRecord(result.data ?? payload));
+    dom.reservationEditModal.classList.remove('active');
+  } catch (error) {
+    console.error(error);
+    if (!updateStoredReservation(payload)) {
+      alert('신청 내역 수정에 실패했습니다.');
+      return;
+    }
+    await applyReservationUpdate(payload);
+    dom.reservationEditModal.classList.remove('active');
+  } finally {
+    setButtonLoading(dom.reservationEditSubmitBtn, false);
+  }
+}
+
+async function deleteReservation(reservationId, button) {
+  if (!confirm('이 신청 내역을 삭제하시겠습니까?')) return;
+  setButtonLoading(button, true, '삭제중...');
+
+  try {
+    const result = await apiPost('deleteReservation', {
+      id: reservationId,
+      eventId: state.currentDetailEventId,
+    });
+    if (!result.success) throw new Error(result.error ?? 'deleteReservation failed');
+    await applyReservationDelete(reservationId);
+  } catch (error) {
+    console.error(error);
+    if (!deleteStoredReservation(reservationId)) {
+      alert('신청 내역 삭제에 실패했습니다.');
+      setButtonLoading(button, false);
+      return;
+    }
+    await applyReservationDelete(reservationId);
+  }
+}
+
+async function applyReservationUpdate(nextReservation) {
+  const detail = await getEventDetail(state.currentDetailEventId);
+  detail.reservations = detail.reservations.map((item) =>
+    item.id === nextReservation.id ? nextReservation : item,
+  );
+  state.detailCache.set(state.currentDetailEventId, detail);
+  renderReservations(detail.reservations);
+}
+
+async function applyReservationDelete(reservationId) {
+  const detail = await getEventDetail(state.currentDetailEventId);
+  detail.reservations = detail.reservations.filter((item) => item.id !== reservationId);
+  state.detailCache.set(state.currentDetailEventId, detail);
+  incrementDashboardCount(state.currentDetailEventId, 'reservationCount', -1);
+  renderReservations(detail.reservations);
+  renderEventTable();
 }
 
 function openPasswordModal() {
@@ -712,6 +836,23 @@ function getStoredReservations() {
     date: normalizeDateString(item.date),
     createdAt: item.createdAt || formatTimestamp(new Date().toISOString()),
   }));
+}
+
+function updateStoredReservation(nextReservation) {
+  const reservations = JSON.parse(localStorage.getItem('reservations') || '[]');
+  const index = reservations.findIndex((item) => String(item.id ?? '') === nextReservation.id);
+  if (index === -1) return false;
+  reservations[index] = { ...reservations[index], ...nextReservation };
+  localStorage.setItem('reservations', JSON.stringify(reservations));
+  return true;
+}
+
+function deleteStoredReservation(reservationId) {
+  const reservations = JSON.parse(localStorage.getItem('reservations') || '[]');
+  const nextReservations = reservations.filter((item) => String(item.id ?? '') !== reservationId);
+  if (nextReservations.length === reservations.length) return false;
+  localStorage.setItem('reservations', JSON.stringify(nextReservations));
+  return true;
 }
 
 function fileToBase64(file) {
