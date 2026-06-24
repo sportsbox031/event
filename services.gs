@@ -320,7 +320,7 @@ function addReservationService(data) {
       contact: String(data.contact || '').trim(),
       participants: Number(data.participants || 0),
       status: String(data.status || '대기'),
-      createdAt: String(data.createdAt || createTimestamp()),
+      createdAt: createTimestamp(),
     };
 
     if (!reservation.groupName || !reservation.manager || reservation.participants < 1) {

@@ -110,9 +110,7 @@ function readReservations(eventId) {
     });
   }
 
-  rows.sort(function(left, right) {
-    return String(right.createdAt).localeCompare(String(left.createdAt));
-  });
+  rows.sort(compareCreatedAtAsc);
 
   return writeCache(cacheKey, rows);
 }
@@ -257,6 +255,7 @@ function insertReservationRecord(record) {
     record.status,
     record.createdAt,
   ]);
+  sortReservationRowsByCreatedAt(sheet);
   return record;
 }
 
@@ -279,6 +278,7 @@ function updateReservationRecord(record) {
   for (var index = 1; index < data.length; index += 1) {
     if (String(data[index][0] || '') === record.id) {
       sheet.getRange(index + 1, 1, 1, payload.length).setValues([payload]);
+      sortReservationRowsByCreatedAt(sheet);
       return record;
     }
   }
@@ -295,6 +295,37 @@ function removeReservationRecord(reservationId, eventId) {
   });
 
   return deleted ? successResponse(true) : errorResponse('Not found');
+}
+
+function compareCreatedAtAsc(left, right) {
+  var leftTime = parseTimestampValue(left.createdAt);
+  var rightTime = parseTimestampValue(right.createdAt);
+  if (leftTime !== rightTime) return leftTime - rightTime;
+  return String(left.id || '').localeCompare(String(right.id || ''), 'ko-KR', {
+    numeric: true,
+    sensitivity: 'base',
+  });
+}
+
+function sortReservationRowsByCreatedAt(sheet) {
+  var lastRow = sheet.getLastRow();
+  if (lastRow <= 2) return;
+
+  var columnCount = RESERVATION_HEADERS.length;
+  var range = sheet.getRange(2, 1, lastRow - 1, columnCount);
+  var rows = range.getValues();
+
+  rows.sort(function(left, right) {
+    var leftTime = parseTimestampValue(left[9]);
+    var rightTime = parseTimestampValue(right[9]);
+    if (leftTime !== rightTime) return leftTime - rightTime;
+    return String(left[0] || '').localeCompare(String(right[0] || ''), 'ko-KR', {
+      numeric: true,
+      sensitivity: 'base',
+    });
+  });
+
+  range.setValues(rows);
 }
 
 function insertDocumentSubmissionRecord(record) {
