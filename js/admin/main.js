@@ -580,9 +580,7 @@ async function deleteSchedule(date, button) {
 }
 
 function renderReservations(reservations) {
-  const sorted = [...reservations].sort((left, right) =>
-    String(right.createdAt).localeCompare(String(left.createdAt)),
-  );
+  const sorted = [...reservations].sort(compareReservationCreatedAtAsc);
 
   if (!sorted.length) {
     dom.reservationTableBody.innerHTML = createAdminTableMessage(8, '신청 내역이 없습니다.');
@@ -608,6 +606,45 @@ function renderReservations(reservations) {
       `,
     )
     .join('');
+}
+
+function compareReservationCreatedAtAsc(left, right) {
+  const leftTime = parseReservationTimestamp(left.createdAt);
+  const rightTime = parseReservationTimestamp(right.createdAt);
+
+  if (leftTime !== rightTime) return leftTime - rightTime;
+
+  return String(left.id).localeCompare(String(right.id), 'ko-KR', {
+    numeric: true,
+    sensitivity: 'base',
+  });
+}
+
+function parseReservationTimestamp(value) {
+  const raw = String(value ?? '').trim();
+  if (!raw) return Number.MAX_SAFE_INTEGER;
+
+  const parsed = Date.parse(raw);
+  if (!Number.isNaN(parsed)) return parsed;
+
+  const koreanMatch = raw.match(
+    /^(\d{4})\.\s*(\d{1,2})\.\s*(\d{1,2})\.\s*(오전|오후)?\s*(\d{1,2}):(\d{2})(?::(\d{2}))?/,
+  );
+  if (!koreanMatch) return Number.MAX_SAFE_INTEGER;
+
+  const [, year, month, day, meridiem, hour, minute, second = '0'] = koreanMatch;
+  let hours = Number(hour);
+  if (meridiem === '오전' && hours === 12) hours = 0;
+  if (meridiem === '오후' && hours < 12) hours += 12;
+
+  return new Date(
+    Number(year),
+    Number(month) - 1,
+    Number(day),
+    hours,
+    Number(minute),
+    Number(second),
+  ).getTime();
 }
 
 function handleReservationTableClick(event) {
