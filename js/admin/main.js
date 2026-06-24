@@ -16,6 +16,7 @@ const state = {
   dashboardRows: [],
   currentDetailEventId: null,
   currentTab: 'schedules',
+  currentReservationDateFilter: 'all',
   detailCache: new Map(),
   bookingToggleLoading: false,
   bookingToggleTarget: null,
@@ -50,6 +51,7 @@ function cacheDom() {
   dom.detailEventTitle = document.getElementById('detailEventTitle');
   dom.bookingToggleWrap = document.getElementById('bookingToggleWrap');
   dom.scheduleTableBody = document.getElementById('scheduleTableBody');
+  dom.reservationDateTabs = document.getElementById('reservationDateTabs');
   dom.reservationTableBody = document.getElementById('reservationTableBody');
   dom.reservationEditModal = document.getElementById('reservationEditModal');
   dom.reservationEditForm = document.getElementById('reservationEditForm');
@@ -106,6 +108,7 @@ function bindEvents() {
 
   dom.eventTableBody.addEventListener('click', handleEventTableClick);
   dom.scheduleTableBody.addEventListener('click', handleScheduleTableClick);
+  dom.reservationDateTabs.addEventListener('click', handleReservationDateTabClick);
   dom.reservationTableBody.addEventListener('click', handleReservationTableClick);
   dom.bookingToggleWrap.addEventListener('click', handleBookingToggleClick);
 
@@ -282,17 +285,20 @@ async function openEventDetail(eventId) {
   dom.viewEventList.style.display = 'none';
   dom.viewEventDetail.style.display = 'block';
   dom.detailEventTitle.textContent = eventRecord.name;
+  state.currentReservationDateFilter = 'all';
   switchTab('schedules');
   renderDetailLoadingState();
 
   const detail = await getEventDetail(eventId);
   renderBookingToggle();
   renderSchedules(detail.schedules);
+  renderReservationDateTabs(detail.schedules, detail.reservations);
   renderReservations(detail.reservations);
 }
 
 function renderDetailLoadingState() {
   dom.scheduleTableBody.innerHTML = createAdminTableMessage(2, '일정을 확인하고 있습니다.');
+  dom.reservationDateTabs.innerHTML = '';
   dom.reservationTableBody.innerHTML = createAdminTableMessage(8, '신청 내역 데이터를 가져오고 있습니다.');
 }
 
@@ -521,6 +527,8 @@ async function addSchedule(button) {
     incrementDashboardCount(state.currentDetailEventId, 'scheduleCount', 1);
     dom.scheduleDate.value = '';
     renderSchedules(detail.schedules);
+    renderReservationDateTabs(detail.schedules, detail.reservations);
+    renderReservations(detail.reservations);
     renderEventTable();
   } catch (error) {
     console.error(error);
@@ -571,6 +579,8 @@ async function deleteSchedule(date, button) {
     state.detailCache.set(state.currentDetailEventId, detail);
     incrementDashboardCount(state.currentDetailEventId, 'scheduleCount', -1);
     renderSchedules(detail.schedules);
+    renderReservationDateTabs(detail.schedules, detail.reservations);
+    renderReservations(detail.reservations);
     renderEventTable();
   } catch (error) {
     console.error(error);
@@ -579,11 +589,73 @@ async function deleteSchedule(date, button) {
   }
 }
 
+function renderReservationDateTabs(schedules = [], reservations = []) {
+  const dates = [...new Set(schedules.map((schedule) => schedule.date).filter(Boolean))]
+    .sort((left, right) => left.localeCompare(right));
+  const counts = reservations.reduce((map, reservation) => {
+    map.set(reservation.date, (map.get(reservation.date) ?? 0) + 1);
+    return map;
+  }, new Map());
+
+  if (
+    state.currentReservationDateFilter !== 'all'
+    && !dates.includes(state.currentReservationDateFilter)
+  ) {
+    state.currentReservationDateFilter = 'all';
+  }
+
+  const tabs = [
+    { value: 'all', label: '전체', count: reservations.length },
+    ...dates.map((date) => ({
+      value: date,
+      label: formatReservationDateLabel(date),
+      count: counts.get(date) ?? 0,
+    })),
+  ];
+
+  dom.reservationDateTabs.innerHTML = tabs
+    .map(
+      (tab) => `
+        <button
+          type="button"
+          class="date-tab-btn ${state.currentReservationDateFilter === tab.value ? 'active' : ''}"
+          data-reservation-date="${escapeHtml(tab.value)}"
+        >
+          <span>${escapeHtml(tab.label)}</span>
+          <strong>${tab.count}</strong>
+        </button>
+      `,
+    )
+    .join('');
+}
+
+function formatReservationDateLabel(date) {
+  const [, month, day] = String(date).match(/^\d{4}-(\d{2})-(\d{2})$/) ?? [];
+  if (!month || !day) return date;
+  return `${Number(month)}월 ${Number(day)}일`;
+}
+
+async function handleReservationDateTabClick(event) {
+  const button = event.target.closest('[data-reservation-date]');
+  if (!button) return;
+
+  state.currentReservationDateFilter = button.dataset.reservationDate;
+  const detail = await getEventDetail(state.currentDetailEventId);
+  renderReservationDateTabs(detail.schedules, detail.reservations);
+  renderReservations(detail.reservations);
+}
+
 function renderReservations(reservations) {
-  const sorted = [...reservations].sort(compareReservationCreatedAtAsc);
+  const filtered = state.currentReservationDateFilter === 'all'
+    ? reservations
+    : reservations.filter((reservation) => reservation.date === state.currentReservationDateFilter);
+  const sorted = [...filtered].sort(compareReservationCreatedAtAsc);
 
   if (!sorted.length) {
-    dom.reservationTableBody.innerHTML = createAdminTableMessage(8, '신청 내역이 없습니다.');
+    const message = state.currentReservationDateFilter === 'all'
+      ? '신청 내역이 없습니다.'
+      : '해당 일자 신청 내역이 없습니다.';
+    dom.reservationTableBody.innerHTML = createAdminTableMessage(8, message);
     return;
   }
 
@@ -744,6 +816,7 @@ async function applyReservationUpdate(nextReservation) {
     item.id === nextReservation.id ? nextReservation : item,
   );
   state.detailCache.set(state.currentDetailEventId, detail);
+  renderReservationDateTabs(detail.schedules, detail.reservations);
   renderReservations(detail.reservations);
 }
 
@@ -752,6 +825,7 @@ async function applyReservationDelete(reservationId) {
   detail.reservations = detail.reservations.filter((item) => item.id !== reservationId);
   state.detailCache.set(state.currentDetailEventId, detail);
   incrementDashboardCount(state.currentDetailEventId, 'reservationCount', -1);
+  renderReservationDateTabs(detail.schedules, detail.reservations);
   renderReservations(detail.reservations);
   renderEventTable();
 }

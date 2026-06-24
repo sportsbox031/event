@@ -699,6 +699,32 @@ select.form-input { cursor: pointer; }
 }
 .tab-btn:hover { background: var(--canvas-soft-2); color: var(--text); }
 .tab-btn.active { background: var(--primary); color: var(--on-primary); border-color: transparent; }
+.reservation-date-tabs {
+    display: flex; flex-wrap: wrap; gap: 8px;
+    margin-bottom: 14px;
+}
+.date-tab-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    min-height: 34px; padding: 0 12px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--hairline);
+    background: var(--canvas); color: var(--text-muted);
+    font-size: 13px; font-weight: 500;
+    transition: all 0.15s;
+}
+.date-tab-btn:hover { border-color: var(--hairline-strong); color: var(--text); }
+.date-tab-btn.active {
+    background: var(--text); color: var(--canvas);
+    border-color: var(--text);
+}
+.date-tab-btn strong {
+    min-width: 22px; height: 22px; padding: 0 7px;
+    display: inline-flex; align-items: center; justify-content: center;
+    border-radius: var(--radius-full);
+    background: var(--canvas-soft-2); color: var(--text);
+    font-size: 12px; font-weight: 600;
+}
+.date-tab-btn.active strong { background: rgba(255,255,255,0.18); color: var(--canvas); }
 
 /* Schedule Form */
 .schedule-form {
